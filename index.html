@@ -36,9 +36,56 @@
     @media(max-width:900px){.receipt-layout{grid-template-columns:1fr}.receipt-form-panel{position:static}}
       @media(max-width:620px){.app{display:block}.side{width:auto;min-height:auto}.brand{padding-bottom:17px}.nav{display:flex;overflow:auto;margin-bottom:16px}.nav-title{display:none}.nav button{white-space:nowrap}.side-foot{display:none}.main{padding:0 14px 28px}.top{height:60px}.page-head{display:block}.page-head h1{font-size:34px}.page-head .button{margin-top:16px}.metrics,.property-grid,.form-grid,.summary-grid{grid-template-columns:1fr}.hero-actions{margin-top:20px;justify-content:flex-start}.table{min-width:680px}.receipt-card{padding:17px;min-height:0}.receipt-signatures{gap:15px}}
       .selected-file-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--line);font-size:11px}.selected-file-row:last-child{border-bottom:0}.selected-file-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.selected-file-room{width:150px;padding:6px;border:1px solid var(--line);border-radius:7px;background:var(--card);color:var(--ink);font-size:11px}.photo-gallery{display:grid;gap:16px}.photo-room{border:1px solid var(--line);border-radius:10px;padding:12px;background:#faf8f2}.photo-room-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.photo-room-title{font:18px Georgia;color:var(--ink)}.photo-room-count{color:var(--muted);font-size:10px}.photo-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(135px,1fr));gap:10px}.photo-grid .presentation-file{min-width:0}.photo-grid .presentation-file img{height:105px}.documents-list{margin-top:15px}.image-viewer{position:relative}.image-viewer-stage{position:relative;display:flex;align-items:center;justify-content:center;min-height:180px}.image-viewer-nav{position:absolute;top:50%;z-index:2;width:38px;height:38px;margin-top:-19px;border:1px solid #ffffff45;border-radius:50%;background:#0008;color:#fff;font-size:25px;line-height:1}.image-viewer-nav.prev{left:12px}.image-viewer-nav.next{right:12px}.image-viewer-count{padding:8px 17px 0;color:#bfc8c2;font-size:11px;text-align:center}.person-contact-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 20px;padding:12px 14px;border:1px solid var(--line);border-radius:9px;background:#f7f4ec}.person-contact-actions span{color:var(--muted);font-size:11px}
+
+    /* Dormus 8.4 — autenticação Supabase */
+    #login-screen{position:fixed;inset:0;z-index:9999;background:var(--paper);display:grid;place-items:center;padding:20px}
+    #login-screen[hidden]{display:none}
+    .login-card{width:min(430px,100%);background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px;box-shadow:0 24px 70px #17281d22}
+    .login-brand{display:flex;align-items:center;gap:11px;margin-bottom:25px}
+    .login-brand-mark{width:44px;height:44px;border:1px solid var(--brass-2);border-radius:50%;display:grid;place-items:center;color:var(--brass);font:26px Georgia}
+    .login-brand strong{display:block;font:25px Georgia;color:var(--ink)}
+    .login-brand small{display:block;color:var(--brass);font-size:9px;letter-spacing:1px;margin-top:2px}
+    .login-title{font:29px Georgia;margin:0 0 7px;color:var(--ink)}
+    .login-sub{margin:0 0 22px;color:var(--muted);line-height:1.5;font-size:13px}
+    .login-field{display:flex;flex-direction:column;gap:6px;margin-bottom:13px}
+    .login-field label{color:var(--muted);font-size:11px;font-weight:700}
+    .login-field input{width:100%;padding:12px;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--ink);outline:none}
+    .login-field input:focus{border-color:var(--brass)}
+    .login-button{width:100%;padding:12px 14px;border:1px solid var(--ink);border-radius:9px;background:var(--ink);color:#fffdf8;font-weight:700;margin-top:4px}
+    .login-button:disabled{opacity:.65;cursor:wait}
+    .login-error{min-height:18px;margin-top:12px;color:#934b3e;font-size:11px;line-height:1.4}
+    .login-note{margin-top:17px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:10px;line-height:1.45}
+    .auth-user{display:flex;align-items:center;gap:8px;margin-left:auto}
+    .auth-email{max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:11px}
+    .logout-button{border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);padding:7px 10px;font-size:11px;font-weight:700}
+    @media(max-width:620px){.auth-email{display:none}.login-card{padding:24px}}
   </style>
 </head>
 <body>
+
+  <section id="login-screen" hidden>
+    <div class="login-card">
+      <div class="login-brand">
+        <span class="login-brand-mark">D</span>
+        <span><strong>dormus</strong><small>GESTÃO IMOBILIÁRIA</small></span>
+      </div>
+      <h1 class="login-title">Entrar no Dormus</h1>
+      <p class="login-sub">Use seu e-mail e sua senha para acessar o sistema.</p>
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="login-field">
+          <label for="login-email">E-mail</label>
+          <input id="login-email" type="email" autocomplete="username" required>
+        </div>
+        <div class="login-field">
+          <label for="login-password">Senha</label>
+          <input id="login-password" type="password" autocomplete="current-password" required>
+        </div>
+        <button id="login-button" class="login-button" type="submit">Entrar</button>
+        <div id="login-error" class="login-error" role="alert"></div>
+      </form>
+      <div class="login-note">O acesso é protegido pelo Supabase Auth. Seu usuário precisa estar cadastrado no projeto do Dormus.</div>
+    </div>
+  </section>
   <div class="app">
     <aside class="side">
       <a class="brand" href="#" onclick="showView('home');return false"><span class="brand-mark">D</span><span><strong>dormus</strong><small>GESTÃO IMOBILIÁRIA</small></span></a>
@@ -65,7 +112,7 @@
       <div class="side-foot">Arquivo operacional da imobiliária<br><span>Os dados ficam salvos neste navegador.</span></div>
     </aside>
     <main class="main">
-      <header class="top"><div class="crumb">Dormus <strong id="crumb">Visão geral</strong></div><div class="top-actions"><button class="icon" title="Ir para visão geral" onclick="showView('home')">⌂</button><button class="icon" title="Alterar cores do sistema" onclick="toggleThemePanel()">◐</button></div></header>
+      <header class="top"><div class="crumb">Dormus <strong id="crumb">Visão geral</strong></div><div class="top-actions"><div class="auth-user"><span id="auth-email" class="auth-email"></span><button class="logout-button" onclick="logoutDormus()">Sair</button></div><button class="icon" title="Ir para visão geral" onclick="showView('home')">⌂</button><button class="icon" title="Alterar cores do sistema" onclick="toggleThemePanel()">◐</button></div></header>
 
       <section id="home" class="view active">
         <div class="page-head"><div><div class="eyebrow">Sistema de gestão imobiliária</div><h1>Visão geral</h1><p class="lead">Comece cadastrando as informações da sua operação.</p></div><button class="button button-primary" onclick="openModal('property')">Cadastrar imóvel</button></div>
@@ -192,6 +239,11 @@ async function carregarDadosSupabase(){
     const selected=(value,current)=>value===current?' selected':'';
     async function save(){
   try{
+    const {data:{session}}=await supabaseClient.auth.getSession();
+    if(!session){
+      showLogin('Entre no Dormus para continuar.');
+      return false;
+    }
     const { error } = await supabaseClient
       .from('dormus_data')
       .upsert({
@@ -363,17 +415,85 @@ async function carregarDadosSupabase(){
   }
 }
 
+function showLogin(message=''){
+  const screen=document.getElementById('login-screen');
+  const app=document.querySelector('.app');
+  if(screen)screen.hidden=false;
+  if(app)app.style.display='none';
+  const error=document.getElementById('login-error');
+  if(error)error.textContent=message||'';
+  const email=document.getElementById('login-email');
+  if(email&&!email.value)email.focus();
+}
+
+function hideLogin(){
+  const screen=document.getElementById('login-screen');
+  const app=document.querySelector('.app');
+  if(screen)screen.hidden=true;
+  if(app)app.style.display='';
+}
+
+async function handleLogin(event){
+  event.preventDefault();
+  const email=document.getElementById('login-email')?.value.trim();
+  const password=document.getElementById('login-password')?.value||'';
+  const button=document.getElementById('login-button');
+  const errorEl=document.getElementById('login-error');
+  if(errorEl)errorEl.textContent='';
+  if(button){button.disabled=true;button.textContent='Entrando...';}
+
+  try{
+    const {error}=await supabaseClient.auth.signInWithPassword({email,password});
+    if(error)throw error;
+  }catch(error){
+    console.error('Erro no login:',error);
+    if(errorEl)errorEl.textContent='Não foi possível entrar. Confira o e-mail e a senha.';
+    if(button){button.disabled=false;button.textContent='Entrar';}
+  }
+}
+
+async function logoutDormus(){
+  const {error}=await supabaseClient.auth.signOut();
+  if(error){
+    alert('Não foi possível sair agora. Tente novamente.');
+    return;
+  }
+  db=JSON.parse(JSON.stringify(blank));
+  showLogin();
+}
+
 async function initDormus(){
   renderThemePanel();
   applyTheme(localStorage.getItem(THEME_KEY)||'forest',false);
 
+  showLogin();
+
+  const {data:{session}}=await supabaseClient.auth.getSession();
+  if(session){
+    await enterDormus(session);
+  }
+
+  supabaseClient.auth.onAuthStateChange((_event,newSession)=>{
+    if(newSession){
+      setTimeout(()=>enterDormus(newSession),0);
+    }else{
+      db=JSON.parse(JSON.stringify(blank));
+      showLogin();
+    }
+  });
+}
+
+async function enterDormus(session){
+  if(!session)return;
+  hideLogin();
+  const emailEl=document.getElementById('auth-email');
+  if(emailEl)emailEl.textContent=session.user?.email||'Usuário';
   try{
     await loadDbFromSupabase();
   }catch(error){
     console.error('Erro ao carregar o Dormus:',error);
     alert('Não foi possível carregar os dados do banco.');
   }
-
   renderAll();
 }
 
