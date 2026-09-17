@@ -200,14 +200,6 @@ async function carregarDadosSupabase(){
       data: db,
       updated_at: new Date().toISOString()
     });
-
-  if(error){
-    console.error('Erro ao salvar no Supabase:', error);
-    alert('Erro ao salvar os dados no banco. Verifique sua conexão.');
-    return;
-  }
-
-  renderAll();
 }
     function renderAll(){const active=document.querySelector('.view.active')?.id||'home';renderView(active)}
     function applyTheme(key,close=true){const t=themes[key]||themes.forest;const root=document.documentElement;root.style.setProperty('--ink',t.ink);root.style.setProperty('--ink-2',t.ink2);root.style.setProperty('--paper',t.paper);root.style.setProperty('--card',t.card);root.style.setProperty('--line',t.line);root.style.setProperty('--muted',t.muted);root.style.setProperty('--brass',t.brass);root.style.setProperty('--brass-2',t.brass2);root.style.setProperty('--green',t.green);root.style.setProperty('--red',t.red);root.style.setProperty('--shadow',`0 16px 40px ${t.ink}12`);localStorage.setItem(THEME_KEY,key);document.querySelectorAll('.theme-choice').forEach(b=>b.classList.toggle('selected',b.dataset.theme===key));if(close)document.getElementById('theme-panel').hidden=true}
