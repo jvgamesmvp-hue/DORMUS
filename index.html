@@ -161,12 +161,6 @@ async function carregarDadosSupabase(){
     .eq('id', 1)
     .single();
 
-  if(error){
-    console.error('Erro ao carregar dados do Supabase:', error);
-    alert('Não foi possível carregar os dados do Dormus.');
-    return;
-  }
-
   if(data?.data){
     db = {...db, ...data.data};
   }
@@ -353,14 +347,6 @@ async function initDormus(){
   renderThemePanel();
   applyTheme(localStorage.getItem(THEME_KEY)||'forest',false);
 
-  try{
-    await loadDbFromSupabase();
-  }catch(error){
-    console.error('Erro ao carregar o Dormus:',error);
-    alert('Não foi possível carregar os dados do banco.');
-  }
-
-  renderAll();
 }
 
 initDormus();
