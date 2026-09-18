@@ -1353,7 +1353,7 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
     if(!p||!email){alert('Informe um e-mail válido.');return}
     const payload={email,prestador_document:documento,nome:p.name,ativo,updated_at:new Date().toISOString()};
     const {error}=await supabaseClient.from('prestadores_acesso').upsert(payload,{onConflict:'email'});
-    if(error){alert('Não foi possível salvar o acesso. Primeiro crie a tabela do portal no Supabase.');console.error(error);return}
+    if(error){alert('Não foi possível salvar o acesso.\n\nCódigo: '+(error.code||'—')+'\nMensagem: '+(error.message||'Erro desconhecido')+'\n\nVerifique se as tabelas do Portal do Prestador foram criadas no Supabase e se as políticas RLS foram configuradas.');console.error('Dormus Portal - saveProviderAccess:',error);return}
     closeModal();alert('Vínculo salvo. Agora crie o usuário no Supabase Auth com este mesmo e-mail e uma senha (ou envie um convite).');
     if(typeof renderProviderControl==='function')renderProviderControl();
   };
