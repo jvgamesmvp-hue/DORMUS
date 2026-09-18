@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.9</title>
+  <title>Dormus | Gestão imobiliária · 8.14</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -60,6 +60,36 @@
     .logout-button{border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);padding:7px 10px;font-size:11px;font-weight:700}
     @media(max-width:620px){.auth-email{display:none}.login-card{padding:24px}}
   </style>
+
+<style id="dormus-provider-restricted-style">
+/* Portal restrito do prestador: somente Manutenção e Recibos. */
+body.provider-mode .side .nav-title:not(.provider-visible-title),
+body.provider-mode .side .nav button[data-view]:not([data-view="maintenance"]):not([data-view="receipts"]),
+body.provider-mode .side .nav-more,
+body.provider-mode .side .nav-title-more,
+body.provider-mode .side .side-foot{display:none!important}
+body.provider-mode .side{justify-content:flex-start}
+body.provider-mode .provider-only-brand-note{display:block!important}
+body.provider-mode .view:not(#maintenance):not(#receipts){display:none!important}
+body.provider-mode #maintenance .page-head .button-primary,
+body.provider-mode #maintenance .maintenance-toolbar,
+body.provider-mode #maintenance .maintenance-panel,
+body.provider-mode #maintenance .provider-control-grid,
+body.provider-mode #maintenance .provider-control-head,
+body.provider-mode #provider-directory{display:none!important}
+body.provider-mode #receipts .receipt-form-panel,
+body.provider-mode #receipts .receipt-preview-wrap{display:none!important}
+body.provider-mode #provider-maintenance-view,
+body.provider-mode #provider-receipts-view{display:block!important}
+.provider-only-brand-note{display:none;color:#91a4bd;font-size:11px;line-height:1.45;padding:0 10px;margin-top:-15px;margin-bottom:22px}
+.provider-restricted-card{background:#fff;border:1px solid #dfe7f1;border-radius:14px;padding:20px;margin-bottom:16px}
+.provider-restricted-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px}
+.provider-restricted-kpi{background:#fff;border:1px solid #dfe7f1;border-radius:12px;padding:16px}.provider-restricted-kpi span{display:block;color:#7187a5;font-size:11px}.provider-restricted-kpi strong{display:block;color:#10203a;font-size:27px;margin-top:10px}
+.provider-restricted-list{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.provider-restricted-service{border:1px solid #dfe7f1;border-radius:13px;padding:17px;background:#fff}.provider-restricted-service h3{margin:0;color:#10203a;font-size:16px}.provider-restricted-service p{color:#7187a5;font-size:12px;line-height:1.5}.provider-restricted-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:14px 0}.provider-restricted-meta div{background:#f7f9fc;border-radius:9px;padding:9px}.provider-restricted-meta span{display:block;color:#8194ad;font-size:9px;text-transform:uppercase}.provider-restricted-meta strong{display:block;color:#1d3553;font-size:12px;margin-top:4px}.provider-restricted-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.provider-receipt-note{color:#7187a5;line-height:1.6;font-size:13px}
+@media(max-width:900px){.provider-restricted-kpis{grid-template-columns:repeat(2,1fr)}.provider-restricted-list{grid-template-columns:1fr}}
+@media(max-width:600px){.provider-restricted-kpis{grid-template-columns:1fr}.provider-restricted-meta{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 
@@ -88,7 +118,7 @@
   </section>
   <div class="app">
     <aside class="side">
-      <a class="brand" href="#" onclick="showView('home');return false"><span class="brand-mark">D</span><span><strong>Dormus</strong><small>GESTÃO IMOBILIÁRIA</small></span></a>
+      <a class="brand" href="#" onclick="showView('home');return false"><span class="brand-mark">D</span><span><strong>Dormus</strong><small>GESTÃO IMOBILIÁRIA</small></span></a><div class="provider-only-brand-note">Portal do Prestador<br>Você possui acesso limitado aos serviços atribuídos a você.</div>
       <div class="nav-title">Principal</div><nav class="nav">
         <button data-view="home" class="active"><span class="nav-icon">⌘</span>Dashboard</button>
         <button data-view="properties"><span class="nav-icon">▥</span>Imóveis</button>
@@ -138,10 +168,10 @@
       <section id="contracts" class="view"><div class="page-head"><div><div class="eyebrow">Cadastros</div><h1>Contratos</h1><p class="lead">Relacione imóvel, locatário, proprietário e fiador.</p></div><button class="button button-primary" onclick="openModal('contract')">Novo contrato</button></div><section class="panel"><div id="contracts-list"></div></section></section>
       <section id="deposits" class="view"><div class="page-head"><div><div class="eyebrow">Financeiro</div><h1>Cauções</h1><p class="lead">Acompanhe recebimento, saldo, devolução e retenção de cada caução.</p></div><button class="button button-primary" onclick="openModal('deposit')">Nova caução</button></div><div class="summary-grid"><div class="summary"><label>Total recebido</label><strong id="deposit-total-received">R$ 0,00</strong></div><div class="summary"><label>Total devolvido</label><strong id="deposit-total-returned">R$ 0,00</strong></div><div class="summary"><label>Saldo em poder</label><strong id="deposit-total-held">R$ 0,00</strong></div></div><section class="panel"><div id="deposits-list"></div></section></section>
       <section id="inspections" class="view"><div class="page-head"><div><div class="eyebrow">Operação</div><h1>Vistorias</h1><p class="lead">Registre entradas, saídas e demais vistorias.</p></div><button class="button button-primary" onclick="openModal('inspection')">Nova vistoria</button></div><section class="panel"><div id="inspections-list"></div></section></section>
-      <section id="maintenance" class="view"><div class="page-head"><div><div class="eyebrow">Operação</div><h1>Manutenção</h1><p class="lead">Chamados de manutenção por imóvel, com prestadores, prioridades e custos.</p></div><button class="button button-primary" onclick="openModal('maintenance')">＋ Novo chamado</button></div><div class="maintenance-stats"><div class="metric"><div class="metric-label">Chamados abertos</div><div class="metric-value" id="maint-open">0</div><div class="metric-meta">Pendências atuais</div></div><div class="metric"><div class="metric-label">Prioridade alta/urgente</div><div class="metric-value danger-text" id="maint-high">0</div><div class="metric-meta">Requerem atenção</div></div><div class="metric"><div class="metric-label">Concluídos no mês</div><div class="metric-value success-text" id="maint-done">0</div><div class="metric-meta">Chamados finalizados</div></div><div class="metric"><div class="metric-label">Custo no mês</div><div class="metric-value" id="maint-cost">R$ 0,00</div><div class="metric-meta">Custos registrados</div></div></div><div class="maintenance-toolbar"><div class="property-filters"><button class="filter-btn active">Todos</button><button class="filter-btn">Abertos</button><button class="filter-btn">Em andamento</button><button class="filter-btn">Concluídos</button><button class="filter-btn">Cancelados</button></div><input id="maintenance-search" class="toolbar-search" placeholder="Buscar por título, imóvel, prestador..." oninput="renderMaintenance()"></div><section class="panel maintenance-panel"><div id="maintenance-list"></div></section></section>
+      <section id="maintenance" class="view"><div id="provider-maintenance-view" style="display:none"></div><div class="page-head"><div><div class="eyebrow">Operação</div><h1>Manutenção</h1><p class="lead">Chamados de manutenção por imóvel, com prestadores, prioridades e custos.</p></div><button class="button button-primary" onclick="openModal('maintenance')">＋ Novo chamado</button></div><div class="maintenance-stats"><div class="metric"><div class="metric-label">Chamados abertos</div><div class="metric-value" id="maint-open">0</div><div class="metric-meta">Pendências atuais</div></div><div class="metric"><div class="metric-label">Prioridade alta/urgente</div><div class="metric-value danger-text" id="maint-high">0</div><div class="metric-meta">Requerem atenção</div></div><div class="metric"><div class="metric-label">Concluídos no mês</div><div class="metric-value success-text" id="maint-done">0</div><div class="metric-meta">Chamados finalizados</div></div><div class="metric"><div class="metric-label">Custo no mês</div><div class="metric-value" id="maint-cost">R$ 0,00</div><div class="metric-meta">Custos registrados</div></div></div><div class="maintenance-toolbar"><div class="property-filters"><button class="filter-btn active">Todos</button><button class="filter-btn">Abertos</button><button class="filter-btn">Em andamento</button><button class="filter-btn">Concluídos</button><button class="filter-btn">Cancelados</button></div><input id="maintenance-search" class="toolbar-search" placeholder="Buscar por título, imóvel, prestador..." oninput="renderMaintenance()"></div><section class="panel maintenance-panel"><div id="maintenance-list"></div></section></section>
       <section id="notes" class="view"><div class="page-head"><div><div class="eyebrow">Atalho · Ctrl + Alt + N</div><h1>Bloco de notas</h1><p class="lead">Anote recados, decisões e informações rápidas da operação.</p></div><button class="button button-primary" onclick="openModal('note')">Nova anotação</button></div><section class="panel"><div id="notes-list"></div></section></section>
       <section id="agenda" class="view"><div class="page-head"><div><div class="eyebrow">Atalho · Ctrl + Alt + A</div><h1>Agenda</h1><p class="lead">Organize compromissos, visitas, vencimentos e próximos movimentos.</p></div><button class="button button-primary" onclick="openModal('agenda')">Novo compromisso</button></div><section class="panel"><div id="agenda-list"></div></section></section>
-      <section id="receipts" class="view"><div class="page-head"><div><div class="eyebrow">Financeiro · Impressão profissional</div><h1>Recibos de pagamento</h1><p class="lead">Gere recibos pequenos, com duas cópias na mesma folha A4.</p></div></div><div class="receipt-layout"><section class="panel receipt-form-panel"><div class="panel-head"><div><div class="panel-title">Dados do recibo</div><div class="panel-kicker">Preencha os dados do serviço antes de imprimir.</div></div></div><div class="form-grid"><div class="form-field"><label for="receipt-provider">Prestador de serviço</label><select id="receipt-provider" onchange="renderReceiptPreview()"><option value="">Selecione o prestador</option></select></div><div class="form-field"><label for="receipt-amount">Valor do serviço</label><input id="receipt-amount" type="number" min="0" step="0.01" oninput="renderReceiptPreview()"></div><div class="form-field"><label for="receipt-date">Data do pagamento</label><input id="receipt-date" type="date" oninput="renderReceiptPreview()"></div><div class="form-field"><label for="receipt-city">Local de emissão</label><input id="receipt-city" type="text" oninput="renderReceiptPreview()"></div><div class="form-field full"><label for="receipt-address">Endereço do imóvel</label><input id="receipt-address" type="text" oninput="renderReceiptPreview()"></div><div class="form-field full"><label for="receipt-amount-words">Valor por extenso</label><input id="receipt-amount-words" type="text" oninput="renderReceiptPreview()"></div><div class="form-field full"><label for="receipt-description">Referente a / descrição do serviço</label><textarea id="receipt-description" rows="3"></textarea></div><div class="form-field full"><label for="receipt-notes">Observações</label><textarea id="receipt-notes" rows="3"></textarea></div></div><div class="modal-actions"><button class="button button-quiet" onclick="clearReceiptForm()">Limpar formulário</button><button class="button button-brass" onclick="saveReceipt()">Salvar recibo</button><button class="button button-primary" onclick="printReceipt(2)">Imprimir 2 cópias</button></div><div class="receipt-history"><div class="panel-kicker">Recibos salvos</div><div id="receipts-list"></div></div></section><section class="receipt-preview-wrap"><div class="receipt-preview-label">Pré-visualização em tempo real</div><div id="receipt-preview"></div><div class="modal-actions no-print"><button class="button button-primary" onclick="printReceipt(1)">Imprimir 1 recibo</button><button class="button button-brass" onclick="printReceipt(2)">Imprimir 2 na mesma folha</button></div></section></div></section>
+      <section id="receipts" class="view"><div id="provider-receipts-view" style="display:none"></div><div class="page-head"><div><div class="eyebrow">Financeiro · Impressão profissional</div><h1>Recibos de pagamento</h1><p class="lead">Gere recibos pequenos, com duas cópias na mesma folha A4.</p></div></div><div class="receipt-layout"><section class="panel receipt-form-panel"><div class="panel-head"><div><div class="panel-title">Dados do recibo</div><div class="panel-kicker">Preencha os dados do serviço antes de imprimir.</div></div></div><div class="form-grid"><div class="form-field"><label for="receipt-provider">Prestador de serviço</label><select id="receipt-provider" onchange="renderReceiptPreview()"><option value="">Selecione o prestador</option></select></div><div class="form-field"><label for="receipt-amount">Valor do serviço</label><input id="receipt-amount" type="number" min="0" step="0.01" oninput="renderReceiptPreview()"></div><div class="form-field"><label for="receipt-date">Data do pagamento</label><input id="receipt-date" type="date" oninput="renderReceiptPreview()"></div><div class="form-field"><label for="receipt-city">Local de emissão</label><input id="receipt-city" type="text" oninput="renderReceiptPreview()"></div><div class="form-field full"><label for="receipt-address">Endereço do imóvel</label><input id="receipt-address" type="text" oninput="renderReceiptPreview()"></div><div class="form-field full"><label for="receipt-amount-words">Valor por extenso</label><input id="receipt-amount-words" type="text" oninput="renderReceiptPreview()"></div><div class="form-field full"><label for="receipt-description">Referente a / descrição do serviço</label><textarea id="receipt-description" rows="3"></textarea></div><div class="form-field full"><label for="receipt-notes">Observações</label><textarea id="receipt-notes" rows="3"></textarea></div></div><div class="modal-actions"><button class="button button-quiet" onclick="clearReceiptForm()">Limpar formulário</button><button class="button button-brass" onclick="saveReceipt()">Salvar recibo</button><button class="button button-primary" onclick="printReceipt(2)">Imprimir 2 cópias</button></div><div class="receipt-history"><div class="panel-kicker">Recibos salvos</div><div id="receipts-list"></div></div></section><section class="receipt-preview-wrap"><div class="receipt-preview-label">Pré-visualização em tempo real</div><div id="receipt-preview"></div><div class="modal-actions no-print"><button class="button button-primary" onclick="printReceipt(1)">Imprimir 1 recibo</button><button class="button button-brass" onclick="printReceipt(2)">Imprimir 2 na mesma folha</button></div></section></div></section>
       <section id="crm" class="view">
         <div class="page-head"><div><div class="eyebrow">Relacionamento · captação</div><h1>CRM &amp; Vendas</h1><p class="lead">Acompanhe leads, oportunidades, visitas e conversões da carteira.</p></div><button class="button button-primary" onclick="openCrmLeadModal()">＋ Novo lead</button></div>
         <div class="grid metrics crm-metrics"><div class="metric"><div class="metric-label">Leads ativos</div><div class="metric-value" id="crm-metric-active">0</div><div class="metric-meta">Oportunidades em andamento</div></div><div class="metric"><div class="metric-label">Em negociação</div><div class="metric-value" id="crm-metric-negotiation">0</div><div class="metric-meta">Propostas e visitas</div></div><div class="metric"><div class="metric-label">Convertidos</div><div class="metric-value" id="crm-metric-won">0</div><div class="metric-meta">Negócios ganhos</div></div><div class="metric"><div class="metric-label">Valor potencial</div><div class="metric-value" id="crm-metric-value">R$ 0,00</div><div class="metric-meta">Somatório das oportunidades</div></div></div>
@@ -1379,25 +1409,62 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
     const old=window.renderProviderControl;if(typeof old!=='function')return;
     window.renderProviderControl=function(){old();document.querySelectorAll('.provider-control-card').forEach(card=>{const text=card.querySelector('strong')?.textContent||'',p=(window.DormusProviders||[]).find(x=>x.name===text);if(!p)return;const actions=card.querySelector('.provider-card-actions');if(actions&&!actions.querySelector('.provider-access-btn'))actions.insertAdjacentHTML('beforeend',`<button class="button button-small provider-access-btn" onclick="openProviderAccessModal('${escP(p.document)}')">🔐 Acesso</button>`)});};
   }
+  function providerRestrictedMaintenance(){
+    const host=document.getElementById('provider-maintenance-view'); if(!host||!currentProviderAccess)return;
+    host.innerHTML=`<div class="page-head modern-head"><div><div class="eyebrow">Portal do prestador</div><h1>Manutenção</h1><p class="lead">Aqui aparecem somente os serviços atribuídos a você.</p></div></div><div class="provider-restricted-kpis"><div class="provider-restricted-kpi"><span>Novos / abertos</span><strong id="pr-open">0</strong></div><div class="provider-restricted-kpi"><span>Em andamento</span><strong id="pr-progress">0</strong></div><div class="provider-restricted-kpi"><span>Concluídos</span><strong id="pr-done">0</strong></div><div class="provider-restricted-kpi"><span>Total de serviços</span><strong id="pr-total">0</strong></div></div><section class="provider-restricted-card"><div class="panel-head"><div><div class="panel-title">Meus serviços</div><div class="panel-kicker">Você não tem acesso aos demais módulos da imobiliária.</div></div><button class="button button-small" onclick="providerRestrictedMaintenance()">↻ Atualizar</button></div><div id="provider-restricted-list"></div></section>`;
+    getProviderServices(currentProviderAccess).then(rows=>{
+      const open=rows.filter(x=>['Aberto','Aceito'].includes(x.status||'Aberto')).length, progress=rows.filter(x=>x.status==='Em andamento').length, done=rows.filter(x=>x.status==='Concluído').length;
+      [['pr-open',open],['pr-progress',progress],['pr-done',done],['pr-total',rows.length]].forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.textContent=v});
+      const list=document.getElementById('provider-restricted-list'); if(!list)return;
+      list.innerHTML=rows.length?`<div class="provider-restricted-list">${rows.map(x=>`<article class="provider-restricted-service"><h3>${escP(x.title||'Serviço de manutenção')}</h3><p><strong>Imóvel:</strong> ${escP(x.property_name||'—')}<br><strong>Endereço:</strong> ${escP(x.property_address||'—')}</p><div class="provider-restricted-meta"><div><span>Categoria</span><strong>${escP(x.category||'—')}</strong></div><div><span>Prioridade</span><strong>${escP(x.priority||'—')}</strong></div><div><span>Status</span><strong>${escP(x.status||'Aberto')}</strong></div></div><p>${escP(x.description||'')}</p><div class="provider-restricted-actions">${['Aberto'].includes(x.status||'Aberto')?`<button class="button button-primary button-small" onclick="providerAcceptService('${escP(x.id)}')">Aceitar serviço</button>`:''}${['Aceito'].includes(x.status||'')?`<button class="button button-primary button-small" onclick="providerStartService('${escP(x.id)}')">Iniciar serviço</button>`:''}${['Em andamento'].includes(x.status||'')?`<button class="button button-brass button-small" onclick="providerCompleteService('${escP(x.id)}')">Solicitar conclusão</button>`:''}<button class="button button-small" onclick="providerServiceDetails('${escP(x.id)}')">Ver detalhes</button></div></article>`).join('')}</div>`:'<div class="provider-service-empty">Nenhum serviço atribuído a você no momento.</div>';
+    });
+  }
+  function providerRestrictedReceipts(){
+    const host=document.getElementById('provider-receipts-view'); if(!host||!currentProviderAccess)return;
+    host.innerHTML=`<div class="page-head modern-head"><div><div class="eyebrow">Portal do prestador</div><h1>Recibos</h1><p class="lead">Área destinada aos recibos relacionados aos seus serviços.</p></div></div><section class="provider-restricted-card"><div class="panel-title">Meus recibos</div><p class="provider-receipt-note">Os recibos vinculados aos seus serviços aparecerão aqui. A emissão e o controle financeiro da imobiliária continuam restritos ao acesso administrativo.</p><div class="empty"><strong>Área de recibos do prestador</strong><br>Quando houver recibos sincronizados para este acesso, eles serão exibidos aqui.</div></section>`;
+  }
   const originalEnter=window.enterDormus;
   window.enterDormus=async function(session){
     if(!session)return;
     const access=await getProviderAccess(session.user?.email||'');
     currentProviderAccess=access;
     if(access){
+      document.body.classList.add('provider-mode');
       document.querySelector('.app')?.style.setProperty('display','');
       document.getElementById('login-screen')?.setAttribute('hidden','');
       document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
       document.querySelectorAll('[data-view]').forEach(b=>b.classList.remove('active'));
-      document.getElementById('provider-portal')?.classList.add('active');
-      const title=document.getElementById('provider-portal-title');if(title)title.textContent=`Olá, ${access.nome||'prestador'}`;
+      document.querySelector('[data-view="maintenance"]')?.classList.add('active');
+      document.getElementById('maintenance')?.classList.add('active');
+      const title=document.getElementById('crumb');if(title)title.textContent='Manutenção';
       const emailEl=document.getElementById('auth-email');if(emailEl)emailEl.textContent=session.user?.email||'';
-      await renderProviderPortal();
+      const profile=document.getElementById('profile-button');if(profile)profile.textContent=(access.nome||'PR').split(/\s+/).map(x=>x[0]).join('').slice(0,2).toUpperCase();
+      providerRestrictedMaintenance();
+      providerRestrictedReceipts();
       return;
     }
+    document.body.classList.remove('provider-mode');
     currentProviderAccess=null;
     if(typeof originalEnter==='function')await originalEnter(session);
     setTimeout(async()=>{await syncProviderServices();await pullProviderUpdates()},200);
+  };
+  const originalShowView=window.showView;
+  window.showView=function(id){
+    if(currentProviderAccess){
+      if(!['maintenance','receipts'].includes(id))id='maintenance';
+      const result=originalShowView(id);
+      if(id==='maintenance')providerRestrictedMaintenance();
+      if(id==='receipts')providerRestrictedReceipts();
+      return result;
+    }
+    return originalShowView(id);
+  };
+
+  const originalLogout=window.logoutDormus;
+  window.logoutDormus=async function(){
+    document.body.classList.remove('provider-mode');
+    currentProviderAccess=null;
+    if(typeof originalLogout==='function')return originalLogout();
   };
   window.DormusProviderPortal={get access(){return currentProviderAccess},syncProviderServices};
   addAccessButtons();
