@@ -1287,7 +1287,7 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
     const rows=providerStats();
     const total=rows.reduce((s,x)=>s+x.total,0), open=rows.reduce((s,x)=>s+x.open,0), progress=rows.reduce((s,x)=>s+x.progress,0), done=rows.reduce((s,x)=>s+x.done,0), cost=rows.reduce((s,x)=>s+x.cost,0);
     host.innerHTML=`<div class="provider-kpis"><div class="provider-kpi"><span>Prestadores cadastrados</span><strong>${rows.length}</strong><small>Base disponível para seleção</small></div><div class="provider-kpi"><span>Serviços em aberto</span><strong class="danger-text">${open}</strong><small>Aguardando atendimento</small></div><div class="provider-kpi"><span>Em andamento</span><strong>${progress}</strong><small>Em execução</small></div><div class="provider-kpi"><span>Concluídos</span><strong class="success-text">${done}</strong><small>Serviços finalizados</small></div><div class="provider-kpi"><span>Custo dos serviços</span><strong>${money11(cost)}</strong><small>${total} chamado(s) no total</small></div></div>
-      <div class="provider-control-head"><div><h3>Controle por prestador</h3><p>Visão consolidada dos serviços, custos e pendências de cada profissional.</p></div><button class="button button-small" onclick="openModal('maintenance')">＋ Novo chamado</button></div>
+      <div class="provider-control-head"><div><h3>Controle por prestador</h3><p>Visão consolidada dos serviços, custos e pendências de cada profissional.</p></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="button button-small button-quiet" onclick="syncDormusProviderServices()">↻ Sincronizar portal</button><button class="button button-small" onclick="openModal('maintenance')">＋ Novo chamado</button></div></div>
       <div class="provider-control-grid">${rows.map(x=>`<article class="provider-control-card"><div class="provider-card-top"><span class="provider-avatar">${esc11(initials(x.name))}</span><div><strong>${esc11(x.name)}</strong><small>${esc11(x.document||'Prestador cadastrado')}</small></div><span class="provider-access-badge">Portal futuro</span></div><div class="provider-mini-grid"><div><span>Chamados</span><strong>${x.total}</strong></div><div><span>Abertos</span><strong class="danger-text">${x.open}</strong></div><div><span>Andamento</span><strong>${x.progress}</strong></div><div><span>Concluídos</span><strong class="success-text">${x.done}</strong></div><div><span>Custo</span><strong>${money11(x.cost)}</strong></div></div><div class="provider-card-actions"><button class="button button-small button-quiet" onclick="filterMaintenanceByProvider('${esc11(x.document||x.name)}')">Ver serviços</button>${x.document?`<button class="button button-small" onclick="openProviderContact('${esc11(x.document)}')">Dados / contato</button>`:''}</div></article>`).join('')}</div>`;
   };
 
@@ -1461,13 +1461,24 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
     if(typeof renderProviderControl==='function')renderProviderControl();
   };
 
-  async function syncProviderServices(){
+  async function syncProviderServices(showError=false){
     try{
       const rows=(db.maintenance||[]).filter(x=>x.provider||x.providerDocument);
-      if(!rows.length)return;
+      if(!rows.length)return {ok:true,count:0};
       const payload=rows.map(x=>{const p=providerByDoc(x.providerDocument)||providerByDoc(x.provider);const prop=(db.properties||[]).find(i=>i.id===x.propertyId)||{};return{id:x.id,prestador_document:x.providerDocument||p?.document||'',provider_name:p?.name||x.provider||'',title:x.description||'Serviço de manutenção',description:x.description||'',category:x.category||'Outros',priority:x.priority||'Média',status:x.status||'Aberto',cost:Number(x.cost||0),property_id:x.propertyId||null,property_name:prop.name||'',property_address:[prop.address,prop.number,prop.neighborhood,prop.city,prop.state].filter(Boolean).join(', '),opened_at:x.date||null,provider_phone:x.providerWhatsapp||p?.whatsapp||'',admin_notes:x.notes||'',updated_at:new Date().toISOString()}}).filter(x=>x.prestador_document);
-      if(payload.length)await supabaseClient.from('prestador_servicos').upsert(payload,{onConflict:'id'});
-    }catch(e){console.warn('Sincronização do portal de prestadores aguardando tabelas do Supabase.',e)}
+      if(!payload.length)return {ok:true,count:0};
+      const result=await supabaseClient.from('prestador_servicos').upsert(payload,{onConflict:'id'});
+      if(result.error){
+        console.error('Dormus: erro ao sincronizar serviços dos prestadores:',result.error);
+        if(showError) alert('Não foi possível enviar os chamados ao Portal do Prestador.\n\nCódigo: '+(result.error.code||'—')+'\nMensagem: '+(result.error.message||'Erro desconhecido')+'\n\nNo Supabase, confirme as políticas de INSERT/UPDATE da tabela prestador_servicos para sua conta administrativa.');
+        return {ok:false,error:result.error};
+      }
+      return {ok:true,count:payload.length};
+    }catch(e){
+      console.warn('Sincronização do portal de prestadores aguardando tabelas/políticas do Supabase.',e);
+      if(showError)alert('Não foi possível sincronizar os chamados com o Portal do Prestador.\n\nVerifique as tabelas e políticas RLS do Supabase.');
+      return {ok:false,error:e};
+    }
   }
   async function pullProviderUpdates(){
     try{
@@ -1507,6 +1518,16 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
     const host=document.getElementById('provider-receipts-view'); if(!host||!currentProviderAccess)return;
     host.innerHTML=`<div class="page-head modern-head"><div><div class="eyebrow">Portal do prestador</div><h1>Recibos</h1><p class="lead">Área destinada aos recibos relacionados aos seus serviços.</p></div></div><section class="provider-restricted-card"><div class="panel-title">Meus recibos</div><p class="provider-receipt-note">Os recibos vinculados aos seus serviços aparecerão aqui. A emissão e o controle financeiro da imobiliária continuam restritos ao acesso administrativo.</p><div class="empty"><strong>Área de recibos do prestador</strong><br>Quando houver recibos sincronizados para este acesso, eles serão exibidos aqui.</div></section>`;
   }
+  // Mantém a tabela do portal atualizada sempre que a imobiliária abre/atualiza Manutenção.
+  const originalRenderMaintenance=window.renderMaintenance;
+  if(typeof originalRenderMaintenance==='function'){
+    window.renderMaintenance=function(){
+      const result=originalRenderMaintenance.apply(this,arguments);
+      if(!currentProviderAccess)setTimeout(()=>syncProviderServices(false),120);
+      return result;
+    };
+  }
+
   const originalEnter=window.enterDormus;
   window.enterDormus=async function(session){
     if(!session)return;
@@ -1530,7 +1551,7 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
     document.body.classList.remove('provider-mode');
     currentProviderAccess=null;
     if(typeof originalEnter==='function')await originalEnter(session);
-    setTimeout(async()=>{await syncProviderServices();await pullProviderUpdates()},200);
+    setTimeout(async()=>{await syncProviderServices(false);await pullProviderUpdates()},200);
   };
   const originalShowView=window.showView;
   window.showView=function(id){
@@ -1551,6 +1572,7 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
     if(typeof originalLogout==='function')return originalLogout();
   };
   window.DormusProviderPortal={get access(){return currentProviderAccess},syncProviderServices};
+  window.syncDormusProviderServices=()=>syncProviderServices(true);
   addAccessButtons();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(addAccessButtons,400));else setTimeout(addAccessButtons,400);
   const oldBoot=window.bootEnhancements;if(typeof oldBoot==='function')window.bootEnhancements=function(){oldBoot();addAccessButtons()};
