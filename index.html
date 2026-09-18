@@ -1580,5 +1580,161 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
   setTimeout(async()=>{try{const {data:{session}}=await supabaseClient.auth.getSession();if(session){const access=await getProviderAccess(session.user?.email||'');if(access)window.enterDormus(session)}}catch(e){console.warn(e)}},500);
 })();
 </script>
+
+<script>
+/* Dormus 8.18 — fluxo administrativo de autorização, agendamento e valor final do serviço */
+(function(){
+  const escA=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const moneyA=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  const dateA=v=>v?String(v).split('-').reverse().join('/'):'';
+  const providerFor=x=>(window.DormusProviders||[]).find(p=>p.document===x.providerDocument)|| (window.DormusProviders||[]).find(p=>p.name===x.provider)||{};
+  const getMaintenance=id=>(window.DormusDB?.maintenance||[]).find(x=>x.id===id) || (typeof db!=='undefined'?(db.maintenance||[]).find(x=>x.id===id):null);
+  function currentDB(){return typeof db!=='undefined'?db:(window.DormusDB||{});}
+  async function getControl(id){
+    try{const {data,error}=await supabaseClient.from('prestador_servico_controle').select('*').eq('servico_id',id).maybeSingle();if(error&&error.code!=='42P01')console.warn(error);return data||null}catch(e){return null}
+  }
+  async function getLatestProviderQuote(id){
+    try{const {data,error}=await supabaseClient.from('prestador_servico_atualizacoes').select('*').eq('servico_id',id).order('created_at',{ascending:false}).limit(1).maybeSingle();if(error)return null;return data||null}catch(e){return null}
+  }
+  async function saveControl(id,patch){
+    const m=getMaintenance(id); if(!m)return {ok:false,error:new Error('Chamado não encontrado')};
+    const p=providerFor(m);
+    const payload={servico_id:id,prestador_document:m.providerDocument||p.document||'',authorized:!!patch.authorized,scheduled_date:patch.scheduled_date||null,approved_value:patch.approved_value===''||patch.approved_value==null?null:Number(patch.approved_value),final_value:patch.final_value===''||patch.final_value==null?null:Number(patch.final_value),admin_message:patch.admin_message||'',authorized_at:patch.authorized?new Date().toISOString():null,updated_at:new Date().toISOString()};
+    const {data,error}=await supabaseClient.from('prestador_servico_controle').upsert(payload,{onConflict:'servico_id'}).select('*').maybeSingle();
+    if(error){console.error(error);return {ok:false,error}};
+    m.adminControl=payload;
+    m.providerApproved=payload.approved_value;
+    m.providerFinalValue=payload.final_value;
+    m.providerScheduledDate=payload.scheduled_date;
+    m.providerAuthorized=payload.authorized;
+    m.providerAdminMessage=payload.admin_message;
+    if(typeof save==='function')await save();
+    return {ok:true,data:data||payload};
+  }
+  function waNumber(v){return String(v||'').replace(/\D/g,'')}
+  function buildAdminMessage(m,c){
+    const p=providerFor(m), lines=[`Olá, ${p.name||m.provider||'prestador'}!`,``, `Serviço: ${m.description||'Manutenção'}`, `Imóvel: ${nameOf('properties',m.propertyId)}`];
+    if(c.authorized)lines.push('','✅ O serviço está AUTORIZADO pela imobiliária.');
+    if(c.scheduled_date)lines.push(`📅 Data prevista: ${dateA(c.scheduled_date)}`);
+    if(c.approved_value!=null)lines.push(`💰 Valor autorizado: ${moneyA(c.approved_value)}`);
+    if(c.final_value!=null)lines.push(`💵 Valor final registrado: ${moneyA(c.final_value)}`);
+    if(c.admin_message)lines.push('',c.admin_message);
+    return lines.join('\n');
+  }
+  window.openMaintenanceControl=async function(id){
+    const m=getMaintenance(id);if(!m){alert('Chamado não encontrado.');return}
+    const p=providerFor(m), prop=(currentDB().properties||[]).find(x=>x.id===m.propertyId)||{};
+    const c=await getControl(id)||{}; const q=await getLatestProviderQuote(id); const quote=c.approved_value??m.providerQuote??m.quote??q?.quote??null;
+    const root=document.getElementById('modal-root');
+    root.innerHTML=`<div class="modal-bg" onclick="closeModal(event)"><div class="modal maintenance-control-modal" onclick="event.stopPropagation()">
+      <div class="modal-head"><div><div class="eyebrow">Controle do serviço</div><h2>${escA(m.description||'Manutenção')}</h2><div class="access-help">${escA(prop.name||'Imóvel')} · ${escA([prop.address,prop.number,prop.neighborhood,prop.city,prop.state].filter(Boolean).join(', '))}</div></div><button class="icon" onclick="closeModal()">×</button></div>
+      <div class="maintenance-control-provider"><div><span>Prestador</span><strong>${escA(p.name||m.provider||'Não informado')}</strong><small>${escA(p.phone||p.whatsapp||m.providerWhatsapp||'')}</small></div><div><span>Prioridade</span><b class="provider-priority-badge ${/urg/i.test(m.priority||'')?'provider-priority-urgent':/alta/i.test(m.priority||'')?'provider-priority-high':'provider-priority-medium'}">${escA(m.priority||'Média')}</b></div></div>
+      ${q?.quote!=null?`<div class="received-quote-box"><span>Orçamento enviado pelo prestador</span><strong>${moneyA(q.quote)}</strong><small>${escA(q.provider_notes||'')}</small></div>`:''}
+      <div class="form-grid">
+        <div class="form-field"><label>Serviço autorizado?</label><select id="maint-ctrl-authorized"><option value="false" ${c.authorized?'':'selected'}>Aguardando autorização</option><option value="true" ${c.authorized?'selected':''}>✓ Autorizado</option></select></div>
+        <div class="form-field"><label>Dia agendado</label><input id="maint-ctrl-date" type="date" value="${escA(c.scheduled_date||'')}"></div>
+        <div class="form-field"><label>Valor autorizado (R$)</label><input id="maint-ctrl-approved" type="number" min="0" step="0.01" value="${c.approved_value!=null?escA(c.approved_value):(quote!=null?escA(quote):'')}"></div>
+        <div class="form-field"><label>Valor final (R$)</label><input id="maint-ctrl-final" type="number" min="0" step="0.01" value="${c.final_value!=null?escA(c.final_value):''}"></div>
+        <div class="form-field full"><label>Mensagem / orientação para o prestador</label><textarea id="maint-ctrl-message" rows="4" placeholder="Ex.: Serviço autorizado. Comparecer às 14h. Levar material necessário.">${escA(c.admin_message||'')}</textarea></div>
+      </div>
+      <div class="maintenance-control-actions"><button class="button button-quiet" onclick="closeModal()">Cancelar</button><button class="button button-primary" onclick="saveMaintenanceControl('${escA(id)}')">Salvar controle</button>${(p.whatsapp||p.phone||m.providerWhatsapp)?`<button class="button button-whatsapp" onclick="messageMaintenanceProvider('${escA(id)}')">💬 Falar com prestador</button>`:''}</div>
+    </div></div>`;
+  };
+  window.saveMaintenanceControl=async function(id){
+    const patch={authorized:document.getElementById('maint-ctrl-authorized')?.value==='true',scheduled_date:document.getElementById('maint-ctrl-date')?.value||null,approved_value:document.getElementById('maint-ctrl-approved')?.value||null,final_value:document.getElementById('maint-ctrl-final')?.value||null,admin_message:document.getElementById('maint-ctrl-message')?.value.trim()||''};
+    if(patch.authorized&&!patch.scheduled_date){alert('Informe o dia agendado para autorizar o serviço.');return}
+    const r=await saveControl(id,patch);if(!r.ok){alert('Não foi possível salvar o controle.\n\nCódigo: '+(r.error?.code||'—')+'\nMensagem: '+(r.error?.message||'Verifique a tabela e as políticas RLS do Supabase.'));return}
+    closeModal(); if(typeof renderMaintenance==='function')renderMaintenance(); alert('Controle do serviço salvo com sucesso.');
+  };
+  window.messageMaintenanceProvider=async function(id){
+    const m=getMaintenance(id);if(!m)return;const p=providerFor(m);const c=await getControl(id)||{};const n=waNumber(p.whatsapp||p.phone||m.providerWhatsapp);if(!n){alert('Este prestador não possui telefone/WhatsApp cadastrado.');return}const msg=buildAdminMessage(m,c);window.open(`https://wa.me/${n}?text=${encodeURIComponent(msg)}`,'_blank','noopener');
+  };
+  async function adminControlSummary(id){
+    const c=await getControl(id); const m=getMaintenance(id); if(!m)return '';
+    const q=await getLatestProviderQuote(id); const quote=c?.approved_value??m.providerQuote??m.quote??q?.quote??null;
+    return `<div class="maintenance-control-inline">${q?.quote!=null?`<span class="quote-received">Orçamento: ${moneyA(q.quote)}</span>`:''}${c?.authorized?`<span class="authorized-badge">✓ Autorizado</span>`:''}${c?.scheduled_date?`<span>📅 ${dateA(c.scheduled_date)}</span>`:''}${c?.final_value!=null?`<span>Final: ${moneyA(c.final_value)}</span>`:''}<button type="button" class="button button-small maintenance-control-btn" onclick="openMaintenanceControl('${escA(id)}')">${quote!=null?'💰 Controle do orçamento':'⚙ Controle do serviço'}</button></div>`;
+  }
+  function enhanceAdminMaintenance(){
+    if(window.DormusProviderPortal?.access)return;
+    const list=document.getElementById('maintenance-list');if(!list)return;
+    const rows=[...(list.querySelectorAll('tbody tr'))]; const ms=currentDB().maintenance||[];
+    rows.forEach((tr,i)=>{
+      let id='';
+      const action=tr.querySelector('.actions');
+      const html=action?.innerHTML||'';
+      const match=html.match(/openPresentation\('maintenance','([^']+)'\)/)||html.match(/openModal\('maintenance','([^']+)'\)/);
+      if(match) id=match[1];
+      const m=(id&&ms.find(x=>x.id===id))||ms[i];
+      if(!m||tr.querySelector('.maintenance-control-inline'))return;
+      const cell=tr.querySelector('td:last-child');if(!cell)return;
+      const box=document.createElement('div');box.className='maintenance-admin-control-cell';cell.appendChild(box);
+      adminControlSummary(m.id).then(html=>{box.innerHTML=html});
+    });
+  }
+  const oldRMAdmin=window.renderMaintenance;
+  window.renderMaintenance=function(){const r=typeof oldRMAdmin==='function'?oldRMAdmin.apply(this,arguments):undefined;if(!window.DormusProviderPortal?.access)setTimeout(enhanceAdminMaintenance,80);return r};
+  setTimeout(enhanceAdminMaintenance,300);
+
+  /* Portal: mostrar as autorizações e agendamento enviados pela imobiliária. */
+  const oldGetProviderServices=window.DormusProviderPortal?.getProviderServices;
+  async function providerControlsFor(ids){
+    if(!ids.length)return new Map();
+    try{const {data,error}=await supabaseClient.from('prestador_servico_controle').select('*').in('servico_id',ids);if(error)return new Map();return new Map((data||[]).map(x=>[x.servico_id,x]));}catch(e){return new Map()}
+  }
+  async function getPortalRows(){
+    const access=window.DormusProviderPortal?.access;if(!access)return[];
+    const {data,error}=await supabaseClient.from('prestador_servicos').select('*').eq('prestador_document',access.prestador_document).order('opened_at',{ascending:false});if(error||!data)return[];
+    const rows=data||[],controls=await providerControlsFor(rows.map(x=>x.id));
+    let updates=[];try{const r=await supabaseClient.from('prestador_servico_atualizacoes').select('*').eq('prestador_document',access.prestador_document).order('created_at',{ascending:false});updates=r.data||[]}catch(e){}
+    const latest=new Map();updates.forEach(u=>{if(!latest.has(u.servico_id))latest.set(u.servico_id,u)});
+    return rows.map(r=>{const u=latest.get(r.id),c=controls.get(r.id);return {...r,...(u?{status:u.status||r.status,provider_notes:u.provider_notes||r.provider_notes,quote:u.quote??r.quote,cost:u.cost??r.cost}:{}),...(c?{admin_authorized:c.authorized,scheduled_date:c.scheduled_date,approved_value:c.approved_value,final_value:c.final_value,admin_message:c.admin_message,authorized_at:c.authorized_at}: {})}});
+  }
+  function portalControlBanner(x){
+    if(!x.admin_authorized&&!x.scheduled_date&&x.approved_value==null&&x.final_value==null&&!(x.admin_message||''))return '';
+    return `<div class="provider-admin-banner ${x.admin_authorized?'authorized':''}"><div class="provider-admin-banner-head"><strong>${x.admin_authorized?'✓ Serviço autorizado pela imobiliária':'Atualização da imobiliária'}</strong>${x.scheduled_date?`<span>📅 ${dateA(x.scheduled_date)}</span>`:''}</div><div class="provider-admin-banner-grid">${x.approved_value!=null?`<div><span>Valor autorizado</span><strong>${moneyA(x.approved_value)}</strong></div>`:''}${x.final_value!=null?`<div><span>Valor final</span><strong>${moneyA(x.final_value)}</strong></div>`:''}</div>${x.admin_message?`<p>${escA(x.admin_message)}</p>`:''}</div>`;
+  }
+  function portalCard18(x){
+    const status=x.status||'Aberto', urgent=/urg/i.test(x.priority||'');
+    return `<article class="provider-service-card ${urgent?'is-urgent':''}">
+      <div class="provider-service-top"><span class="provider-service-avatar">🔧</span><div class="provider-service-heading"><strong>${escA(x.title||'Serviço de manutenção')}</strong><small>🏠 ${escA(x.property_name||'Imóvel não informado')}</small></div><div class="provider-service-badges"><span class="provider-priority-badge ${priorityClass18(x.priority)}">${escA(x.priority||'Média')}</span><span class="badge provider-service-badge">${escA(status)}</span></div></div>
+      ${portalControlBanner(x)}
+      <div class="provider-service-location"><span>📍</span><div><strong>${escA(x.property_name||'Imóvel não informado')}</strong><small>${escA(x.property_address||'Endereço não informado')}</small></div></div>
+      <div class="provider-service-meta"><div><span>Categoria</span><strong>${escA(x.category||'Outros')}</strong></div><div><span>Abertura</span><strong>${dateA(x.opened_at)||'—'}</strong></div><div><span>Dia agendado</span><strong>${dateA(x.scheduled_date)||'—'}</strong></div><div><span>Orçamento</span><strong>${x.quote!=null?moneyA(x.quote):'Não informado'}</strong></div><div><span>Valor autorizado</span><strong>${x.approved_value!=null?moneyA(x.approved_value):'—'}</strong></div></div>
+      <div class="provider-service-description"><strong>Problema relatado</strong><p>${escA(x.description||'Sem descrição registrada.')}</p></div>
+      <div class="provider-service-actions">${status==='Aberto'?`<button class="button button-primary button-small" onclick="providerAcceptService('${escA(x.id)}')">✓ Aceitar serviço</button>`:''}${['Aberto','Aceito'].includes(status)?`<button class="button button-small" onclick="providerStartService('${escA(x.id)}')">▶ Iniciar atendimento</button>`:''}${status==='Em andamento'?`<button class="button button-brass button-small" onclick="providerCompleteService('${escA(x.id)}')">✓ Solicitar conclusão</button>`:''}<button class="button button-quote button-small" onclick="providerQuoteService('${escA(x.id)}')">${x.quote!=null?'✏ Alterar orçamento':'💰 Dar orçamento'}</button><button class="button button-quiet button-small" onclick="providerServiceDetails18('${escA(x.id)}')">Ver chamado completo</button></div>
+    </article>`;
+  }
+  function priorityClass18(v){const n=String(v||'Média').toLowerCase();return n.includes('urg')?'provider-priority-urgent':n.includes('alta')?'provider-priority-high':n.includes('baixa')?'provider-priority-low':'provider-priority-medium'}
+  window.renderProviderPortal=async function(){
+    if(!window.DormusProviderPortal?.access)return; const list=document.getElementById('provider-portal-list');if(!list)return;list.innerHTML='<div class="provider-service-empty">Carregando seus serviços...</div>';
+    const rows=(await getPortalRows()).sort((a,b)=>{const rank=x=>/urg/i.test(x.priority||'')?0:/alta/i.test(x.priority||'')?1:/m[eé]dia/i.test(x.priority||'')?2:3;return rank(a)-rank(b)||String(a.opened_at||'').localeCompare(String(b.opened_at||''))});
+    [['portal-open',rows.filter(x=>['Aberto','Aceito'].includes(x.status||'Aberto')).length],['portal-progress',rows.filter(x=>x.status==='Em andamento').length],['portal-done',rows.filter(x=>/concl/i.test(x.status||'')).length],['portal-total',rows.length]].forEach(([id,v])=>{const e=document.getElementById(id);if(e)e.textContent=v});
+    list.innerHTML=rows.length?`<div class="provider-service-grid">${rows.map(portalCard18).join('')}</div>`:'<div class="provider-service-empty"><strong>Nenhum serviço atribuído.</strong><br>Quando a imobiliária enviar um serviço para você, ele aparecerá aqui.</div>';
+  };
+  window.providerServiceDetails18=async function(id){const rows=await getPortalRows(),x=rows.find(r=>r.id===id);if(!x)return;const root=document.getElementById('modal-root');root.innerHTML=`<div class="modal-bg" onclick="closeModal(event)"><div class="modal provider-detail-modal" onclick="event.stopPropagation()"><div class="modal-head"><div><div class="eyebrow">Chamado de manutenção</div><h2>${escA(x.title||'Serviço')}</h2></div><button class="icon" onclick="closeModal()">×</button></div>${portalControlBanner(x)}<div class="provider-detail-hero"><div><strong>${escA(x.property_name||'Imóvel')}</strong><span>📍 ${escA(x.property_address||'Endereço não informado')}</span></div><div><span class="provider-priority-badge ${priorityClass18(x.priority)}">${escA(x.priority||'Média')}</span><span class="badge">${escA(x.status||'Aberto')}</span></div></div><div class="provider-detail-grid"><div><span>Categoria</span><strong>${escA(x.category||'—')}</strong></div><div><span>Abertura</span><strong>${dateA(x.opened_at)||'—'}</strong></div><div><span>Dia agendado</span><strong>${dateA(x.scheduled_date)||'—'}</strong></div><div><span>Orçamento</span><strong>${x.quote!=null?moneyA(x.quote):'Não informado'}</strong></div><div><span>Valor autorizado</span><strong>${x.approved_value!=null?moneyA(x.approved_value):'—'}</strong></div><div><span>Valor final</span><strong>${x.final_value!=null?moneyA(x.final_value):'—'}</strong></div></div><div class="provider-detail-section"><h3>Descrição do problema</h3><p>${escA(x.description||'Sem descrição registrada.')}</p></div>${x.admin_message?`<div class="provider-detail-section"><h3>Orientação da imobiliária</h3><p>${escA(x.admin_message)}</p></div>`:''}<div class="modal-actions"><button class="button button-quiet" onclick="closeModal()">Fechar</button><button class="button button-quote" onclick="closeModal();providerQuoteService('${escA(x.id)}')">${x.quote!=null?'✏ Alterar orçamento':'💰 Dar orçamento'}</button></div></div></div>`};
+
+  /* Corrige a entrada do prestador: exibe apenas o portal, sem o painel administrativo de manutenção. */
+  const oldShowView18=window.showView;
+  window.showView=function(id){
+    if(window.DormusProviderPortal?.access){
+      if(id!=='maintenance'&&id!=='receipts')id='maintenance';
+      const r=oldShowView18.apply(this,[id]);
+      if(id==='maintenance'){
+        document.getElementById('provider-maintenance-view')?.style.setProperty('display','none');
+        const sec=document.getElementById('maintenance');if(sec){sec.querySelector('.page-head')?.style.setProperty('display','none');sec.querySelector('.maintenance-stats')?.style.setProperty('display','none');sec.querySelector('.maintenance-toolbar')?.style.setProperty('display','none');sec.querySelector('.maintenance-panel')?.style.setProperty('display','none');document.getElementById('provider-portal')?.classList.remove('active');document.getElementById('provider-portal')?.style.setProperty('display','none')}
+        const host=document.getElementById('provider-maintenance-view');if(host){host.style.display='block';host.innerHTML=`<div id="provider-portal-shell" class="provider-portal-shell"><div class="page-head modern-head"><div><div class="eyebrow">Portal do prestador</div><h1>Meus serviços</h1><p class="lead">Chamados, autorizações, agendamentos e orçamentos.</p></div></div><div class="provider-portal-kpis"><div class="metric"><div class="metric-label">Novos / abertos</div><div class="metric-value" id="portal-open">0</div></div><div class="metric"><div class="metric-label">Em andamento</div><div class="metric-value" id="portal-progress">0</div></div><div class="metric"><div class="metric-label">Concluídos</div><div class="metric-value success-text" id="portal-done">0</div></div><div class="metric"><div class="metric-label">Total de serviços</div><div class="metric-value" id="portal-total">0</div></div></div><section class="panel"><div class="panel-head"><div><div class="panel-title">Meus chamados</div><div class="panel-kicker">Prioridades e orientações da imobiliária aparecem em cada serviço.</div></div><button class="button button-small" onclick="renderProviderPortal()">↻ Atualizar</button></div><div id="provider-portal-list"></div></section></div>`;renderProviderPortal();}
+      }
+      return r;
+    }
+    return oldShowView18.apply(this,arguments);
+  };
+  const oldEnter18=window.enterDormus;
+  window.enterDormus=async function(session){const r=await oldEnter18.apply(this,arguments);if(window.DormusProviderPortal?.access){setTimeout(()=>window.showView('maintenance'),30)}return r};
+})();
+</script>
+<style>
+.maintenance-control-modal{max-width:760px}.maintenance-control-provider{display:flex;justify-content:space-between;gap:15px;align-items:center;background:#f8fafc;border:1px solid #e5ebf3;border-radius:12px;padding:13px;margin-bottom:12px}.maintenance-control-provider span,.maintenance-control-provider small{display:block;color:#7b90ab;font-size:11px}.maintenance-control-provider strong{display:block;color:#10203a;margin:3px 0}.received-quote-box{background:#ecfdf5;border:1px solid #b7e4d1;border-radius:12px;padding:12px;margin:12px 0}.received-quote-box span,.received-quote-box small{display:block;color:#047857;font-size:12px}.received-quote-box strong{display:block;color:#065f46;font-size:20px;margin:4px 0}.maintenance-control-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:15px}.button-whatsapp{border:1px solid #bbf7d0;background:#f0fdf4;color:#15803d}.maintenance-control-inline{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-top:7px}.maintenance-control-inline>span{font-size:11px;padding:4px 7px;border-radius:999px;background:#f1f5f9;color:#526b88}.maintenance-control-inline .quote-received{background:#ecfdf5;color:#047857}.maintenance-control-inline .authorized-badge{background:#dcfce7;color:#166534;font-weight:700}.maintenance-control-btn{font-size:11px!important}.maintenance-admin-control-cell{min-width:180px}.provider-admin-banner{background:#f8fafc;border:1px solid #dfe7f1;border-radius:12px;padding:12px;margin:12px 0}.provider-admin-banner.authorized{background:#ecfdf5;border-color:#b7e4d1}.provider-admin-banner-head{display:flex;justify-content:space-between;gap:10px;align-items:center}.provider-admin-banner-head strong{color:#10203a}.provider-admin-banner.authorized .provider-admin-banner-head strong{color:#047857}.provider-admin-banner-head span{font-size:12px;color:#35607f}.provider-admin-banner-grid{display:flex;gap:20px;flex-wrap:wrap;margin-top:9px}.provider-admin-banner-grid span{display:block;color:#7187a5;font-size:10px;text-transform:uppercase}.provider-admin-banner-grid strong{display:block;color:#1d3553;margin-top:2px}.provider-admin-banner p{margin:10px 0 0;color:#536b89;white-space:pre-wrap;line-height:1.45}.provider-portal-shell{padding-bottom:35px}.provider-portal-shell .panel{margin-top:16px}@media(max-width:700px){.maintenance-control-provider{align-items:flex-start;flex-direction:column}.maintenance-control-inline{align-items:flex-start}.maintenance-admin-control-cell{min-width:0}.provider-admin-banner-head{align-items:flex-start;flex-direction:column}}
+</style>
+
 </body>
 </html>
