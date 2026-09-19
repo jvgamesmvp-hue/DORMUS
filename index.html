@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.24</title>
+  <title>Dormus | Gestão imobiliária · 8.25</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -2084,6 +2084,113 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
         .catch(function(err){ console.warn('Dormus PWA:', err); });
     });
   }
+})();
+</script>
+
+
+<script id="dormus-825-realtime">
+/* DORMUS 8.25 — nome do usuário + Supabase Realtime + chat em tempo real + atualização automática */
+(function(){
+  let rtChannels=[];
+  let rtStarted=false;
+  let lastDbEvent=0;
+  const ADMIN_EMAIL='jvgamesmvp@gmail.com';
+  const escRT=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const initialsRT=name=>String(name||'Usuário').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'US';
+  function currentSession(){return supabaseClient?.auth?.getSession?supabaseClient.auth.getSession():Promise.resolve({data:{session:null}})}
+  async function loadAccessName(session){
+    const email=(session?.user?.email||'').toLowerCase();
+    let name=session?.user?.user_metadata?.full_name||session?.user?.user_metadata?.name||'';
+    let profile='Usuário';
+    try{
+      if(email){
+        const {data,error}=await supabaseClient.from('dormus_acessos').select('email,nome,perfil,ativo').eq('email',email).maybeSingle();
+        if(!error&&data&&data.ativo!==false){name=data.nome||name;profile=data.perfil||profile;}
+      }
+    }catch(e){console.warn('DORMUS: não foi possível carregar o nome do acesso.',e)}
+    if(!name)name=email||'Usuário';
+    window.DormusCurrentUser={email,name,profile,initials:initialsRT(name)};
+    const emailEl=document.getElementById('auth-email'); if(emailEl) emailEl.textContent=name;
+    const avatar=document.getElementById('profile-button'); if(avatar){avatar.textContent=initialsRT(name);avatar.title=`${name} · ${profile}`;avatar.setAttribute('aria-label',`${name} · ${profile}`)}
+    const profileName=document.getElementById('profile-name'); if(profileName)profileName.textContent=name;
+    const profileEmail=document.getElementById('profile-email'); if(profileEmail)profileEmail.textContent=email;
+    const profileRole=document.getElementById('profile-role'); if(profileRole)profileRole.textContent=profile;
+    return window.DormusCurrentUser;
+  }
+  async function reloadDbRealtime(){
+    const now=Date.now(); if(now-lastDbEvent<400)return; lastDbEvent=now;
+    try{
+      if(typeof loadDbFromSupabase==='function') await loadDbFromSupabase();
+      if(typeof renderAll==='function') renderAll();
+      if(typeof window.renderCRM==='function'&&document.getElementById('crm')?.classList.contains('active')) window.renderCRM();
+      if(typeof window.renderReports==='function'&&document.getElementById('reports')?.classList.contains('active')) window.renderReports();
+      if(typeof window.renderModernFinance==='function'&&document.getElementById('rents')?.classList.contains('active')) window.renderModernFinance();
+      if(typeof window.renderTerminations==='function'&&document.getElementById('terminations')?.classList.contains('active')) window.renderTerminations();
+      if(typeof window.renderMaintenance==='function') window.renderMaintenance();
+    }catch(e){console.warn('DORMUS Realtime: falha ao atualizar dados.',e)}
+  }
+  async function refreshOpenChat(){
+    const box=document.getElementById('chat19-list');
+    if(!box)return;
+    const id=box.dataset.serviceId||window.DormusOpenChat825?.id||'';
+    const doc=box.dataset.providerDocument||window.DormusOpenChat825?.doc||'';
+    if(typeof window.DormusOps19?.refreshChat==='function') return window.DormusOps19.refreshChat(id,doc);
+    // fallback: reproduce the existing chat query without changing the UI
+    try{
+      let q=supabaseClient.from('prestador_servico_mensagens').select('*').eq('servico_id',id).order('created_at',{ascending:true});
+      if(doc)q=q.eq('prestador_document',doc);
+      const {data,error}=await q; if(error)throw error;
+      box.innerHTML=(data||[]).length?(data||[]).map(r=>`<div class="chat19-msg ${r.sender_role==='admin'?'admin':''}"><div class="chat19-bubble"><strong>${escRT(r.sender_name||r.sender_role)}</strong><p>${escRT(r.message)}</p><small>${new Date(r.created_at).toLocaleString('pt-BR')}</small></div></div>`).join(''):'<div style="padding:80px 10px;text-align:center;color:#8194ad;font-size:12px">Nenhuma mensagem ainda. Envie a primeira mensagem.</div>';
+      box.scrollTop=box.scrollHeight;
+    }catch(e){console.warn('DORMUS Realtime: falha ao atualizar chat.',e)}
+  }
+  function stopRealtime(){rtChannels.forEach(ch=>{try{supabaseClient.removeChannel(ch)}catch(e){}});rtChannels=[];rtStarted=false}
+  async function startRealtime(session){
+    if(!session||rtStarted||!supabaseClient?.channel)return;
+    rtStarted=true;
+    stopRealtime(); rtStarted=true;
+    const dbChannel=supabaseClient.channel('dormus-data-live-'+session.user.id)
+      .on('postgres_changes',{event:'*',schema:'public',table:'dormus_data',filter:'id=eq.1'},()=>reloadDbRealtime())
+      .subscribe(status=>{if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')console.warn('DORMUS Realtime: canal principal indisponível.',status)});
+    const opsChannel=supabaseClient.channel('dormus-ops-live-'+session.user.id)
+      .on('postgres_changes',{event:'*',schema:'public',table:'prestador_servicos'},()=>{reloadDbRealtime();window.renderProviderPortal?.()})
+      .on('postgres_changes',{event:'*',schema:'public',table:'prestador_servico_atualizacoes'},()=>{reloadDbRealtime();window.renderProviderPortal?.();if(window.DormusOps19?.renderAdminOps)window.DormusOps19.renderAdminOps()})
+      .on('postgres_changes',{event:'*',schema:'public',table:'prestador_servico_controle'},()=>{reloadDbRealtime();window.renderProviderPortal?.();if(window.DormusOps19?.renderAdminOps)window.DormusOps19.renderAdminOps()})
+      .on('postgres_changes',{event:'*',schema:'public',table:'prestador_servico_mensagens'},payload=>{
+        const id=payload?.new?.servico_id||payload?.old?.servico_id||'';
+        const box=document.getElementById('chat19-list');
+        if(box&&(!id||box.dataset.serviceId===String(id))) refreshOpenChat();
+        else if(id&&typeof window.DormusOps19?.notifyMessage==='function') window.DormusOps19.notifyMessage(payload?.new);
+      })
+      .subscribe(status=>{if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')console.warn('DORMUS Realtime: canal operacional indisponível.',status)});
+    rtChannels.push(dbChannel,opsChannel);
+  }
+  async function boot(){
+    try{
+      const {data:{session}}=await currentSession();
+      if(session){await loadAccessName(session);await startRealtime(session)}
+      supabaseClient.auth.onAuthStateChange(async (_event,newSession)=>{
+        if(newSession){await loadAccessName(newSession);stopRealtime();await startRealtime(newSession)}else{stopRealtime()}
+      });
+    }catch(e){console.warn('DORMUS 8.25: inicialização em tempo real falhou.',e)}
+  }
+  // Expose small hooks used by the existing chat UI.
+  const originalOpenChat825=window.openServiceChat19;
+  if(typeof originalOpenChat825==='function'){
+    window.openServiceChat19=async function(id){
+      const m=(window.DormusDB?.maintenance||window.db?.maintenance||[]).find(x=>x.id===id);
+      const p=(window.DormusProviders||[]).find(x=>x.document===m?.providerDocument)||(window.DormusProviders||[]).find(x=>x.name===m?.provider)||{};
+      const role=!window.DormusProviderPortal?.access?'admin':'prestador';
+      const doc=role==='admin'?(m?.providerDocument||p?.document||''):(window.DormusProviderPortal?.access?.prestador_document||'');
+      window.DormusOpenChat825={id:String(id),doc:String(doc)};
+      const result=await originalOpenChat825.apply(this,arguments);
+      const box=document.getElementById('chat19-list');
+      if(box){box.dataset.serviceId=String(id);box.dataset.providerDocument=String(doc)}
+      return result;
+    };
+  }
+  window.DormusRealtime825={start:startRealtime,stop:stopRealtime,reload:reloadDbRealtime,loadAccessName,refreshOpenChat};
+  setTimeout(boot,700);
 })();
 </script>
 
