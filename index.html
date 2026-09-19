@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.14</title>
+  <title>Dormus | Gestão imobiliária · 8.24</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -90,6 +90,105 @@ body.provider-mode #provider-receipts-view{display:block!important}
 @media(max-width:900px){.provider-restricted-kpis{grid-template-columns:repeat(2,1fr)}.provider-restricted-list{grid-template-columns:1fr}}
 @media(max-width:600px){.provider-restricted-kpis{grid-template-columns:1fr}.provider-restricted-meta{grid-template-columns:1fr}}
 </style>
+
+<style id="dormus-mobile-fix-824">
+@media (max-width:760px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden}
+  .app{display:block;min-height:100vh;width:100%}
+  .side{
+    width:100%!important;
+    flex:0 0 auto!important;
+    min-height:auto!important;
+    padding:12px 10px 8px!important;
+    position:relative;
+    z-index:20;
+  }
+  .brand{
+    justify-content:flex-start!important;
+    padding:4px 8px 12px!important;
+  }
+  .brand span:last-child{font-size:initial!important}
+  .brand strong{font-size:22px}
+  .brand small{font-size:9px}
+  .nav-title,.nav-title-more{display:none!important}
+  .nav{
+    display:flex!important;
+    gap:7px!important;
+    margin:0 0 6px!important;
+    overflow-x:auto!important;
+    overflow-y:hidden!important;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    padding:2px 1px 5px;
+  }
+  .nav::-webkit-scrollbar{display:none}
+  .nav button,
+  .nav button:not(.active){
+    flex:0 0 auto!important;
+    width:auto!important;
+    min-width:max-content!important;
+    display:flex!important;
+    justify-content:flex-start!important;
+    font-size:13px!important;
+    padding:9px 11px!important;
+    border-radius:9px!important;
+  }
+  .nav-icon{font-size:15px!important;width:auto!important}
+  .nav-more{margin-top:0!important}
+  .side-foot{display:none!important}
+  .main{
+    width:100%!important;
+    max-width:100%!important;
+    padding:0 14px 30px!important;
+    margin:0!important;
+  }
+  .top{
+    width:100%!important;
+    margin:0!important;
+    padding:0!important;
+    height:58px!important;
+    gap:7px!important;
+  }
+  .global-search{
+    position:relative!important;
+    left:auto!important;
+    transform:none!important;
+    width:auto!important;
+    flex:1 1 auto!important;
+    min-width:0!important;
+  }
+  .top-actions{flex:0 0 auto!important}
+  .top-icon{width:34px!important}
+  .avatar{width:40px!important;height:40px!important}
+  .view{width:100%;max-width:100%;overflow:hidden}
+  .page-head{gap:12px}
+  .page-head h1{font-size:31px!important}
+  .panel,.metric,.property{max-width:100%}
+  .table-wrap{max-width:100%;overflow-x:auto}
+  .modal-bg{padding:10px!important}
+  .modal{
+    width:100%!important;
+    max-width:100%!important;
+    max-height:94vh!important;
+    padding:17px!important;
+  }
+  .form-grid{grid-template-columns:1fr!important}
+  .form-field.full{grid-column:auto!important}
+  .modal-actions{flex-wrap:wrap}
+  .presentation-body{padding:18px!important}
+  .presentation-head{padding:20px!important}
+  .presentation-head h2{font-size:27px!important}
+}
+</style>
+
+
+  <meta name="theme-color" content="#08152f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Dormus">
+  <link rel="manifest" href="./manifest.json">
+
 </head>
 <body>
 
@@ -205,7 +304,6 @@ const supabaseClient = window.supabase.createClient(
     const KEY='dormus-empty-v2';
     // Tema fixo do Dormus: azul-marinho + verde.
 
-    const FILE_DB='dormus-files-v1',FILE_STORE='attachments';
     const providers=[
       {name:'Luiz Alves de Souza',document:'034.429.806-07'},
       {name:'Raimundo Pereira',document:'161.132.331-20'},
@@ -251,17 +349,54 @@ async function carregarDadosSupabase(){
 }
     Object.keys(blank).forEach(key=>{if(!Array.isArray(db[key]))db[key]=[]});
     const titles={home:'Dashboard',properties:'Imóveis',owners:'Proprietários',tenants:'Locatários',guarantors:'Fiadores',contracts:'Contratos',rents:'Financeiro',deposits:'Cauções',inspections:'Vistorias',maintenance:'Manutenções',notes:'Bloco de notas',agenda:'Agenda',receipts:'Recibos',crm:'CRM & Vendas',reports:'Relatórios'};
+    const STORAGE_BUCKET='dormus';
+    const LEGACY_FILE_DB='dormus-files-v1',LEGACY_FILE_STORE='attachments';
+    let fileDbPromise;
+    function openLegacyFileDb(){if(!window.indexedDB)return Promise.reject(new Error('IndexedDB indisponível.'));if(fileDbPromise)return fileDbPromise;fileDbPromise=new Promise((resolve,reject)=>{const req=indexedDB.open(LEGACY_FILE_DB,1);req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)});return fileDbPromise}
+    async function legacyAttachments(kind,recordId){try{const dbi=await openLegacyFileDb();return await new Promise((resolve,reject)=>{const req=dbi.transaction(LEGACY_FILE_STORE,'readonly').objectStore(LEGACY_FILE_STORE).getAll();req.onsuccess=()=>resolve(req.result.filter(x=>x.kind===kind&&x.recordId===recordId));req.onerror=()=>reject(req.error)})}catch(e){return[]}}
+    async function migrateLegacyAttachments(kind,recordId){const legacy=await legacyAttachments(kind,recordId);if(!legacy.length)return[];if(!Array.isArray(db.attachments))db.attachments=[];const migrated=[];for(const file of legacy){const key=`${kind}:${recordId}:${uid()}`;const path=`${kind}/${recordId}/${key}-${storageSafeName(file.name)}`;const {error}=await supabaseClient.storage.from(STORAGE_BUCKET).upload(path,file.blob,{upsert:false,contentType:file.type||'application/octet-stream'});if(error)throw error;migrated.push({key,kind,recordId,name:file.name,type:file.type||'application/octet-stream',size:file.size,path,room:file.room||'Geral',createdAt:file.createdAt||new Date().toISOString()})}db.attachments=db.attachments.filter(x=>!(x.kind===kind&&x.recordId===recordId)).concat(migrated);return migrated}
+
+    function storageSafeName(name){return String(name||'arquivo').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9._-]+/g,'_').slice(0,120)||'arquivo'}
+    function attachmentRows(kind,recordId){return Array.isArray(db.attachments)?db.attachments.filter(x=>x.kind===kind&&x.recordId===recordId):[]}
+    async function signedAttachmentUrl(path){const {data,error}=await supabaseClient.storage.from(STORAGE_BUCKET).createSignedUrl(path,3600);if(error)throw error;return data?.signedUrl||''}
+    async function listAttachments(kind,recordId){const files=attachmentRows(kind,recordId);return await Promise.all(files.map(async file=>{try{return {...file,url:await signedAttachmentUrl(file.path)}}catch(e){return {...file,url:''}}}))}
+    async function syncAttachments(kind,recordId){
+      const input=document.getElementById('f-attachments');
+      const remove=[...document.querySelectorAll('.remove-attachment:checked')].map(x=>x.value);
+      if(!Array.isArray(db.attachments))db.attachments=[];
+      if(recordId && !attachmentRows(kind,recordId).length){await migrateLegacyAttachments(kind,recordId)}
+      const existing=attachmentRows(kind,recordId);
+      const kept=existing.filter(file=>!remove.includes(file.key));
+      const removed=existing.filter(file=>remove.includes(file.key));
+      if(removed.length){
+        const paths=removed.map(x=>x.path).filter(Boolean);
+        if(paths.length){const {error}=await supabaseClient.storage.from(STORAGE_BUCKET).remove(paths);if(error)throw error;}
+      }
+      const updatedExisting=kept.map(file=>{const room=document.querySelector(`[data-room-key=\"${CSS.escape(file.key)}\"]`)?.value;return room?{...file,room}:file});
+      const uploaded=[];
+      for(const [index,file] of [...(input?.files||[])].entries()){
+        const room=file.type?.startsWith('image/')?document.querySelector(`[data-new-file-room=\"${index}\"]`)?.value||'Geral':'';
+        const key=`${kind}:${recordId}:${uid()}`;
+        const path=`${kind}/${recordId}/${key}-${storageSafeName(file.name)}`;
+        const {error}=await supabaseClient.storage.from(STORAGE_BUCKET).upload(path,file,{upsert:false,contentType:file.type||'application/octet-stream'});
+        if(error)throw error;
+        uploaded.push({key,kind,recordId,name:file.name,type:file.type||'application/octet-stream',size:file.size,path,room,createdAt:new Date().toISOString()});
+      }
+      db.attachments=db.attachments.filter(file=>!(file.kind===kind&&file.recordId===recordId)).concat(updatedExisting,uploaded);
+    }
+    async function deleteAttachments(kind,recordId){
+      const files=attachmentRows(kind,recordId);
+      if(!files.length)return;
+      const paths=files.map(x=>x.path).filter(Boolean);
+      if(paths.length){const {error}=await supabaseClient.storage.from(STORAGE_BUCKET).remove(paths);if(error)throw error;}
+      db.attachments=db.attachments.filter(file=>!(file.kind===kind&&file.recordId===recordId));
+      try{const legacy=await legacyAttachments(kind,recordId);if(legacy.length){const ldb=await openLegacyFileDb();const tx=ldb.transaction(LEGACY_FILE_STORE,'readwrite');const store=tx.objectStore(LEGACY_FILE_STORE);legacy.forEach(file=>store.delete(file.key));await new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||new Error('Falha ao remover arquivo local.'));tx.onabort=()=>reject(tx.error||new Error('Operação local cancelada.'))})}}catch(e){console.warn('Não foi possível limpar anexos locais antigos.',e)}
+    }
+    function formatBytes(bytes){if(!bytes)return'';if(bytes<1024)return`${bytes} B`;if(bytes<1048576)return`${(bytes/1024).toFixed(1)} KB`;return`${(bytes/1048576).toFixed(1)} MB`}
+    function formatDatePt(date){return date?String(date).split('-').reverse().join('/') : ''}
     const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
     const money=v=>'R$ '+Number(v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
     const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
-    let fileDbPromise;
-    function openFileDb(){if(!window.indexedDB)return Promise.reject(new Error('Armazenamento de arquivos indisponível neste navegador.'));if(fileDbPromise)return fileDbPromise;fileDbPromise=new Promise((resolve,reject)=>{const req=indexedDB.open(FILE_DB,1);req.onupgradeneeded=()=>req.result.createObjectStore(FILE_STORE,{keyPath:'key'});req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error)});return fileDbPromise}
-    function transactionDone(tx){return new Promise((resolve,reject)=>{tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error||new Error('Falha ao salvar arquivo.'));tx.onabort=()=>reject(tx.error||new Error('Operação de arquivo cancelada.'))})}
-    async function listAttachments(kind,recordId){if(!recordId)return[];try{const fileDb=await openFileDb();return await new Promise((resolve,reject)=>{const req=fileDb.transaction(FILE_STORE,'readonly').objectStore(FILE_STORE).getAll();req.onsuccess=()=>resolve(req.result.filter(x=>x.kind===kind&&x.recordId===recordId));req.onerror=()=>reject(req.error)})}catch(e){return[]}}
-     async function syncAttachments(kind,recordId){const input=document.getElementById('f-attachments'),remove=[...document.querySelectorAll('.remove-attachment:checked')].map(x=>x.value),existing=await listAttachments(kind,recordId);if(!input?.files?.length&&!remove.length&&!document.querySelector('[data-room-key]'))return;const fileDb=await openFileDb();const tx=fileDb.transaction(FILE_STORE,'readwrite'),store=tx.objectStore(FILE_STORE);remove.forEach(key=>store.delete(key));existing.filter(file=>!remove.includes(file.key)).forEach(file=>{const room=document.querySelector(`[data-room-key="${CSS.escape(file.key)}"]`)?.value;store.put({...file,room:room||file.room||'Geral'})});[...(input?.files||[])].forEach((file,index)=>{const room=file.type?.startsWith('image/')?document.querySelector(`[data-new-file-room="${index}"]`)?.value||'Geral':'';store.put({key:`${kind}:${recordId}:${uid()}`,kind,recordId,name:file.name,type:file.type,size:file.size,blob:file,room,createdAt:new Date().toISOString()})});await transactionDone(tx)}
-    async function deleteAttachments(kind,recordId){const files=await listAttachments(kind,recordId);if(!files.length)return;const fileDb=await openFileDb();const tx=fileDb.transaction(FILE_STORE,'readwrite'),store=tx.objectStore(FILE_STORE);files.forEach(file=>store.delete(file.key));await transactionDone(tx)}
-     function formatBytes(bytes){if(!bytes)return'';if(bytes<1024)return`${bytes} B`;if(bytes<1048576)return`${(bytes/1024).toFixed(1)} KB`;return`${(bytes/1048576).toFixed(1)} MB`}
-     function formatDatePt(date){return date?String(date).split('-').reverse().join('/') : ''}
     const val=id=>document.getElementById(id)?.value?.trim()||'';
     const selected=(value,current)=>value===current?' selected':'';
     async function save(){
@@ -393,7 +528,7 @@ async function carregarDadosSupabase(){
      const photoRooms=['Geral','Sala','Cozinha','Banheiro','Quarto','Área de serviço','Varanda','Garagem','Escritório','Outro'];
      function photoRoomOptions(current='Geral'){return photoRooms.map(room=>`<option value="${esc(room)}"${selected(room,current)}>${esc(room)}</option>`).join('')}
      function attachmentField(r={},kind=''){return `<div class="attachments-block"><label>Arquivos e fotos</label><input id="f-attachments" type="file" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,.zip" onchange="showSelectedFiles()"><span class="attachments-help">Ao selecionar fotos, escolha o cômodo de cada uma. Depois elas aparecem agrupadas na visualização do imóvel.</span><div id="selected-files" class="selected-files"></div><div id="modal-attachments" class="attachment-list"></div></div>`}
-      async function loadModalAttachments(kind,id){const el=document.getElementById('modal-attachments');if(!el)return;const files=await listAttachments(kind,id);if(!files.length){el.innerHTML=id?'<span class="attachments-help">Nenhum arquivo anexado a este cadastro.</span>':'';return}el.innerHTML=files.map(file=>`<div class="attachment-item"><span class="attachment-preview" data-preview-key="${esc(file.key)}">${file.type?.startsWith('image/')?'':'📎'}</span><a class="attachment-link" data-file-key="${esc(file.key)}" target="_blank" rel="noopener">${esc(file.name)} <small>(${formatBytes(file.size)})</small></a>${file.type?.startsWith('image/')?`<select class="selected-file-room" data-room-key="${esc(file.key)}" aria-label="Cômodo da foto">${photoRoomOptions(file.room||'Geral')}</select>`:''}<label><input class="remove-attachment" type="checkbox" value="${esc(file.key)}"> remover</label></div>`).join('');files.forEach(file=>{const url=URL.createObjectURL(file.blob),link=document.querySelector(`[data-file-key="${CSS.escape(file.key)}"]`),preview=document.querySelector(`[data-preview-key="${CSS.escape(file.key)}"]`);if(link){link.href=url;if(file.type?.startsWith('image/')){link.target='';link.onclick=e=>{e.preventDefault();openImageViewer(url,file.name)}}}if(preview&&file.type?.startsWith('image/')){preview.textContent='';const img=document.createElement('img');img.className='attachment-preview';img.src=url;img.alt=file.name;img.style.cursor='zoom-in';img.onclick=()=>openImageViewer(url,file.name);preview.replaceWith(img)}})}
+      async function loadModalAttachments(kind,id){const el=document.getElementById('modal-attachments');if(!el)return;const files=await listAttachments(kind,id);if(!files.length){el.innerHTML=id?'<span class="attachments-help">Nenhum arquivo anexado a este cadastro.</span>':'';return}el.innerHTML=files.map(file=>`<div class="attachment-item"><span class="attachment-preview" data-preview-key="${esc(file.key)}">${file.type?.startsWith('image/')?'':'📎'}</span><a class="attachment-link" data-file-key="${esc(file.key)}" ${file.url?'target="_blank" rel="noopener"':''}>${esc(file.name)} <small>(${formatBytes(file.size)})</small></a>${file.type?.startsWith('image/')?`<select class="selected-file-room" data-room-key="${esc(file.key)}" aria-label="Cômodo da foto">${photoRoomOptions(file.room||'Geral')}</select>`:''}<label><input class="remove-attachment" type="checkbox" value="${esc(file.key)}"> remover</label></div>`).join('');files.forEach(file=>{const url=file.url,link=document.querySelector(`[data-file-key="${CSS.escape(file.key)}"]`),preview=document.querySelector(`[data-preview-key="${CSS.escape(file.key)}"]`);if(link&&url){link.href=url;if(file.type?.startsWith('image/')){link.target='';link.rel='';link.onclick=e=>{e.preventDefault();openImageViewer(url,file.name)}}}if(preview&&url&&file.type?.startsWith('image/')){preview.textContent='';const img=document.createElement('img');img.className='attachment-preview';img.src=url;img.alt=file.name;img.style.cursor='zoom-in';img.onclick=()=>openImageViewer(url,file.name);preview.replaceWith(img)}})}
       function showSelectedFiles(){const input=document.getElementById('f-attachments'),el=document.getElementById('selected-files');if(!input||!el)return;if(!input.files.length){el.innerHTML='';return}el.innerHTML=`<div>${input.files.length} arquivo(s) selecionado(s)</div>${[...input.files].map((file,index)=>`<div class="selected-file-row"><span class="selected-file-name">${esc(file.name)}</span>${file.type?.startsWith('image/')?`<select class="selected-file-room" data-new-file-room="${index}" aria-label="Cômodo da foto">${photoRoomOptions()}</select>`:'<span class="attachments-help">arquivo</span>'}</div>`).join('')}</div>`}
       function personFields(kind,r={}){return `<div class="form-grid">${input('Nome completo / razão social','f-name',r.name)}${select('Tipo de pessoa','f-person-type',['Pessoa física','Pessoa jurídica'],r.personType||'Pessoa física')}${input('CPF/CNPJ','f-document',r.document)}${input('RG / inscrição estadual','f-identity',r.identity)}${input('Data de nascimento / abertura','f-birth-date',r.birthDate,'date')}${input('Estado civil','f-marital-status',r.maritalStatus)}${input('Telefone','f-phone',r.phone,'tel')}${input('WhatsApp','f-whatsapp',r.whatsapp,'tel')}${input('E-mail','f-email',r.email,'email')}${input('Profissão / atividade','f-profession',r.profession)}${input('Empresa / empregador','f-company',r.company)}${input('Renda mensal','f-income',r.income,'number','min="0" step="0.01"')}${input('CEP','f-zip',r.zip)}${input('Endereço','f-address',r.address)}${input('Número','f-number',r.number)}${input('Complemento','f-complement',r.complement)}${input('Bairro','f-neighborhood',r.neighborhood)}${input('Cidade','f-city',r.city)}${input('Estado','f-state',r.state)}${input('Banco','f-bank',r.bank)}${input('Agência','f-agency',r.agency)}${input('Conta','f-account',r.account)}${input('PIX','f-pix',r.pix)}${kind==='tenant'?input('Contato de emergência','f-emergency',r.emergency):''}${kind==='tenant'?textarea('Referências pessoais / profissionais','f-references',r.references):''}${kind==='guarantor'?input('Patrimônio / imóvel de garantia','f-assets',r.assets):''}${textarea('Observações','f-notes',r.notes)}</div>`}
      const inspectionStates=['Novo','Excelente','Bom','Regular','Ruim','Necessita reparo','Não se aplica'];
@@ -448,9 +583,9 @@ async function carregarDadosSupabase(){
      function genericPresentation(kind,r,files){let pairs=[];if(['owner','tenant','guarantor'].includes(kind))pairs=[['Tipo de pessoa',r.personType],['CPF/CNPJ',r.document],['RG / inscrição estadual',r.identity],['Telefone',r.phone],['WhatsApp',r.whatsapp],['E-mail',r.email],['Profissão / atividade',r.profession],['Empresa / empregador',r.company],['Renda mensal',r.income?money(r.income):''],['Endereço',presentationAddress(r)],['Banco',r.bank],['Agência',r.agency],['Conta',r.account],['PIX',r.pix],['Contato de emergência',r.emergency],['Referências pessoais / profissionais',r.references],['Patrimônio / imóvel de garantia',r.assets],['Observações',r.notes]];else if(kind==='contract')pairs=[['Imóvel',nameOf('properties',r.propertyId)],['Proprietário',nameOf('owners',r.ownerId)],['Locatário',nameOf('tenants',r.tenantId)],['Fiador',nameOf('guarantors',r.guarantorId)],['Tipo de contrato',r.contractType],['Vigência',`${r.start||'—'} até ${r.end||'—'}`],['Aluguel vigente',r.rent?money(r.rent):''],['Vencimento',r.dueDay&&`Dia ${r.dueDay}`],['Índice de reajuste',r.index],['Próximo reajuste',r.adjustment],['Taxa de administração',r.adminFee],['Garantia',r.guarantee],['Status',r.status],['Observações',r.notes]];else if(kind==='deposit')pairs=[['Contrato',nameOf('contracts',r.contractId)],['Imóvel',nameOf('properties',r.propertyId)],['Tipo',r.type],['Valor',r.amount?money(r.amount):''],['Recebimento',r.receivedDate],['Status',r.status],['Valor devolvido',r.returnedAmount?money(r.returnedAmount):''],['Data da devolução',r.returnDate],['Correção / rendimentos',r.yield],['Observações',r.notes]];else if(kind==='task')pairs=[['Imóvel',nameOf('properties',r.propertyId)],['Responsável',r.assignee],['Documento do prestador',r.assigneeDocument],['Prazo',r.due],['Prioridade',r.priority],['Status',r.status],['Observações',r.notes]];else if(kind==='inspection')pairs=[['Imóvel',nameOf('properties',r.propertyId)],['Tipo',r.type],['Data',r.date],['Responsável',r.responsible],['Status',r.status],['Observações',r.notes]];else if(kind==='maintenance')pairs=[['Imóvel',nameOf('properties',r.propertyId)],['Fornecedor',r.provider],['Custo',r.cost?money(r.cost):''],['Data de abertura',r.date],['Prioridade',r.priority],['Status',r.status],['Descrição',r.description],['Observações',r.notes]];else if(kind==='document')pairs=[['Categoria',r.category],['Vinculado a',r.linked],['Data',r.date],['Referência do arquivo',r.reference],['Observações',r.notes]];else if(kind==='note')pairs=[['Data',r.date],['Texto',r.content],['Observações',r.notes]];else if(kind==='agenda')pairs=[['Data',r.date],['Horário',r.time],['Categoria',r.category],['Relacionado a',r.linked],['Status',r.status],['Observações',r.notes]];return `${['owner','tenant','guarantor'].includes(kind)?personContactActions(r):''}<div class="presentation-grid">${pairs.filter(x=>x[1]).map(x=>presentationItem(x[0],x[1])).join('')}</div><div class="showcase-section"><h3>Arquivos e fotos</h3>${presentationFiles(files)}</div>`}
     async function openPresentation(kind,id){const map={owner:'owners',tenant:'tenants',guarantor:'guarantors',property:'properties',contract:'contracts',deposit:'deposits',task:'tasks',inspection:'inspections',maintenance:'maintenance',note:'notes',agenda:'agenda'},r=db[map[kind]]?.find(x=>x.id===id);if(!r)return;const title=r.name||r.title||presentationLabels[kind];document.getElementById('modal-root').innerHTML=`<div class="modal-bg" onclick="closeModal(event)"><div class="modal presentation-modal" onclick="event.stopPropagation()"><div class="presentation-head"><button class="icon" style="float:right;background:#ffffff12;border-color:#ffffff30;color:#fff" onclick="closeModal()">×</button><div class="eyebrow">Visualização do cadastro</div><h2>${esc(title)}</h2><p>Apresentação completa · ${esc(presentationLabels[kind])}</p></div><div id="presentation-body" class="presentation-body"><div class="empty">Carregando informações...</div></div></div></div>`;const files=await listAttachments(kind,id),body=document.getElementById('presentation-body');if(!body)return;const content=kind==='property'?propertyPresentation(r,files):genericPresentation(kind,r,files);body.innerHTML=content+`<div class="presentation-actions"><button class="button button-primary" onclick="openModal('${kind}','${id}')">Editar cadastro</button>${kind==='contract'?`<button class="button button-brass" onclick="printContract('${esc(id)}')">📄 Gerar PDF / Imprimir contrato</button>`:''}<button class="button button-quiet" onclick="closeModal()">Fechar</button></div>`}
     function openModal(kind,id=''){const map={owner:'owners',tenant:'tenants',guarantor:'guarantors',property:'properties',contract:'contracts',deposit:'deposits',task:'tasks',inspection:'inspections',maintenance:'maintenance',note:'notes',agenda:'agenda'},list=map[kind],r=id?db[list].find(x=>x.id===id)||{}:{};const labels={owner:'Proprietário',tenant:'Locatário',guarantor:'Fiador',property:'Imóvel',contract:'Contrato',deposit:'Caução',task:'Tarefa',inspection:'Vistoria',maintenance:'Manutenção',note:'Anotação',agenda:'Compromisso'};document.getElementById('modal-root').innerHTML=`<div class="modal-bg" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()"><div class="modal-head"><h2>${id?'Editar':'Cadastrar'} ${labels[kind]}</h2><button class="icon" onclick="closeModal()">×</button></div>${formFor(kind,r)}${attachmentField(r,kind)}<div class="modal-actions"><button class="button button-quiet" onclick="closeModal()">Cancelar</button><button class="button button-primary" onclick="submitModal('${kind}','${id}')">Salvar cadastro</button></div></div></div>`;loadModalAttachments(kind,id)}
-    async function submitModal(kind,id){const r=collect(kind),map={owner:'owners',tenant:'tenants',guarantor:'guarantors',property:'properties',contract:'contracts',deposit:'deposits',task:'tasks',inspection:'inspections',maintenance:'maintenance',note:'notes',agenda:'agenda'},list=map[kind];if(!list){alert('Módulo não encontrado.');return}if(!r.name&&['owner','tenant','guarantor','property','document'].includes(kind)){alert('Preencha o nome do cadastro.');return}if(['task','note','agenda'].includes(kind)&&!r.title){alert('Preencha o título.');return}if(kind==='note'&&!r.content){alert('Preencha o texto da anotação.');return}if(kind==='maintenance'&&!r.description){alert('Preencha a descrição do chamado.');return}const before=JSON.stringify(db[list]);if(id){r.id=id;const i=db[list].findIndex(x=>x.id===id);if(i<0){alert('Registro não encontrado.');return}db[list][i]=r}else db[list].push(r);try{await syncAttachments(kind,r.id)}catch(e){alert('O cadastro foi atualizado, mas não foi possível salvar um anexo neste navegador.')}const saved=await save();if(saved){closeModal()}else{db[list]=JSON.parse(before);renderAll()}}
+    async function submitModal(kind,id){const r=collect(kind),map={owner:'owners',tenant:'tenants',guarantor:'guarantors',property:'properties',contract:'contracts',deposit:'deposits',task:'tasks',inspection:'inspections',maintenance:'maintenance',note:'notes',agenda:'agenda'},list=map[kind];if(!list){alert('Módulo não encontrado.');return}if(!r.name&&['owner','tenant','guarantor','property','document'].includes(kind)){alert('Preencha o nome do cadastro.');return}if(['task','note','agenda'].includes(kind)&&!r.title){alert('Preencha o título.');return}if(kind==='note'&&!r.content){alert('Preencha o texto da anotação.');return}if(kind==='maintenance'&&!r.description){alert('Preencha a descrição do chamado.');return}const before=JSON.stringify(db[list]),beforeAttachments=JSON.stringify(db.attachments||[]);if(id){r.id=id;const i=db[list].findIndex(x=>x.id===id);if(i<0){alert('Registro não encontrado.');return}db[list][i]=r}else db[list].push(r);try{await syncAttachments(kind,r.id)}catch(e){alert('O cadastro foi atualizado, mas não foi possível salvar um anexo neste navegador.')}const saved=await save();if(saved){closeModal()}else{db[list]=JSON.parse(before);db.attachments=JSON.parse(beforeAttachments);renderAll()}}
     function closeModal(e){if(!e||e.target===e.currentTarget)document.getElementById('modal-root').innerHTML=''}
-    async function removeRecord(kind,id){if(!confirm('Excluir este cadastro? Esta ação não pode ser desfeita.'))return;const map={owner:'owners',tenant:'tenants',guarantor:'guarantors',property:'properties',contract:'contracts',deposit:'deposits',task:'tasks',inspection:'inspections',maintenance:'maintenance',note:'notes',agenda:'agenda'},list=map[kind];if(!list)return;const before=JSON.stringify(db[list]),beforeFiles=await listAttachments(kind,id);db[list]=db[list].filter(x=>x.id!==id);const saved=await save();if(saved){try{await deleteAttachments(kind,id)}catch(e){console.warn(e)}}else{db[list]=JSON.parse(before);renderAll()}}
+    async function removeRecord(kind,id){if(!confirm('Excluir este cadastro? Esta ação não pode ser desfeita.'))return;const map={owner:'owners',tenant:'tenants',guarantor:'guarantors',property:'properties',contract:'contracts',deposit:'deposits',task:'tasks',inspection:'inspections',maintenance:'maintenance',note:'notes',agenda:'agenda'},list=map[kind];if(!list)return;const before=JSON.stringify(db[list]),beforeAttachments=JSON.stringify(db.attachments||[]);db[list]=db[list].filter(x=>x.id!==id);const saved=await save();if(saved){try{await deleteAttachments(kind,id)}catch(e){console.warn(e)}}else{db[list]=JSON.parse(before);db.attachments=JSON.parse(beforeAttachments);renderAll()}}
     function toggleTask(id){const t=db.tasks.find(x=>x.id===id);if(t)t.status=t.status==='Concluída'?'Aberta':'Concluída';save()}
      function inspectionPrevious(r){return r?.previousInspectionId?db.inspections.find(x=>x.id===r.previousInspectionId):null}
      function inspectionReportHtml(r){const property=db.properties.find(x=>x.id===r.propertyId)||{},previous=inspectionPrevious(r),items=inspectionItems(r),changed=items.filter(x=>x.previous&&x.current&&x.previous!==x.current).length;return `<article class="inspection-report inspection-print-sheet"><header class="inspection-report-header"><div class="inspection-report-brand">dormus<small>GESTÃO IMOBILIÁRIA</small></div><div class="inspection-report-title"><strong>LAUDO DE VISTORIA</strong><span>${esc(r.type||'Vistoria')} · ${esc(formatDatePt(r.date)||'Data não informada')}</span></div></header><h3>Identificação do imóvel</h3><div class="inspection-report-meta"><div><span>Imóvel</span><strong>${esc(property.name||'Não informado')}</strong></div><div><span>Código</span><strong>${esc(property.code||'Não informado')}</strong></div><div><span>Tipo de vistoria</span><strong>${esc(r.type||'Não informado')}</strong></div><div><span>Endereço</span><strong>${esc(presentationAddress(property))}</strong></div><div><span>Vistoria anterior</span><strong>${esc(previous?`${formatDatePt(previous.date)||'Sem data'} · ${previous.type||'Vistoria'}`:'Não vinculada')}</strong></div><div><span>Responsável</span><strong>${esc(r.responsible||'Não informado')}</strong></div></div><h3>Quadro comparativo por cômodo e item</h3>${items.length?`<table class="inspection-table"><thead><tr><th>Cômodo</th><th>Item avaliado</th><th>Estado anterior</th><th>Estado atual</th><th>Resultado</th><th>Observação / avaria</th></tr></thead><tbody>${items.map(item=>{const isChanged=item.previous&&item.current&&item.previous!==item.current;return `<tr><td><strong>${esc(item.room||'—')}</strong></td><td>${esc(item.item||'—')}</td><td>${esc(item.previous||'Não informado')}</td><td>${esc(item.current||'Não informado')}</td><td>${isChanged?'Alterado':item.previous?'Mantido':'Novo registro'}</td><td>${esc(item.notes||'—')}</td></tr>`}).join('')}</tbody></table>`:empty('Nenhum item lançado','Este laudo não possui cômodos ou itens preenchidos.')}<h3>Conclusão e observações</h3><div class="inspection-report-conclusion"><div class="inspection-report-note"><strong>Resumo da comparação</strong><br>${items.length} item(ns) avaliado(s); ${changed} alteração(ões) identificada(s).</div><div class="inspection-report-note"><strong>Observações gerais</strong><br>${esc(r.notes||'Nenhuma observação geral informada.')}</div></div><div class="inspection-report-signatures"><div class="inspection-report-signature">Responsável pela vistoria<br>Nome e assinatura</div><div class="inspection-report-signature">Locador / representante<br>Nome e assinatura</div><div class="inspection-report-signature">Locatário / representante<br>Nome e assinatura</div></div><div class="inspection-report-foot">Documento emitido pelo sistema Dormus · ${esc(formatDatePt(new Date().toISOString().slice(0,10)))}</div></article>`}
@@ -1940,5 +2075,17 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
   else setTimeout(()=>window.renderMaintenance(),250);
 })();
 </script>
+
+<script id="dormus-pwa-824">
+(function(){
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('./service-worker.js', {scope:'./'})
+        .catch(function(err){ console.warn('Dormus PWA:', err); });
+    });
+  }
+})();
+</script>
+
 </body>
 </html>
