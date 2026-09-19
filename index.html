@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.31</title>
+  <title>Dormus | Gestão imobiliária · 8.32</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -62,7 +62,7 @@
   </style>
 
 <style id="dormus-provider-restricted-style">
-/* Portal restrito do prestador: somente Manutenção e Recibos. */
+/* Portal restrito do prestador: Manutenção + Chats. */
 body.provider-mode .side .nav-title:not(.provider-visible-title),
 body.provider-mode .side .nav button[data-view]:not([data-view="maintenance"]):not([data-view="chats"]):not([data-view="receipts"]),
 body.provider-mode .side .nav-more,
@@ -190,7 +190,7 @@ body.provider-mode #provider-receipts-view{display:block!important}
   <link rel="manifest" href="./manifest.json">
 
 
-<style id="dormus-830-chat-notify-css">
+<style id="dormus-832-chat-notify-css">
 .nav-chat-badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;margin-left:auto;border-radius:999px;background:#ef4444;color:#fff;font-size:10px;font-weight:800}
 .chat-hub{display:grid;grid-template-columns:minmax(280px,360px) 1fr;gap:14px}.chat-thread-list{display:grid;gap:7px;max-height:680px;overflow:auto}.chat-thread{display:flex;gap:10px;width:100%;text-align:left;border:1px solid #e1e8ef;background:#fff;border-radius:11px;padding:12px;cursor:pointer}.chat-thread:hover,.chat-thread.active{background:#f6fbfa;border-color:#9bd9c8}.chat-thread-avatar{width:38px;height:38px;border-radius:50%;background:#0d172a;color:#fff;display:grid;place-items:center;font-weight:800;flex:0 0 auto}.chat-thread-body{min-width:0;flex:1}.chat-thread-title{display:flex;justify-content:space-between;gap:8px}.chat-thread-title strong{font-size:13px;color:#12233e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chat-thread-title small{color:#8192a8;white-space:nowrap}.chat-thread-preview{font-size:11px;color:#7185a2;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chat-thread-unread{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#ef4444;color:#fff;font-size:10px;font-weight:800;margin-top:5px}.chat-hub-main{min-height:520px}.chat-hub-empty{min-height:420px;display:grid;place-items:center;text-align:center;color:#8194ad;padding:30px}.chat-hub-open{height:100%;min-height:520px}.chat-hub-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding-bottom:12px;border-bottom:1px solid #edf1f5}.chat-hub-head h3{margin:0;color:#10213b;font-size:17px}.chat-hub-head p{margin:4px 0 0;color:#8192a8;font-size:11px}.chat-hub-messages{height:410px;overflow:auto;padding:14px 4px;display:grid;align-content:start;gap:9px}.chat-hub-msg{display:flex}.chat-hub-msg.admin{justify-content:flex-end}.chat-hub-bubble{max-width:min(78%,620px);padding:9px 11px;border-radius:12px;background:#f1f5f9}.chat-hub-msg.admin .chat-hub-bubble{background:#dff7ef}.chat-hub-bubble strong{font-size:11px;color:#203754}.chat-hub-bubble p{margin:4px 0;font-size:13px;color:#1e334f;white-space:pre-wrap;word-break:break-word}.chat-hub-bubble small{font-size:9px;color:#8292a7}.chat-hub-compose{display:flex;gap:8px;margin-top:10px}.chat-hub-compose textarea{min-height:46px;max-height:120px;resize:vertical;flex:1}.chat-notify-box{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;margin-bottom:12px;border:1px solid #dfe7ef;border-radius:10px;background:#f8fafc}.chat-notify-box span{font-size:11px;color:#6f8198}.chat-notify-on{color:#079c75!important;font-weight:700}.chat-notify-off{color:#b45309!important;font-weight:700}.chat-new-dot{width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;margin-right:5px}.chat-toast-action{cursor:pointer;text-decoration:underline;font-weight:700}
 @media(max-width:900px){.chat-hub{grid-template-columns:1fr}.chat-thread-list{max-height:300px}.chat-hub-main{min-height:460px}}
@@ -297,8 +297,8 @@ body.provider-mode #provider-receipts-view{display:block!important}
       </section>
       <section id="print-area" class="print-area"></section>
     <section id="chats" class="view">
-  <div class="page-head"><div><div class="eyebrow">Comunicação</div><h1>Chats</h1><p class="lead">Converse em tempo real com os prestadores e acompanhe cada chamado em um só lugar.</p></div><div class="page-tools"><button class="button button-quiet" onclick="DormusChatHub830.enableNotifications()">🔔 Ativar notificações</button><button class="button button-primary" onclick="DormusChatHub830.refresh()">↻ Atualizar chats</button></div></div>
-  <div class="chat-notify-box"><span id="chat-notify-status">Verificando permissões de notificação...</span><button class="button button-small" onclick="DormusChatHub830.enableNotifications()">Permitir som e notificações</button></div>
+  <div class="page-head"><div><div class="eyebrow">Comunicação</div><h1>Chats</h1><p class="lead">Converse em tempo real com os prestadores e acompanhe cada chamado em um só lugar.</p></div><div class="page-tools"><button class="button button-quiet" onclick="DormusChatHub832.enableNotifications()">🔔 Ativar notificações</button><button class="button button-primary" onclick="DormusChatHub832.refresh()">↻ Atualizar chats</button></div></div>
+  <div class="chat-notify-box"><span id="chat-notify-status">Verificando permissões de notificação...</span><button class="button button-small" onclick="DormusChatHub832.enableNotifications()">Permitir som e notificações</button></div>
   <div class="chat-hub">
     <section class="panel"><div class="panel-head"><div><div class="panel-title">Conversas</div><div class="panel-kicker">Cada conversa fica vinculada ao chamado correspondente.</div></div><span class="badge gold" id="chat-thread-count">0</span></div><div id="chat-thread-list" class="chat-thread-list"><div class="chat-hub-empty">Carregando conversas...</div></div></section>
     <section class="panel chat-hub-main"><div id="chat-hub-main" class="chat-hub-open"><div class="chat-hub-empty"><div><strong>Selecione um chat</strong><br><span>As mensagens novas aparecerão aqui em tempo real.</span></div></div></div></section>
@@ -1919,7 +1919,7 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
       if(id==='chats'){
         document.querySelectorAll('[data-view="chats"]').forEach(b=>b.classList.add('active'));
         setTimeout(()=>{
-          try{ if(window.DormusChatHub830){ DormusChatHub830.refresh(); } }catch(e){ console.warn('DORMUS Chat prestador:',e); }
+          try{ if(window.DormusChatHub832){ DormusChatHub832.refresh(); } }catch(e){ console.warn('DORMUS Chat prestador:',e); }
         },50);
       }
       return r;
@@ -2153,7 +2153,7 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
 
 
 
-<script id="dormus-push-830">
+<script id="dormus-push-832">
 (function(){
   const VAPID_PUBLIC_KEY='BOFaHEr9C7LoSllvH4GrxKPF6rdF3rE0y4T385ED1NA2cNfQ-wgqAObVCPYJzXt40lynvOv7Zt2Ka071KOXwmNw';
   const b64ToUint8=v=>Uint8Array.from(atob(v.replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-v.length%4)%4)),c=>c.charCodeAt(0));
@@ -2168,16 +2168,16 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
     if(!session?.user?.id)throw new Error('Faça login para ativar as notificações.');
     const access=window.DormusProviderPortal?.access||{};
     const role=access?.prestador_document?'prestador':'admin';
-    const payload={user_id:session.user.id,email:(session.user.email||'').toLowerCase(),role,prestador_document:access?.prestador_document||null,subscription:sub.toJSON(),updated_at:new Date().toISOString()};
+    const payload={user_id:session.user.id,email:(session.user.email||'').toLowerCase(),role,prestador_document:access?.prestador_document||null,endpoint:sub.endpoint,subscription:sub.toJSON(),updated_at:new Date().toISOString()};
     const r=await supabaseClient.from('dormus_push_subscriptions').upsert(payload,{onConflict:'endpoint'});
     if(r.error)throw r.error;
     return sub;
   }
-  window.DormusPush830={subscribe};
+  window.DormusPush832={subscribe};
 })();
 </script>
 
-<script id="dormus-chat-hub-830">
+<script id="dormus-chat-hub-832">
 (function(){
   const state={threads:new Map(),selected:'',started:false,permission:false,unread:new Map(),soundCtx:null};
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
@@ -2192,7 +2192,7 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
   async function enableNotifications(){
     beep();
     try{
-      await window.DormusPush830.subscribe();
+      await window.DormusPush832.subscribe();
       state.permission=true;
       updateNotifyStatus('🔔 Push real ativado neste dispositivo. Você receberá mensagens mesmo com o DORMUS fechado.','on');
       const reg=await navigator.serviceWorker.ready;
@@ -2208,25 +2208,34 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
     try{
       let q=supabaseClient.from('prestador_servico_mensagens').select('*').order('created_at',{ascending:false}).limit(500);
       if(!admin())q=q.eq('prestador_document',meDoc());
-      const r=await q;if(r.error)throw r.error;const rows=r.data||[];const ids=[...new Set(rows.map(x=>String(x.servico_id)))];
-      let services=[];if(ids.length){const rr=await supabaseClient.from('prestador_servicos').select('*').in('id',ids);services=rr.data||[]}
+      const r=await q;if(r.error)throw r.error;const rows=r.data||[];
+      const messageIds=[...new Set(rows.map(x=>String(x.servico_id)).filter(Boolean))];
+      let services=[];
+      if(admin()){
+        const rr=await supabaseClient.from('prestador_servicos').select('*').order('opened_at',{ascending:false}).limit(500);if(rr.error)throw rr.error;services=rr.data||[];
+      }else{
+        const rr=await supabaseClient.from('prestador_servicos').select('*').eq('prestador_document',meDoc()).order('opened_at',{ascending:false}).limit(500);if(rr.error)throw rr.error;services=rr.data||[];
+      }
+      const allIds=[...new Set([...messageIds,...services.map(x=>String(x.id))])];
+      if(allIds.length && services.length===0){const rr=await supabaseClient.from('prestador_servicos').select('*').in('id',allIds);services=rr.data||[]}
       const sm=new Map(services.map(x=>[String(x.id),x]));
       state.threads.clear();
-      rows.forEach(x=>{const id=String(x.servico_id),s=sm.get(id)||localMaint(id)||{};let t=state.threads.get(id);if(!t){t={id,title:s.title||s.description||'Chamado de manutenção',property:s.property_name||propertyName(s.property_id||s.propertyId),provider:s.provider_name||s.prestador_nome||providerName(s.prestador_document||x.prestador_document)||x.prestador_document||'Prestador',doc:s.prestador_document||x.prestador_document||'',last:x,unread:state.unread.get(id)||0};state.threads.set(id,t)}});
+      services.forEach(s=>{const id=String(s.id);const last=rows.find(x=>String(x.servico_id)===id)||null;state.threads.set(id,{id,title:s.titulo||s.title||s.servico||s.description||'Chamado de manutenção',property:s.imovel_nome||s.property_name||s.imovel||propertyName(s.property_id||s.propertyId),provider:s.provider_name||s.prestador_nome||providerName(s.prestador_document)||s.prestador_document||'Prestador',doc:s.prestador_document||'',last,unread:state.unread.get(id)||0})});
+      rows.forEach(x=>{const id=String(x.servico_id);if(!state.threads.has(id)){const s=sm.get(id)||localMaint(id)||{};state.threads.set(id,{id,title:s.titulo||s.title||s.servico||s.description||'Chamado de manutenção',property:s.imovel_nome||s.property_name||s.imovel||propertyName(s.property_id||s.propertyId),provider:s.provider_name||s.prestador_nome||providerName(s.prestador_document||x.prestador_document)||x.prestador_document||'Prestador',doc:s.prestador_document||x.prestador_document||'',last:x,unread:state.unread.get(id)||0})}else if(!state.threads.get(id).last||new Date(x.created_at)>new Date(state.threads.get(id).last.created_at||0)){state.threads.get(id).last=x}});
       renderThreadList();if(state.selected&&state.threads.has(state.selected))await openThread(state.selected);else if(state.threads.size&&!state.selected)await openThread([...state.threads.keys()][0]);
     }catch(e){list.innerHTML=`<div class="chat-hub-empty">Não foi possível carregar os chats.<br><small>${esc(e?.message||e)}</small></div>`}
   }
-  function renderThreadList(){const list=document.getElementById('chat-thread-list'),count=document.getElementById('chat-thread-count');if(!list)return;const arr=[...state.threads.values()].sort((a,b)=>String(b.last?.created_at||'').localeCompare(String(a.last?.created_at||'')));if(count)count.textContent=arr.length;list.innerHTML=arr.length?arr.map(t=>`<button class="chat-thread ${state.selected===t.id?'active':''}" onclick="DormusChatHub830.open('${esc(t.id)}')"><span class="chat-thread-avatar">💬</span><span class="chat-thread-body"><span class="chat-thread-title"><strong>${esc(t.title)}</strong><small>${t.last?.created_at?new Date(t.last.created_at).toLocaleDateString('pt-BR'):''}</small></span><span class="chat-thread-preview">${esc(t.last?.message||'Nenhuma mensagem')}</span>${t.unread?`<span class="chat-thread-unread">${t.unread}</span>`:''}</span></button>`).join(''):'<div class="chat-hub-empty">Nenhum chat encontrado.<br><small>Quando houver uma conversa, ela aparecerá aqui.</small></div>'}
+  function renderThreadList(){const list=document.getElementById('chat-thread-list'),count=document.getElementById('chat-thread-count');if(!list)return;const arr=[...state.threads.values()].sort((a,b)=>String(b.last?.created_at||'').localeCompare(String(a.last?.created_at||'')));if(count)count.textContent=arr.length;list.innerHTML=arr.length?arr.map(t=>`<button class="chat-thread ${state.selected===t.id?'active':''}" onclick="DormusChatHub832.open('${esc(t.id)}')"><span class="chat-thread-avatar">💬</span><span class="chat-thread-body"><span class="chat-thread-title"><strong>${esc(t.title)}</strong><small>${t.last?.created_at?new Date(t.last.created_at).toLocaleDateString('pt-BR'):''}</small></span><span class="chat-thread-preview">${esc(t.last?.message||'Nenhuma mensagem')}</span>${t.unread?`<span class="chat-thread-unread">${t.unread}</span>`:''}</span></button>`).join(''):'<div class="chat-hub-empty">Nenhum chat encontrado.<br><small>Quando houver uma conversa, ela aparecerá aqui.</small></div>'}
   async function openThread(id){
     id=String(id);const t=state.threads.get(id);if(!t)return;state.selected=id;state.unread.set(id,0);t.unread=0;updateBadge();renderThreadList();
-    const host=document.getElementById('chat-hub-main');if(!host)return;host.innerHTML=`<div class="chat-hub-head"><div><h3>💬 ${esc(t.title)}</h3><p>${esc(t.property||'Imóvel')} · ${esc(t.provider||'Prestador')}</p></div><button class="button button-small" onclick="DormusChatHub830.refreshThread('${esc(id)}')">↻ Atualizar</button></div><div id="chat-hub-messages" class="chat-hub-messages">Carregando...</div><div class="chat-hub-compose"><textarea id="chat-hub-input" placeholder="Digite uma mensagem para ${admin()?'o prestador':'a imobiliária'}..."></textarea><button class="button button-primary" onclick="DormusChatHub830.send('${esc(id)}')">Enviar</button></div>`;await refreshThread(id)
+    const host=document.getElementById('chat-hub-main');if(!host)return;host.innerHTML=`<div class="chat-hub-head"><div><h3>💬 ${esc(t.title)}</h3><p>${esc(t.property||'Imóvel')} · ${esc(t.provider||'Prestador')}</p></div><button class="button button-small" onclick="DormusChatHub832.refreshThread('${esc(id)}')">↻ Atualizar</button></div><div id="chat-hub-messages" class="chat-hub-messages">Carregando...</div><div class="chat-hub-compose"><textarea id="chat-hub-input" placeholder="Digite uma mensagem para ${admin()?'o prestador':'a imobiliária'}..."></textarea><button class="button button-primary" onclick="DormusChatHub832.send('${esc(id)}')">Enviar</button></div>`;await refreshThread(id)
   }
   async function refreshThread(id){const box=document.getElementById('chat-hub-messages');if(!box)return;const t=state.threads.get(String(id));let q=supabaseClient.from('prestador_servico_mensagens').select('*').eq('servico_id',id).order('created_at',{ascending:true});if(!admin())q=q.eq('prestador_document',meDoc());const r=await q;if(r.error){box.innerHTML=`<div class="chat-hub-empty">Erro ao carregar mensagens.<br>${esc(r.error.message)}</div>`;return}const rows=r.data||[];box.innerHTML=rows.length?rows.map(x=>`<div class="chat-hub-msg ${x.sender_role==='admin'?'admin':''}"><div class="chat-hub-bubble"><strong>${esc(x.sender_name||x.sender_role||'Usuário')}</strong><p>${esc(x.message)}</p><small>${new Date(x.created_at).toLocaleString('pt-BR')}</small></div></div>`).join(''):'<div class="chat-hub-empty">Nenhuma mensagem ainda.</div>';box.scrollTop=box.scrollHeight;if(t&&rows.length)t.last=rows[rows.length-1];}
   async function send(id){const input=document.getElementById('chat-hub-input'),message=input?.value.trim();if(!message)return;const t=state.threads.get(String(id))||{};const doc=admin()?t.doc:meDoc();const sender=admin()?'Imobiliária':(providerName(doc)||'Prestador');const payload={id:crypto?.randomUUID?.()||('chat-'+Date.now()),servico_id:id,prestador_document:doc||'',sender_role:role(),sender_name:sender,message,created_at:new Date().toISOString()};const r=await supabaseClient.from('prestador_servico_mensagens').insert(payload);if(r.error){alert('Não foi possível enviar a mensagem.\n\n'+r.error.message);return}input.value='';beep();await refreshThread(id);await fetchThreads()}
   async function incoming(payload){const x=payload?.new;if(!x||!x.servico_id)return;const id=String(x.servico_id);let t=state.threads.get(id);if(!t){await fetchThreads();t=state.threads.get(id)}if(!t)return;const own=String(x.sender_role||'')===role();if(!own){if(state.selected!==id){const n=(state.unread.get(id)||0)+1;state.unread.set(id,n);t.unread=n;updateBadge();renderThreadList();await systemNotify(t,x)}else{beep();await refreshThread(id)}}else if(state.selected===id){await refreshThread(id)}else{await fetchThreads()}}
-  async function startRealtime(){if(state.started||!supabaseClient?.channel)return;state.started=true;const uid=window.DormusCurrentUser?.email||Date.now();supabaseClient.channel('dormus-830-chat-'+String(uid).replace(/[^a-z0-9]/gi,'')).on('postgres_changes',{event:'INSERT',schema:'public',table:'prestador_servico_mensagens'},incoming).subscribe(st=>{if(st==='CHANNEL_ERROR'||st==='TIMED_OUT')console.warn('DORMUS Chat Realtime:',st)})}
+  async function startRealtime(){if(state.started||!supabaseClient?.channel)return;state.started=true;const uid=window.DormusCurrentUser?.email||Date.now();supabaseClient.channel('dormus-832-chat-'+String(uid).replace(/[^a-z0-9]/gi,'')).on('postgres_changes',{event:'INSERT',schema:'public',table:'prestador_servico_mensagens'},incoming).subscribe(st=>{if(st==='CHANNEL_ERROR'||st==='TIMED_OUT')console.warn('DORMUS Chat Realtime:',st)})}
   async function boot(){const b=document.getElementById('chats');if(!b)return;updateNotifyStatus(('Notification' in window&&Notification.permission==='granted')?'🔔 Notificações prontas neste dispositivo.':'⚠️ Clique em “Permitir som e notificações” para ativar o Push.',''+(('Notification' in window&&Notification.permission==='granted')?'on':'off'));document.querySelectorAll('[data-view="chats"]').forEach(x=>x.addEventListener('click',()=>{fetchThreads();startRealtime()}));if('Notification' in window&&Notification.permission==='granted')state.permission=true;setTimeout(async()=>{await startRealtime();const q=new URLSearchParams(location.search).get('chat');if(q){await fetchThreads();setTimeout(()=>openThread(q),300)}},1200)}
-  window.DormusChatHub830={open:openThread,refresh:fetchThreads,refreshThread,send,enableNotifications,beep};
+  window.DormusChatHub832={open:openThread,refresh:fetchThreads,refreshThread,send,enableNotifications,beep};
   setTimeout(boot,900);
 })();
 </script>
