@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.25</title>
+  <title>Dormus | Gestão imobiliária · 8.27/title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -248,13 +248,14 @@ body.provider-mode #provider-receipts-view{display:block!important}
           <button class="dash-stat" onclick="showView('properties')"><span class="dash-stat-icon emerald">▥</span><span class="dash-stat-value" id="metric-properties">0</span><span class="dash-stat-label">Imóveis cadastrados</span><span class="dash-stat-hint" id="home-properties-hint">0 disponíveis · 0 ocupados</span><b>→</b></button>
           <button class="dash-stat" onclick="showView('contracts')"><span class="dash-stat-icon blue">▤</span><span class="dash-stat-value" id="metric-contracts">0</span><span class="dash-stat-label">Contratos ativos</span><span class="dash-stat-hint" id="home-contracts-hint">0 vencendo em 60 dias</span><b>→</b></button>
           <button class="dash-stat" onclick="showView('rents')"><span class="dash-stat-icon amber">R$</span><span class="dash-stat-value money-stat" id="home-rent-forecast">R$ 0,00</span><span class="dash-stat-label">Aluguel previsto / mês</span><span class="dash-stat-hint">Soma dos contratos ativos</span><b>→</b></button>
-          <button class="dash-stat" onclick="showView('owners')"><span class="dash-stat-icon violet">♙</span><span class="dash-stat-value" id="home-owner-count">0</span><span class="dash-stat-label">Proprietários</span><span class="dash-stat-hint" id="home-tenant-hint">0 locatários</span><b>→</b></button><button class="dash-stat" onclick="showView('maintenance')"><span class="dash-stat-icon amber">🔧</span><span class="dash-stat-value" id="home-maint-open">0</span><span class="dash-stat-label">Chamados em aberto</span><span class="dash-stat-hint" id="home-maint-hint">0 em andamento</span><b>→</b></button>
+          <button class="dash-stat" onclick="showView('owners')"><span class="dash-stat-icon violet">♙</span><span class="dash-stat-value" id="home-owner-count">0</span><span class="dash-stat-label">Proprietários</span><span class="dash-stat-hint" id="home-tenant-hint">0 locatários</span><b>→</b></button>
         </div>
         <div class="dashboard-columns">
           <section class="panel chart-panel"><div class="panel-head"><div><div class="panel-title">Imóveis por situação</div><div class="panel-kicker">Distribuição atual da carteira.</div></div></div><div id="home-situation-chart" class="bar-chart"></div></section>
           <section class="panel chart-panel"><div class="panel-head"><div><div class="panel-title">Maiores aluguéis ativos</div><div class="panel-kicker">Contratos com maior valor mensal.</div></div></div><div id="home-rent-chart" class="horizontal-chart"></div></section>
         </div>
         <section class="panel upcoming-panel"><div class="panel-head"><div><div class="panel-title">Contratos vencendo</div><div class="panel-kicker">Próximos 60 dias.</div></div><span class="badge gold" id="home-expiring-count">0 contratos</span></div><div id="home-expiring-list"></div></section>
+        <section class="panel upcoming-panel"><div class="panel-head"><div><div class="panel-title">Chamados em aberto</div><div class="panel-kicker">Manutenções que ainda precisam de atendimento.</div></div><span class="badge gold" id="home-maintenance-count">0 chamados</span></div><div id="home-maintenance-list"></div></section>
         <div class="dashboard-columns lower">
           <section class="panel"><div class="panel-head"><div><div class="panel-title">Resumo financeiro</div><div class="panel-kicker">Visão rápida da operação.</div></div><button class="button button-small" onclick="showView('rents')">Ver financeiro</button></div><div id="home-finance-summary" class="quick-finance"></div></section>
           <section class="panel"><div class="panel-head"><div><div class="panel-title">Atalhos rápidos</div><div class="panel-kicker">Ações mais usadas no dia a dia.</div></div></div><div class="quick-actions"><button onclick="openModal('property')">＋ Novo imóvel</button><button onclick="openModal('contract')">＋ Novo contrato</button><button onclick="openModal('maintenance')">＋ Novo chamado</button><button onclick="openCrmLeadModal()">＋ Novo lead</button></div></section>
@@ -323,6 +324,7 @@ const supabaseClient = window.supabase.createClient(
     const blank={properties:[],owners:[],tenants:[],guarantors:[],contracts:[],deposits:[],tasks:[],inspections:[],maintenance:[],documents:[],notes:[],agenda:[],receipts:[],crmLeads:[],rentalCharges:[],payments:[],ownerTransfers:[],terminations:[]};
     
     let db=JSON.parse(JSON.stringify(blank));
+    window.DormusDB=db;
 
 async function carregarDadosSupabase(){
   const { data, error } = await supabaseClient
@@ -458,7 +460,7 @@ async function carregarDadosSupabase(){
     function nameOf(kind,id){const x=db[kind]?.find(r=>r.id===id);return x?.name||x?.title||'Não informado'}
     function badge(v){const good=['Ativo','Recebido','Devolvido','Concluída','Assinado','Bom','Pago','Disponível','disponivel'].includes(v),bad=['Pendente','Em andamento','Aberto','Em manutenção','Retido','Atenção','Urgente','Alta','Em atraso','Inadimplente'].includes(v);return `<span class="badge ${good?'green':bad?'red':'gold'}">${esc(v||'Sem status')}</span>`}
     function empty(title='Nenhum cadastro realizado',text='Os registros adicionados aparecerão aqui.') {return `<div class="empty"><strong>${esc(title)}</strong>${esc(text)}</div>`}
-    function actionButtons(kind,id){return `<button class="button button-small" type="button" onclick="openPresentation('${esc(kind)}','${esc(id)}')">Ver</button><button class="button button-small" type="button" onclick="openModal('${esc(kind)}','${esc(id)}')">Editar</button>${kind==='maintenance'?`<button class="button button-small provider-chat-button19" type="button" onclick="openServiceChat19('${esc(id)}')">💬 Chat</button>`:''}<button class="button button-small button-danger" type="button" onclick="removeRecord('${esc(kind)}','${esc(id)}')">Excluir</button>`}
+    function actionButtons(kind,id){return `<button class="button button-small" type="button" onclick="openPresentation('${esc(kind)}','${esc(id)}')">Ver</button><button class="button button-small" type="button" onclick="openModal('${esc(kind)}','${esc(id)}')">Editar</button><button class="button button-small button-danger" type="button" onclick="removeRecord('${esc(kind)}','${esc(id)}')">Excluir</button>`}
     function renderAll(){const active=document.querySelector('.view.active')?.id||'home';window.renderView(active)}
 
     function renderHome(){
@@ -474,10 +476,14 @@ async function carregarDadosSupabase(){
       const expiring=active.filter(c=>{if(!c.end)return false;const d=Math.ceil((new Date(c.end+'T12:00:00')-today)/86400000);return d>=0&&d<=60}).sort((a,b)=>String(a.end).localeCompare(String(b.end)));
       const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
       set('metric-properties',properties.length);set('metric-contracts',active.length);set('home-rent-forecast',money(forecast));set('home-owner-count',owners.length);
-      const maint=db.maintenance||[],maintOpen=maint.filter(x=>['Aberto','Em andamento'].includes(x.status)).length,maintProgress=maint.filter(x=>x.status==='Em andamento').length;set('home-maint-open',maintOpen);set('home-maint-hint',`${maintProgress} em andamento`);set('home-properties-hint',`${available} disponíveis · ${occupied} ocupados`);set('home-contracts-hint',`${expiring.length} vencendo em 60 dias`);set('home-tenant-hint',`${tenants.length} locatários`);set('home-expiring-count',`${expiring.length} contrato${expiring.length===1?'':'s'}`);
+      set('home-properties-hint',`${available} disponíveis · ${occupied} ocupados`);set('home-contracts-hint',`${expiring.length} vencendo em 60 dias`);set('home-tenant-hint',`${tenants.length} locatários`);set('home-expiring-count',`${expiring.length} contrato${expiring.length===1?'':'s'}`);
       const chart=document.getElementById('home-situation-chart');if(chart){const rows=[['Disponível',available],['Ocupado',occupied],['Manutenção',maintenance],['Negociação',negotiation]],max=Math.max(1,...rows.map(x=>x[1]));chart.innerHTML=rows.map(([label,q])=>`<div class="bar-item"><div class="bar-label"><span>${esc(label)}</span><strong>${q}</strong></div><div class="bar-track"><i style="width:${Math.round(q/max*100)}%"></i></div></div>`).join('')}
       const rentChart=document.getElementById('home-rent-chart');if(rentChart){const top=active.map(c=>({name:nameOf('properties',c.propertyId)||c.number||'Contrato',rent:Number(c.rent||0)})).sort((a,b)=>b.rent-a.rent).slice(0,6),max=Math.max(1,...top.map(x=>x.rent));rentChart.innerHTML=top.length?top.map(x=>`<div class="hbar-item"><div class="hbar-label"><span>${esc(String(x.name).slice(0,28))}</span><strong>${money(x.rent)}</strong></div><div class="hbar-track"><i style="width:${Math.round(x.rent/max*100)}%"></i></div></div>`).join(''):empty('Nenhum aluguel ativo','Cadastre um contrato ativo para visualizar os maiores valores.')}
       const exp=document.getElementById('home-expiring-list');if(exp)exp.innerHTML=expiring.length?expiring.slice(0,8).map(c=>{const days=Math.max(0,Math.ceil((new Date(c.end+'T12:00:00')-today)/86400000));return `<div class="expiring-row"><span class="warning-icon">⚠</span><div class="expiring-main"><strong>${esc(nameOf('properties',c.propertyId)||c.number||'Contrato')}</strong><span>${esc(nameOf('tenants',c.tenantId)||'Locatário')} · vence em ${formatDatePt(c.end)}</span></div><b>${days} dia${days===1?'':'s'}</b></div>`}).join(''):empty('Nenhum contrato vencendo','Não há contratos com vencimento nos próximos 60 dias.');
+      const homeMaint=document.getElementById('home-maintenance-list');
+      const openMaint=(db.maintenance||[]).filter(m=>!['Concluído','Cancelado'].includes(String(m.status||'Aberto'))).sort((a,b)=>{const rank=x=>/urg/i.test(x.priority||'')?0:/alta/i.test(x.priority||'')?1:/m[eé]dia/i.test(x.priority||'')?2:3;return rank(a)-rank(b)||String(a.date||'').localeCompare(String(b.date||''))});
+      set('home-maintenance-count',`${openMaint.length} chamado${openMaint.length===1?'':'s'}`);
+      if(homeMaint)homeMaint.innerHTML=openMaint.length?openMaint.slice(0,8).map(m=>{const p=db.properties.find(x=>x.id===m.propertyId)||{};return `<div class="expiring-row home-maint-row"><span class="warning-icon">🔧</span><div class="expiring-main"><strong>${esc(m.description||'Chamado de manutenção')}</strong><span>${esc(p.name||'Imóvel não informado')} · ${esc(m.provider||'Sem prestador')} · ${esc(m.status||'Aberto')}</span></div><b>${esc(m.priority||'Média')}</b></div>`}).join(''):empty('Nenhum chamado em aberto','Os chamados de manutenção pendentes aparecerão aqui.');
       const fs=document.getElementById('home-finance-summary');if(fs){const expected=charges.reduce((a,r)=>a+(typeof rentChargeTotal==='function'?rentChargeTotal(r):Number(r.rent||0)),0),paid=charges.reduce((a,r)=>a+Number(r.paidAmount||0),0),open=Math.max(expected-paid,0);fs.innerHTML=`<div><span>Previsto</span><strong>${money(expected)}</strong></div><div><span>Recebido</span><strong class="success-text">${money(paid)}</strong></div><div><span>Em aberto</span><strong class="warning-text">${money(open)}</strong></div>`}
       if(typeof d6DashboardAlerts==='function')d6DashboardAlerts();
     }
@@ -548,7 +554,7 @@ async function carregarDadosSupabase(){
       if(kind==='deposit')return `<div class="form-grid"><div class="form-field"><label>Contrato</label><select id="f-contract">${opts('contracts',r.contractId)}</select></div><div class="form-field"><label>Imóvel</label><select id="f-property">${opts('properties',r.propertyId)}</select></div>${select('Tipo de garantia','f-type',['Caução em dinheiro','Título de capitalização','Outra garantia'],r.type||'Caução em dinheiro')}${input('Valor da caução','f-amount',r.amount,'number','min="0" step="0.01"')}${input('Data do recebimento','f-received-date',r.receivedDate,'date')}${select('Status','f-status',['Pendente','Recebido','Devolvido','Retido'],r.status||'Pendente')}${input('Valor devolvido','f-returned-amount',r.returnedAmount,'number','min="0" step="0.01"')}${input('Data da devolução','f-return-date',r.returnDate,'date')}${input('Correção / rendimentos','f-yield',r.yield,'number','step="0.01"')}${textarea('Observações','f-notes',r.notes)}</div>`;
        if(kind==='task'){const assigned=providerRecord(r.assigneeDocument||r.assignee),currentProvider=assigned?.document||r.assigneeDocument||'';return `<div class="form-grid">${input('Tarefa','f-title',r.title,'text','class="full"')}<div class="form-field"><label for="f-assignee">Prestador responsável</label><select id="f-assignee">${providerOptions(currentProvider,r.assignee)}</select><span class="attachments-help">A lista é a mesma dos prestadores disponíveis nos recibos.</span></div><div class="form-field"><label for="f-property">Imóvel relacionado</label><select id="f-property">${opts('properties',r.propertyId)}</select></div>${input('Prazo','f-due',r.due,'date')}${select('Prioridade','f-priority',['Baixa','Média','Alta'],r.priority||'Média')}${select('Status','f-status',['Aberta','Em andamento','Concluída'],r.status||'Aberta')}${textarea('Observações','f-notes',r.notes)}</div>`}
        if(kind==='inspection')return `<div class="form-grid"><div class="form-field"><label>Imóvel</label><select id="f-property" onchange="refreshInspectionReferences();applyPreviousInspection()">${opts('properties',r.propertyId)}</select></div><div class="form-field"><label>Vistoria anterior para comparação</label><select id="f-previous-inspection" data-exclude="${esc(r.id||'')}" onchange="applyPreviousInspection()">${inspectionOptions(r.propertyId,r.previousInspectionId||'',r.id||'')}</select></div>${select('Tipo','f-type',['Entrada','Saída','Periódica','Acompanhamento'],r.type||'Entrada')}${input('Data','f-date',r.date,'date')}${input('Responsável','f-responsible',r.responsible)}${select('Status','f-status',['Agendada','Em andamento','Concluída'],r.status||'Agendada')}${textarea('Observações','f-notes',r.notes)}${inspectionEditor(r)}</div>`;
-      if(kind==='maintenance'){const legacy=r.provider&&!providerRecord(r.provider)&&!r.providerDocument?`<option value="${esc(r.provider)}" selected>${esc(r.provider)} · cadastro anterior</option>`:'';return `<div class="form-grid"><div class="form-field"><label>Imóvel</label><select id="f-property">${opts('properties',r.propertyId)}</select></div>${input('Descrição do chamado','f-description',r.description,'text','class="full"')}<div class="form-field"><label>Prestador</label><select id="f-provider"><option value="">Selecione o prestador</option>${legacy}${providers.map(p=>`<option value="${esc(p.document)}"${selected(p.document,r.providerDocument||providerRecord(r.provider)?.document||'')}>${esc(p.name)} · ${esc(p.document)}</option>`).join('')}</select></div>${input('Custo','f-cost',r.cost,'number','min="0" step="0.01"')}${input('Data de abertura','f-date',r.date,'date')}${select('Prioridade','f-priority',['Baixa','Média','Alta'],r.priority||'Média')}${select('Status','f-status',['Aberto','Em andamento','Concluído','Cancelado'],r.status||'Aberto')}${textarea('Observações','f-notes',r.notes)}</div>`;}
+      if(kind==='maintenance')return `<div class="form-grid"><div class="form-field"><label>Imóvel</label><select id="f-property">${opts('properties',r.propertyId)}</select></div>${input('Descrição do chamado','f-description',r.description,'text','class="full"')}${input('Fornecedor','f-provider',r.provider)}${input('Custo','f-cost',r.cost,'number','min="0" step="0.01"')}${input('Data de abertura','f-date',r.date,'date')}${select('Prioridade','f-priority',['Baixa','Média','Alta'],r.priority||'Média')}${select('Status','f-status',['Aberto','Em andamento','Concluído','Cancelado'],r.status||'Aberto')}${textarea('Observações','f-notes',r.notes)}</div>`;
       if(kind==='document')return `<div class="form-grid">${input('Nome do documento','f-name',r.name)}${select('Categoria','f-category',['Contrato','Pessoa','Imóvel','Financeiro','Vistoria','Manutenção','Outro'],r.category||'Contrato')}${input('Vinculado a','f-linked',r.linked)}${input('Data do documento','f-date',r.date,'date')}${input('Referência do arquivo','f-reference',r.reference,'text','class="full"')}${textarea('Observações','f-notes',r.notes)}</div>`;
       if(kind==='note')return `<div class="form-grid">${input('Título da anotação','f-title',r.title,'text','class="full"')}${textarea('Texto da anotação','f-content',r.content,true)}${input('Data','f-date',r.date,'date')}${textarea('Observações','f-notes',r.notes)}</div>`;
       if(kind==='agenda')return `<div class="form-grid">${input('Compromisso','f-title',r.title,'text','class="full"')}${input('Data','f-date',r.date,'date')}${input('Horário','f-time',r.time,'time')}${select('Categoria','f-category',['Compromisso','Visita','Vencimento','Reunião','Lembrete','Outro'],r.category||'Compromisso')}${input('Relacionado a','f-linked',r.linked)}${select('Status','f-status',['Agendado','Concluído','Cancelado'],r.status||'Agendado')}${textarea('Observações','f-notes',r.notes)}</div>`;
@@ -561,7 +567,7 @@ async function carregarDadosSupabase(){
       if(kind==='deposit')return {...common,contractId:val('f-contract'),propertyId:val('f-property'),type:val('f-type'),amount:val('f-amount'),receivedDate:val('f-received-date'),status:val('f-status'),returnedAmount:val('f-returned-amount'),returnDate:val('f-return-date'),yield:val('f-yield'),retentionReason:val('f-retention-reason'),notes:val('f-notes')};
        if(kind==='task'){const provider=providerRecord(val('f-assignee'));return {...common,title:val('f-title'),assignee:provider?.name||val('f-assignee'),assigneeDocument:provider?.document||'',propertyId:val('f-property'),due:val('f-due'),priority:val('f-priority'),status:val('f-status'),notes:val('f-notes')}}
        if(kind==='inspection')return {...common,propertyId:val('f-property'),previousInspectionId:val('f-previous-inspection'),type:val('f-type'),date:val('f-date'),responsible:val('f-responsible'),status:val('f-status'),notes:val('f-notes'),items:collectInspectionItems()};
-      if(kind==='maintenance'){const pv=val('f-provider'),pr=providerRecord(pv);return {...common,propertyId:val('f-property'),description:val('f-description'),provider:pr?.name||pv,providerDocument:pr?.document||'',providerWhatsapp:pr?.whatsapp||pr?.phone||'',cost:val('f-cost'),date:val('f-date'),priority:val('f-priority'),status:val('f-status'),notes:val('f-notes')};}
+      if(kind==='maintenance')return {...common,propertyId:val('f-property'),description:val('f-description'),provider:val('f-provider'),cost:val('f-cost'),date:val('f-date'),priority:val('f-priority'),status:val('f-status'),notes:val('f-notes')};
       if(kind==='document')return {...common,name:val('f-name'),category:val('f-category'),linked:val('f-linked'),date:val('f-date'),reference:val('f-reference'),notes:val('f-notes')};
       if(kind==='note')return {...common,title:val('f-title'),content:val('f-content'),date:val('f-date'),notes:val('f-notes')};
       if(kind==='agenda')return {...common,title:val('f-title'),date:val('f-date'),time:val('f-time'),category:val('f-category'),linked:val('f-linked'),status:val('f-status'),notes:val('f-notes')};
@@ -617,11 +623,13 @@ async function carregarDadosSupabase(){
     });
     db = next;
   }
+  window.DormusDB=db;
 
   Object.keys(blank).forEach(key=>{
     if(!Array.isArray(db[key])) db[key]=[];
   });
   if(!Array.isArray(db.attachments)) db.attachments=[];
+  window.DormusDB=db;
 }
 
 function showLogin(message=''){
@@ -668,6 +676,7 @@ async function logoutDormus(){
     return;
   }
   db=JSON.parse(JSON.stringify(blank));
+  window.DormusDB=db;
   showLogin();
 }
 
@@ -684,6 +693,7 @@ async function initDormus(){
       setTimeout(()=>enterDormus(newSession),0);
     }else{
       db=JSON.parse(JSON.stringify(blank));
+      window.DormusDB=db;
       showLogin();
     }
   });
@@ -1929,7 +1939,7 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
   async function control(id){try{const {data,error}=await supabaseClient.from('prestador_servico_controle').select('*').eq('servico_id',id).maybeSingle();if(error&&error.code!=='42P01')throw error;return data||null}catch(e){return null}}
   async function saveControl19(id,patch){const m=maint19(id),p=provider19(m);if(!m)return {ok:false,error:new Error('Chamado não encontrado')};const payload={servico_id:id,prestador_document:m.providerDocument||p.document||'',authorized:patch.decision==='Autorizado',decision:patch.decision||'Aguardando',scheduled_date:patch.scheduled_date||null,approved_value:patch.approved_value===''||patch.approved_value==null?null:Number(patch.approved_value),final_value:patch.final_value===''||patch.final_value==null?null:Number(patch.final_value),admin_message:patch.admin_message||'',authorized_at:patch.decision==='Autorizado'?now():null,updated_at:now()};const {data,error}=await supabaseClient.from('prestador_servico_controle').upsert(payload,{onConflict:'servico_id'}).select('*').maybeSingle();if(error)return {ok:false,error};Object.assign(m,{adminControl:payload,providerApproved:payload.approved_value,providerFinalValue:payload.final_value,providerScheduledDate:payload.scheduled_date,providerAuthorized:payload.authorized,providerAdminMessage:payload.admin_message});if(typeof save==='function')await save();return {ok:true,data:data||payload}}
   async function sendChat19(id,message,role,name,doc){const payload={id:(crypto?.randomUUID?.()||('chat-'+Date.now()+'-'+Math.random().toString(36).slice(2))),servico_id:id,prestador_document:doc||'',sender_role:role,sender_name:name||role==='admin'?'Imobiliária':'Prestador',message:message.trim(),created_at:now()};return await supabaseClient.from('prestador_servico_mensagens').insert(payload)}
-  async function chatRows19(id,doc){let q=supabaseClient.from('prestador_servico_mensagens').select('*').eq('servico_id',id).order('created_at',{ascending:true});if(!isAdmin()&&doc)q=q.eq('prestador_document',doc);const {data,error}=await q;return {data:data||[],error}}
+  async function chatRows19(id,doc){let q=supabaseClient.from('prestador_servico_mensagens').select('*').eq('servico_id',id).order('created_at',{ascending:true});if(doc)q=q.eq('prestador_document',doc);const {data,error}=await q;return {data:data||[],error}}
   function chatHtml19(rows,role){return rows.length?rows.map(r=>`<div class="chat19-msg ${r.sender_role==='admin'?'admin':''}"><div class="chat19-bubble"><strong>${esc(r.sender_name||r.sender_role)}</strong><p>${esc(r.message)}</p><small>${new Date(r.created_at).toLocaleString('pt-BR')}</small></div></div>`).join(''):'<div style="padding:80px 10px;text-align:center;color:#8194ad;font-size:12px">Nenhuma mensagem ainda. Envie a primeira mensagem.</div>'}
   window.openServiceChat19=async function(id){const m=maint19(id);if(!m)return;const p=provider19(m);const root=document.getElementById('modal-root');const role=isAdmin()?'admin':'prestador',doc=isAdmin()?(m.providerDocument||p.document||''):(window.DormusProviderPortal?.access?.prestador_document||'');root.innerHTML=`<div class="modal-bg" onclick="closeModal(event)"><div class="modal chat19-modal" onclick="event.stopPropagation()"><div class="modal-head"><div><div class="eyebrow">Chat do serviço</div><h2>${esc(m.description||'Manutenção')}</h2><div class="access-help">${esc(prop19(m).name||'Imóvel')} · ${esc(p.name||m.provider||'Prestador')}</div></div><button class="icon" onclick="closeModal()">×</button></div><div id="chat19-list" class="chat19-list">Carregando mensagens...</div><div class="chat19-compose"><textarea id="chat19-input" placeholder="Digite uma mensagem para ${role==='admin'?'o prestador':'a imobiliária'}..."></textarea><button class="button button-primary" onclick="sendServiceChat19('${esc(id)}','${esc(doc)}','${role}')">Enviar</button></div></div></div>`;await refreshChat19(id,doc)};
   async function refreshChat19(id,doc){const box=document.getElementById('chat19-list');if(!box)return;const r=await chatRows19(id,doc);if(r.error){box.innerHTML='<div style="padding:40px;text-align:center;color:#b91c1c">Chat ainda não configurado no Supabase.</div>';return}box.innerHTML=chatHtml19(r.data,isAdmin());box.scrollTop=box.scrollHeight}
@@ -2108,7 +2118,7 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
 })();
 </script>
 
-<script id="dormus-pwa-826">
+<script id="dormus-pwa-827">
 (function(){
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function(){
@@ -2120,111 +2130,109 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
 </script>
 
 
-<script id="dormus-825-realtime">
-/* DORMUS 8.25 — nome do usuário + Supabase Realtime + chat em tempo real + atualização automática */
+
+
+<script id="dormus-827-realtime">
+/* DORMUS 8.27 — Realtime + chat robusto para imobiliária e prestador */
 (function(){
-  let rtChannels=[];
-  let rtStarted=false;
-  let lastDbEvent=0;
-  const ADMIN_EMAIL='jvgamesmvp@gmail.com';
-  const escRT=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-  const initialsRT=name=>String(name||'Usuário').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'US';
-  function currentSession(){return supabaseClient?.auth?.getSession?supabaseClient.auth.getSession():Promise.resolve({data:{session:null}})}
-  async function loadAccessName(session){
-    const email=(session?.user?.email||'').toLowerCase();
-    let name=session?.user?.user_metadata?.full_name||session?.user?.user_metadata?.name||'';
-    let profile='Usuário';
-    try{
-      if(email){
-        const {data,error}=await supabaseClient.from('dormus_acessos').select('email,nome,perfil,ativo').eq('email',email).maybeSingle();
-        if(!error&&data&&data.ativo!==false){name=data.nome||name;profile=data.perfil||profile;}
-      }
-    }catch(e){console.warn('DORMUS: não foi possível carregar o nome do acesso.',e)}
+  let channels=[];
+  let started=false;
+  let lastReload=0;
+  const adminEmail='jvgamesmvp@gmail.com';
+  const escR=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const initials=v=>String(v||'Usuário').trim().split(/\s+/).slice(0,2).map(x=>x[0]||'').join('').toUpperCase()||'US';
+  const currentDb=()=>window.DormusDB||{};
+  const isProvider=()=>!!window.DormusProviderPortal?.access;
+  const isAdmin=()=>!isProvider();
+  const providerByDoc=doc=>(window.DormusProviders||[]).find(p=>p.document===doc)||{};
+  async function accessName(session){
+    const email=(session?.user?.email||'').toLowerCase(); let name=session?.user?.user_metadata?.full_name||session?.user?.user_metadata?.name||''; let profile='Usuário';
+    try{if(email){const r=await supabaseClient.from('dormus_acessos').select('email,nome,perfil,ativo').eq('email',email).maybeSingle();if(!r.error&&r.data&&r.data.ativo!==false){name=r.data.nome||name;profile=r.data.perfil||profile;}}}catch(e){}
     if(!name)name=email||'Usuário';
-    window.DormusCurrentUser={email,name,profile,initials:initialsRT(name)};
-    const emailEl=document.getElementById('auth-email'); if(emailEl) emailEl.textContent=name;
-    const avatar=document.getElementById('profile-button'); if(avatar){avatar.textContent=initialsRT(name);avatar.title=`${name} · ${profile}`;avatar.setAttribute('aria-label',`${name} · ${profile}`)}
-    const profileName=document.getElementById('profile-name'); if(profileName)profileName.textContent=name;
-    const profileEmail=document.getElementById('profile-email'); if(profileEmail)profileEmail.textContent=email;
-    const profileRole=document.getElementById('profile-role'); if(profileRole)profileRole.textContent=profile;
-    return window.DormusCurrentUser;
+    window.DormusCurrentUser={email,name,profile,initials:initials(name)};
+    const a=document.getElementById('auth-email');if(a)a.textContent=name;
+    const b=document.getElementById('profile-button');if(b){b.textContent=initials(name);b.title=`${name} · ${profile}`;b.setAttribute('aria-label',`${name} · ${profile}`)}
+    ['profile-name','profile-email','profile-role'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=id==='profile-name'?name:id==='profile-email'?email:profile});
   }
-  async function reloadDbRealtime(){
-    const now=Date.now(); if(now-lastDbEvent<400)return; lastDbEvent=now;
+  async function reloadAll(){
+    const now=Date.now(); if(now-lastReload<500)return; lastReload=now;
     try{
-      if(typeof loadDbFromSupabase==='function') await loadDbFromSupabase();
-      if(typeof renderAll==='function') renderAll();
-      if(typeof window.renderCRM==='function'&&document.getElementById('crm')?.classList.contains('active')) window.renderCRM();
-      if(typeof window.renderReports==='function'&&document.getElementById('reports')?.classList.contains('active')) window.renderReports();
-      if(typeof window.renderModernFinance==='function'&&document.getElementById('rents')?.classList.contains('active')) window.renderModernFinance();
-      if(typeof window.renderTerminations==='function'&&document.getElementById('terminations')?.classList.contains('active')) window.renderTerminations();
-      if(typeof window.renderMaintenance==='function') window.renderMaintenance();
-    }catch(e){console.warn('DORMUS Realtime: falha ao atualizar dados.',e)}
+      if(typeof loadDbFromSupabase==='function')await loadDbFromSupabase();
+      window.DormusDB=window.DormusDB||currentDb();
+      if(typeof renderAll==='function')renderAll();
+      if(typeof window.renderHome==='function')window.renderHome();
+      if(typeof window.renderMaintenance==='function')window.renderMaintenance();
+      if(typeof window.renderProviderPortal==='function'&&isProvider())await window.renderProviderPortal();
+    }catch(e){console.warn('DORMUS 8.27 Realtime:',e)}
   }
-  async function refreshOpenChat(){
-    const box=document.getElementById('chat19-list');
-    if(!box)return;
-    const id=box.dataset.serviceId||window.DormusOpenChat825?.id||'';
-    const doc=box.dataset.providerDocument||window.DormusOpenChat825?.doc||'';
-    if(typeof window.DormusOps19?.refreshChat==='function') return window.DormusOps19.refreshChat(id,doc);
-    // fallback: reproduce the existing chat query without changing the UI
-    try{
-      let q=supabaseClient.from('prestador_servico_mensagens').select('*').eq('servico_id',id).order('created_at',{ascending:true});
-      if(doc)q=q.eq('prestador_document',doc);
-      const {data,error}=await q; if(error)throw error;
-      box.innerHTML=(data||[]).length?(data||[]).map(r=>`<div class="chat19-msg ${r.sender_role==='admin'?'admin':''}"><div class="chat19-bubble"><strong>${escRT(r.sender_name||r.sender_role)}</strong><p>${escRT(r.message)}</p><small>${new Date(r.created_at).toLocaleString('pt-BR')}</small></div></div>`).join(''):'<div style="padding:80px 10px;text-align:center;color:#8194ad;font-size:12px">Nenhuma mensagem ainda. Envie a primeira mensagem.</div>';
-      box.scrollTop=box.scrollHeight;
-    }catch(e){console.warn('DORMUS Realtime: falha ao atualizar chat.',e)}
-  }
-  function stopRealtime(){rtChannels.forEach(ch=>{try{supabaseClient.removeChannel(ch)}catch(e){}});rtChannels=[];rtStarted=false}
-  async function startRealtime(session){
-    if(!session||rtStarted||!supabaseClient?.channel)return;
-    rtStarted=true;
-    stopRealtime(); rtStarted=true;
-    const dbChannel=supabaseClient.channel('dormus-data-live-'+session.user.id)
-      .on('postgres_changes',{event:'*',schema:'public',table:'dormus_data',filter:'id=eq.1'},()=>reloadDbRealtime())
-      .subscribe(status=>{if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')console.warn('DORMUS Realtime: canal principal indisponível.',status)});
-    const opsChannel=supabaseClient.channel('dormus-ops-live-'+session.user.id)
-      .on('postgres_changes',{event:'*',schema:'public',table:'prestador_servicos'},()=>{reloadDbRealtime();window.renderProviderPortal?.()})
-      .on('postgres_changes',{event:'*',schema:'public',table:'prestador_servico_atualizacoes'},()=>{reloadDbRealtime();window.renderProviderPortal?.();if(window.DormusOps19?.renderAdminOps)window.DormusOps19.renderAdminOps()})
-      .on('postgres_changes',{event:'*',schema:'public',table:'prestador_servico_controle'},()=>{reloadDbRealtime();window.renderProviderPortal?.();if(window.DormusOps19?.renderAdminOps)window.DormusOps19.renderAdminOps()})
+  function stop(){channels.forEach(c=>{try{supabaseClient.removeChannel(c)}catch(e){}});channels=[];started=false}
+  async function start(session){
+    if(!session||!supabaseClient?.channel||started)return;
+    stop();started=true;
+    const uid=session.user.id;
+    const dataCh=supabaseClient.channel('dormus-827-data-'+uid)
+      .on('postgres_changes',{event:'*',schema:'public',table:'dormus_data',filter:'id=eq.1'},()=>reloadAll())
+      .subscribe(st=>{if(st==='CHANNEL_ERROR'||st==='TIMED_OUT')console.warn('Realtime dados:',st)});
+    const opsCh=supabaseClient.channel('dormus-827-ops-'+uid)
+      .on('postgres_changes',{event:'*',schema:'public',table:'prestador_servicos'},()=>{reloadAll()})
+      .on('postgres_changes',{event:'*',schema:'public',table:'prestador_servico_atualizacoes'},()=>{reloadAll()})
+      .on('postgres_changes',{event:'*',schema:'public',table:'prestador_servico_controle'},()=>{reloadAll()})
       .on('postgres_changes',{event:'*',schema:'public',table:'prestador_servico_mensagens'},payload=>{
-        const id=payload?.new?.servico_id||payload?.old?.servico_id||'';
+        const id=String(payload?.new?.servico_id||payload?.old?.servico_id||'');
         const box=document.getElementById('chat19-list');
-        if(box&&(!id||box.dataset.serviceId===String(id))) refreshOpenChat();
-        else if(id&&typeof window.DormusOps19?.notifyMessage==='function') window.DormusOps19.notifyMessage(payload?.new);
-      })
-      .subscribe(status=>{if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')console.warn('DORMUS Realtime: canal operacional indisponível.',status)});
-    rtChannels.push(dbChannel,opsChannel);
+        if(box&&(!id||box.dataset.serviceId===id))window.DormusChat827?.refresh();
+        else if(id&&typeof window.DormusOps19?.toast==='function')window.DormusOps19.toast('Nova mensagem no chat do serviço.');
+      }).subscribe(st=>{if(st==='CHANNEL_ERROR'||st==='TIMED_OUT')console.warn('Realtime operações:',st)});
+    channels=[dataCh,opsCh];
   }
-  async function boot(){
+  async function findService(id){
+    const local=(currentDb().maintenance||[]).find(x=>String(x.id)===String(id));
+    if(local)return local;
     try{
-      const {data:{session}}=await currentSession();
-      if(session){await loadAccessName(session);await startRealtime(session)}
-      supabaseClient.auth.onAuthStateChange(async (_event,newSession)=>{
-        if(newSession){await loadAccessName(newSession);stopRealtime();await startRealtime(newSession)}else{stopRealtime()}
-      });
-    }catch(e){console.warn('DORMUS 8.25: inicialização em tempo real falhou.',e)}
+      const r=await supabaseClient.from('prestador_servicos').select('*').eq('id',id).maybeSingle();
+      if(r.data){
+        const x=r.data;
+        return {id:x.id,description:x.description||x.title||'Serviço de manutenção',providerDocument:x.prestador_document||'',provider:x.provider_name||x.prestador_nome||'',propertyId:x.property_id||x.propertyId||'',property_name:x.property_name||'',title:x.title};
+      }
+    }catch(e){console.warn('Busca do serviço para chat:',e)}
+    return null;
   }
-  // Expose small hooks used by the existing chat UI.
-  const originalOpenChat825=window.openServiceChat19;
-  if(typeof originalOpenChat825==='function'){
-    window.openServiceChat19=async function(id){
-      const m=(window.DormusDB?.maintenance||window.db?.maintenance||[]).find(x=>x.id===id);
-      const p=(window.DormusProviders||[]).find(x=>x.document===m?.providerDocument)||(window.DormusProviders||[]).find(x=>x.name===m?.provider)||{};
-      const role=!window.DormusProviderPortal?.access?'admin':'prestador';
-      const doc=role==='admin'?(m?.providerDocument||p?.document||''):(window.DormusProviderPortal?.access?.prestador_document||'');
-      window.DormusOpenChat825={id:String(id),doc:String(doc)};
-      const result=await originalOpenChat825.apply(this,arguments);
-      const box=document.getElementById('chat19-list');
-      if(box){box.dataset.serviceId=String(id);box.dataset.providerDocument=String(doc)}
-      return result;
-    };
+  function propertyFor(m){return (currentDb().properties||[]).find(p=>String(p.id)===String(m?.propertyId))||{name:m?.property_name||'Imóvel'};}
+  async function loadMessages(id,doc){
+    let q=supabaseClient.from('prestador_servico_mensagens').select('*').eq('servico_id',id).order('created_at',{ascending:true});
+    if(doc)q=q.eq('prestador_document',doc);
+    const r=await q; return r;
   }
-  window.DormusRealtime825={start:startRealtime,stop:stopRealtime,reload:reloadDbRealtime,loadAccessName,refreshOpenChat};
+  async function openChat(id){
+    const m=await findService(id); if(!m){alert('Chamado não encontrado para abrir o chat.');return}
+    const provider=providerByDoc(m.providerDocument); const role=isAdmin()?'admin':'prestador'; const doc=isAdmin()?(m.providerDocument||provider.document||''):(window.DormusProviderPortal?.access?.prestador_document||'');
+    const p=propertyFor(m); const root=document.getElementById('modal-root'); if(!root)return;
+    window.DormusOpenChat827={id:String(id),doc:String(doc)};
+    root.innerHTML=`<div class="modal-bg" onclick="closeModal(event)"><div class="modal chat19-modal" onclick="event.stopPropagation()"><div class="modal-head"><div><div class="eyebrow">Chat do serviço</div><h2>${escR(m.description||m.title||'Manutenção')}</h2><div class="access-help">${escR(p.name||'Imóvel')} · ${escR(provider.name||m.provider||'Prestador')}</div></div><button class="icon" onclick="closeModal()">×</button></div><div id="chat19-list" class="chat19-list" data-service-id="${escR(id)}" data-provider-document="${escR(doc)}">Carregando mensagens...</div><div class="chat19-compose"><textarea id="chat19-input" placeholder="Digite uma mensagem para ${role==='admin'?'o prestador':'a imobiliária'}..."></textarea><button class="button button-primary" onclick="window.DormusChat827.send('${escR(id)}','${escR(doc)}','${role}')">Enviar</button></div></div></div>`;
+    await refresh(id,doc);
+  }
+  async function refresh(id,doc){
+    const box=document.getElementById('chat19-list'); if(!box)return;
+    id=String(id||box.dataset.serviceId||'');doc=String(doc ?? box.dataset.providerDocument ?? '');
+    const r=await loadMessages(id,doc);
+    if(r.error){box.innerHTML='<div style="padding:40px;text-align:center;color:#b91c1c">Não foi possível carregar o chat. Verifique as políticas RLS da tabela prestador_servico_mensagens.</div>';return}
+    const rows=r.data||[];box.innerHTML=rows.length?rows.map(x=>`<div class="chat19-msg ${x.sender_role==='admin'?'admin':''}"><div class="chat19-bubble"><strong>${escR(x.sender_name||x.sender_role)}</strong><p>${escR(x.message)}</p><small>${new Date(x.created_at).toLocaleString('pt-BR')}</small></div></div>`).join(''):'<div style="padding:80px 10px;text-align:center;color:#8194ad;font-size:12px">Nenhuma mensagem ainda. Envie a primeira mensagem.</div>';box.scrollTop=box.scrollHeight;
+  }
+  async function send(id,doc,role){
+    const input=document.getElementById('chat19-input'),msg=input?.value.trim();if(!msg)return;
+    const m=await findService(id); const provider=providerByDoc(m?.providerDocument||doc); const sender=role==='admin'?'Imobiliária':(provider.name||m?.provider||'Prestador');
+    const payload={id:(crypto?.randomUUID?.()||('chat-'+Date.now()+'-'+Math.random().toString(36).slice(2))),servico_id:id,prestador_document:doc||'',sender_role:role,sender_name:sender,message:msg,created_at:new Date().toISOString()};
+    const r=await supabaseClient.from('prestador_servico_mensagens').insert(payload);
+    if(r.error){alert('Não foi possível enviar a mensagem.\n\n'+(r.error.message||'Verifique as políticas RLS do chat.'));return}
+    input.value='';await refresh(id,doc);
+  }
+  window.openServiceChat19=openChat;
+  window.sendServiceChat19=send;
+  window.DormusChat827={open:openChat,refresh,send};
+  window.DormusRealtime827={start,stop,reload:reloadAll};
+  async function boot(){try{const r=await supabaseClient.auth.getSession();if(r.data?.session){await accessName(r.data.session);await start(r.data.session)}supabaseClient.auth.onAuthStateChange(async(e,s)=>{if(s){window.DormusDB=window.DormusDB||currentDb();await accessName(s);stop();await start(s)}else stop()})}catch(e){console.warn('DORMUS 8.27 boot:',e)}}
   setTimeout(boot,700);
 })();
 </script>
-
 </body>
 </html>
