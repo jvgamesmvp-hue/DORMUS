@@ -1818,5 +1818,127 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
 })();
 </script>
 
+
+<script>
+/* Dormus 8.20 — manutenção: ações únicas, contatos organizados e filtros funcionais */
+(function(){
+  const esc20=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const money20=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  const db20=()=>window.DormusDB||window.db||{};
+  const provider20=m=> (window.DormusProviders||[]).find(p=>p.document===m?.providerDocument) || (window.DormusProviders||[]).find(p=>p.name===m?.provider) || {};
+  const property20=m=> (db20().properties||[]).find(p=>p.id===m?.propertyId) || {};
+  const date20=v=>{if(!v)return '—'; const s=String(v); return s.includes('-')?s.split('-').reverse().join('/'):s};
+  const phone20=v=>String(v||'').replace(/\D/g,'');
+
+  function renderMaintenance20(){
+    if(window.DormusProviderPortal?.access) return;
+    const el=document.getElementById('maintenance-list');
+    if(!el) return;
+    const all=[...(db20().maintenance||[])];
+    const q=(document.getElementById('maintenance-search')?.value||'').trim().toLowerCase();
+    const active=document.querySelector('#maintenance .maintenance-toolbar .filter-btn.active')?.dataset.maintFilter||'';
+    const items=all.filter(m=>{
+      const p=property20(m), pr=provider20(m);
+      const text=`${m.description||''} ${p.name||''} ${p.address||''} ${m.provider||''} ${pr.name||''} ${m.category||''}`.toLowerCase();
+      const status=String(m.status||'Aberto');
+      return text.includes(q) && (!active || status===active);
+    });
+
+    const open=all.filter(x=>['Aberto','Em andamento'].includes(x.status)).length;
+    const high=all.filter(x=>['Alta','Urgente'].includes(x.priority)&&!['Concluído','Cancelado'].includes(x.status)).length;
+    const done=all.filter(x=>x.status==='Concluído').length;
+    const now=new Date();
+    const cost=all.filter(x=>{const d=x.date?new Date(x.date):null;return d&&d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear()}).reduce((s,x)=>s+Number(x.cost||0),0);
+    const set=(id,v)=>{const n=document.getElementById(id);if(n)n.textContent=v};
+    set('maint-open',open);set('maint-high',high);set('maint-done',done);set('maint-cost',money20(cost));
+
+    const rows=items.map(m=>{
+      const p=property20(m), pr=provider20(m), providerName=pr.name||m.provider||'—', providerPhone=pr.whatsapp||pr.phone||m.providerWhatsapp||m.responsibleWhatsapp||'';
+      const id=esc20(m.id);
+      const whatsapp=phone20(providerPhone);
+      return `<tr>
+        <td><strong>${esc20(m.description||'Chamado sem título')}</strong><small>${esc20(p.name||'Imóvel não informado')}</small></td>
+        <td>${esc20(m.category||'—')}</td>
+        <td>${typeof badge==='function'?badge(m.priority||'Média'):esc20(m.priority||'Média')}</td>
+        <td><strong>${esc20(providerName)}</strong><small>${esc20(m.providerDocument||pr.document||'')}</small></td>
+        <td>${m.cost?money20(m.cost):'≈ R$ 0,00'}</td>
+        <td>${date20(m.date)}</td>
+        <td>${typeof badge==='function'?badge(m.status||'Aberto'):esc20(m.status||'Aberto')}</td>
+        <td class="actions maintenance-actions20">
+          <div class="maintenance-row-actions20">
+            <div class="maintenance-basic-actions20">
+              <button class="button button-small" type="button" onclick="openPresentation('maintenance','${id}')">Ver</button>
+              <button class="button button-small" type="button" onclick="openModal('maintenance','${id}')">Editar</button>
+              <button class="button button-small button-danger" type="button" onclick="removeRecord('maintenance','${id}')">Excluir</button>
+            </div>
+            <div class="maintenance-contact-actions20">
+              ${whatsapp?`<button class="button button-small maintenance-wa20" type="button" onclick="openMaintenanceWhatsApp20('${id}')">💬 WhatsApp</button>`:`<span class="maintenance-no-contact20">Sem WhatsApp</span>`}
+              <button class="button button-small maintenance-message20" type="button" onclick="openWhatsAppMessage('maintenance','${id}')">✉ Mensagem</button>
+              <button class="button button-small maintenance-control20" type="button" onclick="openMaintenanceControl('${id}')">⚙ Controle do serviço</button>
+            </div>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+
+    el.innerHTML=items.length?`<div class="table-wrap"><table class="table maintenance-table maintenance-table20"><thead><tr><th>Chamado / imóvel</th><th>Categoria</th><th>Prioridade</th><th>Prestador</th><th>Custo</th><th>Abertura</th><th>Status</th><th>Ações</th></tr></thead><tbody>${rows}</tbody></table></div>`:`<div class="empty"><strong>Nenhuma manutenção encontrada</strong><br>Registre chamados, custos e responsáveis.</div>`;
+  }
+
+  window.openMaintenanceWhatsApp20=function(id){
+    const m=(db20().maintenance||[]).find(x=>x.id===id); if(!m){alert('Chamado não encontrado.');return}
+    const p=provider20(m), prop=property20(m), n=phone20(p.whatsapp||p.phone||m.providerWhatsapp||m.responsibleWhatsapp);
+    if(!n){alert('Cadastre o WhatsApp do prestador antes de continuar.');return}
+    const lines=[`Olá, ${p.name||m.provider||'prestador'}!`,``,`Serviço: ${m.description||'Manutenção'}`,`Imóvel: ${prop.name||'Não informado'}`,`Endereço: ${[prop.address,prop.number,prop.neighborhood,prop.city,prop.state].filter(Boolean).join(', ')||'Não informado'}`,`Prioridade: ${m.priority||'Média'}`,`Status: ${m.status||'Aberto'}`];
+    window.open(`https://wa.me/${n}?text=${encodeURIComponent(lines.join('\n'))}`,'_blank','noopener');
+  };
+
+  window.setMaintenanceFilter20=function(value,button){
+    document.querySelectorAll('#maintenance .maintenance-toolbar .filter-btn').forEach(b=>b.classList.remove('active'));
+    button?.classList.add('active');
+    renderMaintenance20();
+  };
+
+  function wireMaintenanceFilters20(){
+    const group=document.querySelector('#maintenance .maintenance-toolbar .property-filters');
+    if(!group)return;
+    const labels=[['','Todos'],['Aberto','Abertos'],['Em andamento','Em andamento'],['Concluído','Concluídos'],['Cancelado','Cancelados']];
+    group.innerHTML=labels.map(([v,l],i)=>`<button type="button" class="filter-btn ${i===0?'active':''}" data-maint-filter="${v}" onclick="setMaintenanceFilter20('${v}',this)">${l}</button>`).join('');
+  }
+
+  const oldRender20=window.renderMaintenance;
+  window.renderMaintenance=function(){
+    renderMaintenance20();
+    wireMaintenanceFilters20();
+    // O painel de orçamentos continua separado e recebe os dados do Supabase.
+    setTimeout(()=>{try{if(typeof renderAdminOps19==='function')renderAdminOps19()}catch(e){}},80);
+  };
+
+  // Impede que os módulos antigos adicionem uma segunda coluna/botão de controle.
+  window.enhanceAdminMaintenance=function(){};
+  window.ensureProviderControl=function(){};
+
+  function css20(){
+    if(document.getElementById('dormus20-maint-style'))return;
+    const st=document.createElement('style');st.id='dormus20-maint-style';st.textContent=`
+      .maintenance-table20{min-width:1080px}
+      .maintenance-actions20{min-width:390px;vertical-align:middle}
+      .maintenance-row-actions20{display:flex;flex-direction:column;gap:7px;min-width:370px}
+      .maintenance-basic-actions20,.maintenance-contact-actions20{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+      .maintenance-basic-actions20 .button,.maintenance-contact-actions20 .button{white-space:nowrap}
+      .maintenance-wa20{background:#ecfdf3!important;border-color:#a7d9b5!important;color:#177245!important;font-weight:600}
+      .maintenance-message20{background:#f4f8ff!important;border-color:#c9d9ef!important;color:#28547d!important}
+      .maintenance-control20{background:#f7f9fc!important;border-color:#d7e1ed!important;color:#183653!important}
+      .maintenance-no-contact20{font-size:11px;color:#8b9bb0;padding:7px 4px}
+      .maintenance-table20 td:first-child strong,.maintenance-table20 td:first-child small,.maintenance-table20 td:nth-child(4) strong,.maintenance-table20 td:nth-child(4) small{display:block}
+      .maintenance-table20 td:nth-child(4) small{font-size:11px;color:#7b90ad;margin-top:3px}
+      @media(max-width:900px){.maintenance-actions20{min-width:0}.maintenance-row-actions20{min-width:0}.maintenance-contact-actions20{flex-direction:column;align-items:stretch}.maintenance-contact-actions20 .button{width:100%}}
+    `;document.head.appendChild(st);
+  }
+
+  css20();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(()=>window.renderMaintenance(),250));
+  else setTimeout(()=>window.renderMaintenance(),250);
+})();
+</script>
 </body>
 </html>
