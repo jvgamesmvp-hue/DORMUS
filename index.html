@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.28</title>
+  <title>Dormus | Gestão imobiliária · 8.31</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -64,13 +64,13 @@
 <style id="dormus-provider-restricted-style">
 /* Portal restrito do prestador: somente Manutenção e Recibos. */
 body.provider-mode .side .nav-title:not(.provider-visible-title),
-body.provider-mode .side .nav button[data-view]:not([data-view="maintenance"]):not([data-view="receipts"]),
+body.provider-mode .side .nav button[data-view]:not([data-view="maintenance"]):not([data-view="chats"]):not([data-view="receipts"]),
 body.provider-mode .side .nav-more,
 body.provider-mode .side .nav-title-more,
 body.provider-mode .side .side-foot{display:none!important}
 body.provider-mode .side{justify-content:flex-start}
 body.provider-mode .provider-only-brand-note{display:block!important}
-body.provider-mode .view:not(#maintenance):not(#receipts){display:none!important}
+body.provider-mode .view:not(#maintenance):not(#chats):not(#receipts){display:none!important}
 body.provider-mode #maintenance .page-head .button-primary,
 body.provider-mode #maintenance .maintenance-toolbar,
 body.provider-mode #maintenance .maintenance-panel,
@@ -1909,12 +1909,18 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
   const oldShowView18=window.showView;
   window.showView=function(id){
     if(window.DormusProviderPortal?.access){
-      if(id!=='maintenance'&&id!=='receipts')id='maintenance';
+      if(id!=='maintenance'&&id!=='chats'&&id!=='receipts')id='maintenance';
       const r=oldShowView18.apply(this,[id]);
       if(id==='maintenance'){
         document.getElementById('provider-maintenance-view')?.style.setProperty('display','none');
         const sec=document.getElementById('maintenance');if(sec){sec.querySelector('.page-head')?.style.setProperty('display','none');sec.querySelector('.maintenance-stats')?.style.setProperty('display','none');sec.querySelector('.maintenance-toolbar')?.style.setProperty('display','none');sec.querySelector('.maintenance-panel')?.style.setProperty('display','none');document.getElementById('provider-portal')?.classList.remove('active');document.getElementById('provider-portal')?.style.setProperty('display','none')}
         const host=document.getElementById('provider-maintenance-view');if(host){host.style.display='block';host.innerHTML=`<div id="provider-portal-shell" class="provider-portal-shell"><div class="page-head modern-head"><div><div class="eyebrow">Portal do prestador</div><h1>Meus serviços</h1><p class="lead">Chamados, autorizações, agendamentos e orçamentos.</p></div></div><div class="provider-portal-kpis"><div class="metric"><div class="metric-label">Novos / abertos</div><div class="metric-value" id="portal-open">0</div></div><div class="metric"><div class="metric-label">Em andamento</div><div class="metric-value" id="portal-progress">0</div></div><div class="metric"><div class="metric-label">Concluídos</div><div class="metric-value success-text" id="portal-done">0</div></div><div class="metric"><div class="metric-label">Total de serviços</div><div class="metric-value" id="portal-total">0</div></div></div><section class="panel"><div class="panel-head"><div><div class="panel-title">Meus chamados</div><div class="panel-kicker">Prioridades e orientações da imobiliária aparecem em cada serviço.</div></div><button class="button button-small" onclick="renderProviderPortal()">↻ Atualizar</button></div><div id="provider-portal-list"></div></section></div>`;renderProviderPortal();}
+      }
+      if(id==='chats'){
+        document.querySelectorAll('[data-view="chats"]').forEach(b=>b.classList.add('active'));
+        setTimeout(()=>{
+          try{ if(window.DormusChatHub830){ DormusChatHub830.refresh(); } }catch(e){ console.warn('DORMUS Chat prestador:',e); }
+        },50);
       }
       return r;
     }
