@@ -602,13 +602,26 @@ async function carregarDadosSupabase(){
 
   if(error) throw error;
 
-  if(data?.data){
-    db = {...blank, ...data.data};
-
+  // Mantém a estrutura atual e incorpora somente os dados válidos
+  // vindos do Supabase. Nunca substitui uma base válida por uma base vazia.
+  const remote = (data && data.data && typeof data.data === 'object') ? data.data : null;
+  if(remote){
+    const next = {...db};
     Object.keys(blank).forEach(key=>{
-      if(!Array.isArray(db[key])) db[key]=[];
+      if(Array.isArray(remote[key])) next[key] = remote[key];
+      else if(!Array.isArray(next[key])) next[key] = [];
     });
+    // Preserva campos adicionais, como attachments, quando existirem.
+    Object.keys(remote).forEach(key=>{
+      if(!(key in next)) next[key] = remote[key];
+    });
+    db = next;
   }
+
+  Object.keys(blank).forEach(key=>{
+    if(!Array.isArray(db[key])) db[key]=[];
+  });
+  if(!Array.isArray(db.attachments)) db.attachments=[];
 }
 
 function showLogin(message=''){
@@ -689,6 +702,25 @@ async function enterDormus(session){
   }
   renderAll();
 }
+
+async function saveMaintenance825(record){
+  try{
+    if(!record || typeof record!=='object') throw new Error('Chamado inválido.');
+    if(!Array.isArray(db.maintenance)) db.maintenance=[];
+    const index=db.maintenance.findIndex(x=>String(x.id)===String(record.id));
+    if(index>=0) db.maintenance[index]={...db.maintenance[index],...record};
+    else db.maintenance.push(record);
+    const ok=await save();
+    if(!ok) return false;
+    if(typeof window.renderMaintenance==='function') window.renderMaintenance();
+    return true;
+  }catch(e){
+    console.error('DORMUS 8.26: falha ao salvar chamado.',e);
+    alert('Não foi possível salvar o chamado.\n\n'+(e?.message||e));
+    return false;
+  }
+}
+window.DormusSaveMaintenance825=saveMaintenance825;
 
 window.formFor=formFor;window.collect=collect;window.genericPresentation=genericPresentation;window.propertyPresentation=propertyPresentation;window.openPresentation=openPresentation;window.renderPeople=renderPeople;window.renderContracts=renderContracts;window.renderMaintenance=renderMaintenance;window.renderDeposits=renderDeposits;window.renderHome=renderHome;window.renderReceipts=renderReceipts;window.dormusField=(label,id,value='',type='text',extra='')=>`<div class=\"form-field\"><label for=\"${id}\">${label}</label><input id=\"${id}\" type=\"${type}\" value=\"${esc(value)}\" ${extra}></div>`;window.dormusSelect=(label,id,options,current='')=>`<div class=\"form-field\"><label for=\"${id}\">${label}</label><select id=\"${id}\">${options.map(o=>`<option value=\"${esc(o)}\"${selected(o,current)}>${esc(o)}</option>`).join('')}</select></div>`;
 initDormus();
@@ -2076,7 +2108,7 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
 })();
 </script>
 
-<script id="dormus-pwa-824">
+<script id="dormus-pwa-826">
 (function(){
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function(){
