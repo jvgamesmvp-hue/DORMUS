@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.35</title>
+  <title>Dormus | Gestão imobiliária · 8.37</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -195,30 +195,52 @@ body.provider-mode #provider-receipts-view{display:block!important}
 .chat-hub{display:grid;grid-template-columns:minmax(280px,360px) 1fr;gap:14px}.chat-thread-list{display:grid;gap:7px;max-height:680px;overflow:auto}.chat-thread{display:flex;gap:10px;width:100%;text-align:left;border:1px solid #e1e8ef;background:#fff;border-radius:11px;padding:12px;cursor:pointer}.chat-thread:hover,.chat-thread.active{background:#f6fbfa;border-color:#9bd9c8}.chat-thread-avatar{width:38px;height:38px;border-radius:50%;background:#0d172a;color:#fff;display:grid;place-items:center;font-weight:800;flex:0 0 auto}.chat-thread-body{min-width:0;flex:1}.chat-thread-title{display:flex;justify-content:space-between;gap:8px}.chat-thread-title strong{font-size:13px;color:#12233e;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chat-thread-title small{color:#8192a8;white-space:nowrap}.chat-thread-preview{font-size:11px;color:#7185a2;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chat-thread-unread{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#ef4444;color:#fff;font-size:10px;font-weight:800;margin-top:5px}.chat-hub-main{min-height:520px}.chat-hub-empty{min-height:420px;display:grid;place-items:center;text-align:center;color:#8194ad;padding:30px}.chat-hub-open{height:100%;min-height:520px}.chat-hub-head{display:flex;justify-content:space-between;gap:12px;align-items:center;padding-bottom:12px;border-bottom:1px solid #edf1f5}.chat-hub-head h3{margin:0;color:#10213b;font-size:17px}.chat-hub-head p{margin:4px 0 0;color:#8192a8;font-size:11px}.chat-hub-messages{height:410px;overflow:auto;padding:14px 4px;display:grid;align-content:start;gap:9px}.chat-hub-msg{display:flex}.chat-hub-msg.admin{justify-content:flex-end}.chat-hub-bubble{max-width:min(78%,620px);padding:9px 11px;border-radius:12px;background:#f1f5f9}.chat-hub-msg.admin .chat-hub-bubble{background:#dff7ef}.chat-hub-bubble strong{font-size:11px;color:#203754}.chat-hub-bubble p{margin:4px 0;font-size:13px;color:#1e334f;white-space:pre-wrap;word-break:break-word}.chat-hub-bubble small{font-size:9px;color:#8292a7}.chat-hub-compose{display:flex;gap:8px;margin-top:10px}.chat-hub-compose textarea{min-height:46px;max-height:120px;resize:vertical;flex:1}.chat-notify-box{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;margin-bottom:12px;border:1px solid #dfe7ef;border-radius:10px;background:#f8fafc}.chat-notify-box span{font-size:11px;color:#6f8198}.chat-notify-on{color:#079c75!important;font-weight:700}.chat-notify-off{color:#b45309!important;font-weight:700}.chat-new-dot{width:8px;height:8px;border-radius:50%;background:#ef4444;display:inline-block;margin-right:5px}.chat-toast-action{cursor:pointer;text-decoration:underline;font-weight:700}
 @media(max-width:900px){.chat-hub{grid-template-columns:1fr}.chat-thread-list{max-height:300px}.chat-hub-main{min-height:460px}}
 </style>
+<style id="dormus-836-portal-ai-css">
+.login-shell{width:100%;min-height:100%;display:grid;place-items:center}.login-portal-card{width:min(480px,100%)}.portal-chooser{display:grid;gap:11px}.portal-choice{display:flex;align-items:center;gap:13px;width:100%;padding:15px;border:1px solid var(--line);border-radius:13px;background:var(--card);color:var(--ink);text-align:left}.portal-choice:hover{border-color:#5b4ce2;box-shadow:0 8px 25px #4338ca18;transform:translateY(-1px)}.portal-choice-icon{width:43px;height:43px;border-radius:12px;display:grid;place-items:center;background:#eef2ff;font-size:21px}.portal-choice span:nth-child(2){flex:1}.portal-choice strong,.portal-choice small{display:block}.portal-choice strong{font-size:14px}.portal-choice small{color:var(--muted);font-size:11px;margin-top:4px}.portal-choice b{font-size:19px;color:#6557e8}.portal-login-form{animation:fadePortal .18s ease}.login-back{border:0;background:transparent;color:#6b5ce7;padding:0;margin-bottom:18px;font-weight:700}.portal-kicker{font-size:10px;letter-spacing:1.5px;color:#6b5ce7;font-weight:800;margin-bottom:7px}.assistant-hero{display:flex;gap:13px;align-items:center;padding:15px;border-radius:14px;background:linear-gradient(135deg,#111a4b,#24154d);color:#eef4ff}.assistant-avatar{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,#4f46e5,#a855f7);display:grid;place-items:center;font-size:22px}.assistant-hero strong{font-size:16px}.assistant-hero p{margin:4px 0 0;color:#b8c7df;font-size:12px;line-height:1.5}.assistant-suggestions{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0}.assistant-messages{min-height:320px;max-height:500px;overflow:auto;background:#071126;border:1px solid #1b2c4a;border-radius:13px;padding:14px;display:grid;align-content:start;gap:10px}.assistant-msg{max-width:82%;padding:10px 12px;border-radius:13px;background:#101d34;color:#dce8fa}.assistant-msg.user{justify-self:end;background:linear-gradient(135deg,#30206d,#1e275d)}.assistant-msg strong{font-size:10px;color:#91a6c3}.assistant-msg p{margin:4px 0 0;white-space:pre-wrap;line-height:1.5;font-size:13px}.assistant-compose{display:flex;gap:8px;margin-top:10px}.assistant-compose input{flex:1;min-width:0}.utility-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.utility-card{min-height:330px}.utility-card-head{display:flex;gap:11px;align-items:center;margin-bottom:14px}.utility-logo{width:43px;height:43px;border-radius:12px;display:grid;place-items:center;font-size:21px}.utility-logo.cemig{background:#fff3cf;color:#b87900}.utility-logo.saae{background:#dff5ff;color:#1686ad}.utility-card h2{margin:0;font-size:18px}.utility-card-head p{margin:4px 0 0;color:var(--muted);font-size:11px}.utility-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.utility-actions a{text-decoration:none}.utility-note,.utility-disclaimer{display:block;color:var(--muted);font-size:11px;line-height:1.5;margin-top:12px}.utility-disclaimer{margin-top:0}.utility-mini-title{font-weight:800;color:#5d4ce0;padding:5px 0}.utility-mini{grid-column:1/-1}.utility-mini-title{border-bottom:1px solid var(--line);padding-bottom:7px}@keyframes fadePortal{from{opacity:.3;transform:translateY(3px)}to{opacity:1;transform:none}}@media(max-width:900px){.utility-grid{grid-template-columns:1fr}}@media(max-width:600px){.assistant-compose{flex-direction:column}.assistant-compose .button{width:100%}.portal-choice{padding:13px}}
+</style>
 </head>
 <body>
 
   <section id="login-screen" hidden>
-    <div class="login-card">
-      <div class="login-brand">
-        <span class="login-brand-mark">D</span>
-        <span><strong>dormus</strong><small>GESTÃO IMOBILIÁRIA</small></span>
+    <div class="login-shell">
+      <div class="login-card login-portal-card">
+        <div class="login-brand">
+          <span class="login-brand-mark">D</span>
+          <span><strong>DORMUS</strong><small>GESTÃO IMOBILIÁRIA</small></span>
+        </div>
+        <div id="portal-chooser" class="portal-chooser">
+          <div class="login-title">Bem-vindo ao DORMUS</div>
+          <p class="login-sub">Escolha o portal que corresponde ao seu acesso.</p>
+          <button class="portal-choice" onclick="selectLoginPortal('imobiliaria')"><span class="portal-choice-icon">🏢</span><span><strong>Portal da Imobiliária</strong><small>Administradores e equipe</small></span><b>→</b></button>
+          <button class="portal-choice" onclick="selectLoginPortal('prestador')"><span class="portal-choice-icon">🛠️</span><span><strong>Portal do Prestador</strong><small>Prestadores de serviços</small></span><b>→</b></button>
+        </div>
+        <div id="portal-login-imobiliaria" class="portal-login-form" hidden>
+          <button class="login-back" type="button" onclick="showPortalChooser()">← Voltar</button>
+          <div class="portal-kicker">PORTAL DA IMOBILIÁRIA</div>
+          <h1 class="login-title">Acesso da equipe</h1>
+          <p class="login-sub">Entre usando seu nome de usuário e sua senha.</p>
+          <form onsubmit="handlePortalLogin(event,'imobiliaria')">
+            <div class="login-field"><label for="login-username">Nome de usuário</label><input id="login-username" type="text" autocomplete="username" required placeholder="Ex.: jvgamesmvp"></div>
+            <div class="login-field"><label for="login-password-imob">Senha</label><input id="login-password-imob" type="password" autocomplete="current-password" required></div>
+            <button id="login-button-imob" class="login-button" type="submit">Entrar na imobiliária</button>
+            <div id="login-error-imob" class="login-error" role="alert"></div>
+          </form>
+          <div class="login-note">A senha continua protegida pelo Supabase Auth. O nome de usuário é apenas o identificador de acesso da equipe.</div>
+        </div>
+        <div id="portal-login-prestador" class="portal-login-form" hidden>
+          <button class="login-back" type="button" onclick="showPortalChooser()">← Voltar</button>
+          <div class="portal-kicker">PORTAL DO PRESTADOR</div>
+          <h1 class="login-title">Acesso do prestador</h1>
+          <p class="login-sub">Entre usando o e-mail cadastrado para seu acesso.</p>
+          <form onsubmit="handlePortalLogin(event,'prestador')">
+            <div class="login-field"><label for="login-email">E-mail</label><input id="login-email" type="email" autocomplete="username" required placeholder="prestador@email.com"></div>
+            <div class="login-field"><label for="login-password">Senha</label><input id="login-password" type="password" autocomplete="current-password" required></div>
+            <button id="login-button" class="login-button" type="submit">Entrar como prestador</button>
+            <div id="login-error" class="login-error" role="alert"></div>
+          </form>
+          <div class="login-note">O prestador verá somente Manutenção e Chats dos serviços atribuídos ao seu cadastro.</div>
+        </div>
       </div>
-      <h1 class="login-title">Entrar no Dormus</h1>
-      <p class="login-sub">Use seu e-mail e sua senha para acessar o sistema.</p>
-      <form id="login-form" onsubmit="handleLogin(event)">
-        <div class="login-field">
-          <label for="login-email">E-mail</label>
-          <input id="login-email" type="email" autocomplete="username" required>
-        </div>
-        <div class="login-field">
-          <label for="login-password">Senha</label>
-          <input id="login-password" type="password" autocomplete="current-password" required>
-        </div>
-        <button id="login-button" class="login-button" type="submit">Entrar</button>
-        <div id="login-error" class="login-error" role="alert"></div>
-      </form>
-      <div class="login-note">O acesso é protegido pelo Supabase Auth. Seu usuário precisa estar cadastrado no projeto do Dormus.</div>
     </div>
   </section>
   <div class="app">
@@ -236,6 +258,8 @@ body.provider-mode #provider-receipts-view{display:block!important}
         <button data-view="crm"><span class="nav-icon">⌁</span>CRM &amp; Vendas</button>
         <button data-view="agenda"><span class="nav-icon">◷</span>Agenda</button>
         <button data-view="reports"><span class="nav-icon">▥</span>Relatórios</button>
+        <button data-view="assistant"><span class="nav-icon">🤖</span>Assistente DORMUS</button>
+        <button data-view="utilities"><span class="nav-icon">⚡</span>Energia &amp; Água</button>
       </nav>
       <div class="nav-title nav-title-more">Operação</div><nav class="nav nav-more">
         <button data-view="inspections"><span class="nav-icon">□</span>Vistorias</button>
@@ -247,10 +271,10 @@ body.provider-mode #provider-receipts-view{display:block!important}
       <div class="side-foot"><div class="side-status-dot"></div> Sistema conectado<br><span>Dados sincronizados pelo Supabase.</span></div>
     </aside>
     <main class="main">
-      <header class="top"><div class="global-search"><span>⌕</span><input id="global-search" placeholder="Buscar imóveis, pessoas, contratos..." oninput="globalDormusSearch(this.value)"></div><div class="top-actions"><button class="top-icon" id="notifications-button" title="Notificações" aria-label="Notificações" onclick="toggleNotifications()">♧<i></i></button><button class="avatar" id="profile-button" title="Minha conta" aria-label="Minha conta" onclick="toggleProfileMenu()">AI</button><button class="top-icon" title="Sair" onclick="logoutDormus()">↪</button><span id="auth-email" class="auth-email"></span></div><div class="crumb" aria-hidden="true"><span>Dormus</span><strong id="crumb">Visão geral</strong></div></header>
+      <header class="top"><div class="global-search"><span>⌕</span><input id="global-search" placeholder="Buscar imóveis, pessoas, contratos..." oninput="globalDormusSearch(this.value)"></div><div class="top-actions"><button class="top-icon" id="notifications-button" title="Notificações" aria-label="Notificações" onclick="toggleNotifications()">♧<i></i></button><button class="avatar" id="profile-button" title="Minha conta" aria-label="Minha conta" onclick="toggleProfileMenu()">AI</button><div class="auth-user-display"><strong id="auth-name">Usuário</strong><small id="auth-role">Conta DORMUS</small></div><button class="top-icon" title="Sair" onclick="logoutDormus()">↪</button><span id="auth-email" class="auth-email"></span></div><div class="crumb" aria-hidden="true"><span>Dormus</span><strong id="crumb">Visão geral</strong></div></header>
 
       <section id="home" class="view active">
-        <div class="page-head modern-head"><div><div class="eyebrow">Visão geral</div><h1>Visão Geral</h1><p class="lead">Indicadores calculados em tempo real a partir dos dados cadastrados.</p></div><button class="button button-primary" onclick="openModal('property')">＋ Novo imóvel</button></div>
+        <div class="page-head modern-head dormus-home-head"><div><div class="eyebrow">Painel principal</div><h1>Bem-vindo, <span id="home-user-name">Usuário</span>!</h1><p class="lead">Tudo da sua imobiliária em um só lugar, com dados sincronizados em tempo real.</p></div><button class="button button-primary" onclick="openModal('property')">＋ Novo imóvel</button></div>
         <div class="dashboard-stats">
           <button class="dash-stat" onclick="showView('properties')"><span class="dash-stat-icon emerald">▥</span><span class="dash-stat-value" id="metric-properties">0</span><span class="dash-stat-label">Imóveis cadastrados</span><span class="dash-stat-hint" id="home-properties-hint">0 disponíveis · 0 ocupados</span><b>→</b></button>
           <button class="dash-stat" onclick="showView('contracts')"><span class="dash-stat-icon blue">▤</span><span class="dash-stat-value" id="metric-contracts">0</span><span class="dash-stat-label">Contratos ativos</span><span class="dash-stat-hint" id="home-contracts-hint">0 vencendo em 60 dias</span><b>→</b></button>
@@ -290,7 +314,25 @@ body.provider-mode #provider-receipts-view{display:block!important}
         <div class="grid two"><section class="panel"><div class="panel-head"><div><div class="panel-title">Resumo financeiro</div><div class="panel-kicker">Valores calculados a partir dos lançamentos atuais.</div></div></div><div id="report-finance"></div></section><section class="panel"><div class="panel-head"><div><div class="panel-title">Carteira por situação</div><div class="panel-kicker">Distribuição dos imóveis cadastrados.</div></div></div><div id="report-properties-status"></div></section></div>
         <section class="panel"><div class="panel-head"><div><div class="panel-title">Contratos e vencimentos</div><div class="panel-kicker">Indicadores para acompanhamento da operação.</div></div></div><div id="report-contracts"></div></section>
       </section>
-      <section id="provider-portal" class="view provider-portal-view">
+      <section id="assistant" class="view">
+  <div class="page-head"><div><div class="eyebrow">Inteligência operacional</div><h1>Assistente DORMUS</h1><p class="lead">Consulte rapidamente imóveis, contratos, pessoas, manutenções e cláusulas geradas pelo próprio sistema.</p></div></div>
+  <section class="panel assistant-panel">
+    <div class="assistant-hero"><div class="assistant-avatar">🤖</div><div><strong>Assistente DORMUS</strong><p>Esta versão trabalha com os dados já cadastrados no sistema. A conexão com um modelo de IA externo pode ser adicionada depois, sem mudar esta tela.</p></div></div>
+    <div class="assistant-suggestions"><button class="button button-small" onclick="assistantAsk('Quais imóveis estão cadastrados?')">Imóveis cadastrados</button><button class="button button-small" onclick="assistantAsk('Quais contratos estão ativos?')">Contratos ativos</button><button class="button button-small" onclick="assistantAsk('Quais manutenções estão abertas?')">Manutenções abertas</button><button class="button button-small" onclick="assistantAsk('Explique as cláusulas do contrato mais recente')">Cláusulas do contrato</button></div>
+    <div id="assistant-messages" class="assistant-messages"><div class="assistant-msg assistant"><strong>Assistente</strong><p>Olá! Pergunte sobre os dados do DORMUS ou peça uma explicação das condições cadastradas.</p></div></div>
+    <form class="assistant-compose" onsubmit="assistantSubmit(event)"><input id="assistant-input" placeholder="Ex.: Quais são as pendências do imóvel X?" autocomplete="off"><button class="button button-primary" type="submit">Perguntar</button></form>
+  </section>
+</section>
+<section id="utilities" class="view">
+  <div class="page-head"><div><div class="eyebrow">Central de serviços</div><h1>Energia &amp; Água</h1><p class="lead">Guarde os identificadores do imóvel e abra os canais oficiais da CEMIG e do SAAE para consulta e atendimento.</p></div></div>
+  <section class="panel"><div class="panel-head"><div><div class="panel-title">Imóvel</div><div class="panel-kicker">Selecione um imóvel para consultar ou registrar seus identificadores.</div></div></div><div class="form-grid"><div class="form-field full"><label for="utility-property">Imóvel</label><select id="utility-property" onchange="loadUtilityRecord()"></select></div></div></section>
+  <div class="utility-grid">
+    <section class="panel utility-card"><div class="utility-card-head"><span class="utility-logo cemig">⚡</span><div><h2>CEMIG</h2><p>Agência virtual e atendimento oficial.</p></div></div><div class="form-grid"><div class="form-field"><label>ID eletrônico</label><input id="utility-cemig-id"></div><div class="form-field"><label>Nº da instalação</label><input id="utility-cemig-installation"></div><div class="form-field"><label>Titular</label><input id="utility-cemig-holder"></div><div class="form-field"><label>Débitos registrados no DORMUS</label><input id="utility-cemig-debt" type="number" step="0.01" min="0"></div></div><div class="utility-actions"><button class="button button-primary" onclick="saveUtilityRecord()">Salvar dados</button><a class="button" href="https://atende.cemig.com.br/" target="_blank" rel="noopener">Abrir Cemig Atende ↗</a><a class="button button-brass" href="https://atende.cemig.com.br/encerramentocontrato" target="_blank" rel="noopener">Encerramento de contrato ↗</a></div><small class="utility-note">A consulta e as solicitações que exigem autenticação continuam sendo feitas no canal oficial da CEMIG.</small></section>
+    <section class="panel utility-card"><div class="utility-card-head"><span class="utility-logo saae">💧</span><div><h2>SAAE Conselheiro Pena</h2><p>Serviços online e atendimento de água/esgoto.</p></div></div><div class="form-grid"><div class="form-field"><label>Nº da instalação / matrícula</label><input id="utility-saae-installation"></div><div class="form-field"><label>Nº do hidrômetro</label><input id="utility-saae-hydrometer"></div><div class="form-field"><label>Titular</label><input id="utility-saae-holder"></div><div class="form-field"><label>Débitos registrados no DORMUS</label><input id="utility-saae-debt" type="number" step="0.01" min="0"></div></div><div class="utility-actions"><button class="button button-primary" onclick="saveUtilityRecord()">Salvar dados</button><a class="button" href="https://www.saaeconselheiropena.com.br/" target="_blank" rel="noopener">Abrir SAAE ↗</a><a class="button button-brass" href="https://www.saaeconselheiropena.com.br/" target="_blank" rel="noopener">Serviços Online ↗</a></div><small class="utility-note">O SAAE disponibiliza Serviços Online no portal oficial. A automação de solicitações depende de integração/API autorizada pelo órgão.</small></section>
+  </div>
+  <section class="panel utility-disclaimer"><strong>O que já está preparado:</strong> identificadores por imóvel, histórico local, links oficiais e espaço para integrar protocolos. <strong>O que não foi automatizado:</strong> consulta de débitos pessoais ou envio de pedidos em nome de terceiros sem autenticação/autorização oficial.</section>
+</section>
+<section id="provider-portal" class="view provider-portal-view">
         <div class="page-head modern-head"><div><div class="eyebrow">Portal do prestador</div><h1 id="provider-portal-title">Meus serviços</h1><p class="lead">Acompanhe somente os serviços destinados a você.</p></div><button class="button button-quiet" onclick="logoutDormus()">Sair</button></div>
         <div class="provider-portal-kpis"><div class="metric"><div class="metric-label">Novos / abertos</div><div class="metric-value" id="portal-open">0</div><div class="metric-meta">Aguardando atendimento</div></div><div class="metric"><div class="metric-label">Em andamento</div><div class="metric-value" id="portal-progress">0</div><div class="metric-meta">Serviços em execução</div></div><div class="metric"><div class="metric-label">Concluídos</div><div class="metric-value success-text" id="portal-done">0</div><div class="metric-meta">Serviços finalizados</div></div><div class="metric"><div class="metric-label">Total de serviços</div><div class="metric-value" id="portal-total">0</div><div class="metric-meta">Chamados atribuídos</div></div></div>
         <section class="panel"><div class="panel-head"><div><div class="panel-title">Meus chamados</div><div class="panel-kicker">Você só terá acesso aos serviços vinculados ao seu cadastro de prestador.</div></div><button class="button button-small" onclick="renderProviderPortal()">↻ Atualizar</button></div><div id="provider-portal-list"></div></section>
@@ -336,7 +378,7 @@ const supabaseClient = window.supabase.createClient(
      function providerOptions(current='',legacy=''){const legacyOption=legacy&&!providerRecord(legacy)?`<option value="${esc(legacy)}" selected>${esc(legacy)} · cadastro anterior</option>`:'';return `<option value="">Selecione o prestador</option>${legacyOption}${providers.map(p=>`<option value="${esc(p.document)}"${selected(p.document,current)}>${esc(p.name)} · ${esc(p.document)}</option>`).join('')}`}
      const receiptOffice='Recebi do Sr. Horne Ferreira Dutra, inscrito no CPF sob o n° 576.196.706-53, a soma referente a';
      const RECEIPT_LOGO='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MjgiIGhlaWdodD0iMzI0IiB2aWV3Qm94PSIwIDAgODI4IDMyNCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJIb3JuZSBEdXRyYSBpbcOzdmVpcyI+PHJlY3Qgd2lkdGg9IjgyOCIgaGVpZ2h0PSIzMjQiIHJ4PSIzIiBmaWxsPSIjNGI0OTQ3Ii8+PGcgZmlsbD0iI2Y4ZjdmMiIgZm9udC1mYW1pbHk9IkFyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmIj48dGV4dCB4PSIzNCIgeT0iMTg0IiBmb250LWZhbWlseT0iR2VvcmdpYSxzZXJpZiIgZm9udC1zaXplPSIxNDYiIGxldHRlci1zcGFjaW5nPSItMTgiPkhEPC90ZXh0Pjx0ZXh0IHg9IjI0NSIgeT0iMTI2IiBmb250LXNpemU9IjY3IiBsZXR0ZXItc3BhY2luZz0iLTIiPkhvcm5lIER1dHJhPC90ZXh0Pjx0ZXh0IHg9IjQ4OCIgeT0iMjMwIiBmb250LXNpemU9IjY0IiBmb250LXdlaWdodD0iNzAwIiBsZXR0ZXItc3BhY2luZz0iLTIiPmltw7N2ZWlzPC90ZXh0Pjx0ZXh0IHg9IjY0NiIgeT0iMjk2IiBmb250LXNpemU9IjM1IiBsZXR0ZXItc3BhY2luZz0iMSI+Q1JFQ0k8L3RleHQ+PC9nPjwvc3ZnPg==';
-    const blank={properties:[],owners:[],tenants:[],guarantors:[],contracts:[],deposits:[],tasks:[],inspections:[],maintenance:[],documents:[],notes:[],agenda:[],receipts:[],crmLeads:[],rentalCharges:[],payments:[],ownerTransfers:[],terminations:[]};
+    const blank={properties:[],owners:[],tenants:[],guarantors:[],contracts:[],deposits:[],tasks:[],inspections:[],maintenance:[],documents:[],notes:[],agenda:[],receipts:[],crmLeads:[],rentalCharges:[],payments:[],ownerTransfers:[],terminations:[],utilityRecords:[]};
     
     let db=JSON.parse(JSON.stringify(blank));
     window.DormusDB=db;
@@ -365,7 +407,7 @@ async function carregarDadosSupabase(){
   renderAll();
 }
     Object.keys(blank).forEach(key=>{if(!Array.isArray(db[key]))db[key]=[]});
-    const titles={home:'Dashboard',properties:'Imóveis',owners:'Proprietários',tenants:'Locatários',guarantors:'Fiadores',contracts:'Contratos',rents:'Financeiro',deposits:'Cauções',inspections:'Vistorias',maintenance:'Manutenções',notes:'Bloco de notas',agenda:'Agenda',receipts:'Recibos',crm:'CRM & Vendas',reports:'Relatórios',chats:'Chats'};
+    const titles={home:'Dashboard',properties:'Imóveis',owners:'Proprietários',tenants:'Locatários',guarantors:'Fiadores',contracts:'Contratos',rents:'Financeiro',deposits:'Cauções',inspections:'Vistorias',maintenance:'Manutenções',notes:'Bloco de notas',agenda:'Agenda',receipts:'Recibos',crm:'CRM & Vendas',reports:'Relatórios',chats:'Chats',assistant:'Assistente DORMUS',utilities:'Energia & Água'};
     const STORAGE_BUCKET='dormus';
     const LEGACY_FILE_DB='dormus-files-v1',LEGACY_FILE_STORE='attachments';
     let fileDbPromise;
@@ -564,7 +606,7 @@ async function carregarDadosSupabase(){
      function collectInspectionItems(){return [...document.querySelectorAll('[data-inspection-row]')].map(row=>({room:row.querySelector('[data-inspection-room]')?.value.trim()||'',item:row.querySelector('[data-inspection-item]')?.value.trim()||'',previous:row.querySelector('[data-inspection-previous]')?.value||'',current:row.querySelector('[data-inspection-current]')?.value||'',notes:row.querySelector('[data-inspection-notes]')?.value.trim()||''})).filter(x=>x.room||x.item||x.previous||x.current||x.notes)}
     function formFor(kind,r={}){
       if(['owner','tenant','guarantor'].includes(kind))return personFields(kind,r);
-      if(kind==='property')return `<div class="form-grid">${input('Nome / identificação','f-name',r.name)}${input('Código interno','f-code',r.code)}${input('Matrícula / registro','f-registration',r.registration)}${select('Tipo','f-type',['Apartamento','Casa','Sala comercial','Terreno','Galpão','Outro'],r.type)}${select('Status','f-status',['Disponível','Ocupado','Em manutenção','Inativo'],r.status||'Disponível')}${input('CEP','f-zip',r.zip)}${input('Endereço','f-address',r.address)}${input('Número','f-number',r.number)}${input('Complemento','f-complement',r.complement)}${input('Bairro','f-neighborhood',r.neighborhood)}${input('Cidade','f-city',r.city)}${input('Estado','f-state',r.state)}${input('Área','f-area',r.area)}${input('Quartos','f-rooms',r.rooms,'number','min="0"')}${input('Banheiros','f-bathrooms',r.bathrooms,'number','min="0"')}${input('Vagas de garagem','f-parking',r.parking,'number','min="0"')}${select('Mobiliado','f-furnished',['Não informado','Sim','Não'],r.furnished||'Não informado')}${input('Aluguel mensal','f-rent',r.rent,'number','min="0" step="0.01"')}${input('Condomínio','f-condominium',r.condominium,'number','min="0" step="0.01"')}${input('IPTU mensal','f-iptu',r.iptu,'number','min="0" step="0.01"')}<div class="form-field"><label>Proprietário</label><select id="f-owner">${opts('owners',r.ownerId)}</select></div>${textarea('Observações','f-notes',r.notes)}</div>`;
+      if(kind==='property')return `<div class="form-grid">${input('Nome / identificação','f-name',r.name)}${input('Código interno','f-code',r.code)}${input('Matrícula / registro','f-registration',r.registration)}${select('Tipo','f-type',['Apartamento','Casa','Sala comercial','Terreno','Galpão','Outro'],r.type)}${select('Status','f-status',['Disponível','Ocupado','Em manutenção','Inativo'],r.status||'Disponível')}${input('CEP','f-zip',r.zip)}${input('Endereço','f-address',r.address)}${input('Número','f-number',r.number)}${input('Complemento','f-complement',r.complement)}${input('Bairro','f-neighborhood',r.neighborhood)}${input('Cidade','f-city',r.city)}${input('Estado','f-state',r.state)}${input('Área','f-area',r.area)}${input('Quartos','f-rooms',r.rooms,'number','min="0"')}${input('Banheiros','f-bathrooms',r.bathrooms,'number','min="0"')}${input('Vagas de garagem','f-parking',r.parking,'number','min="0"')}${select('Mobiliado','f-furnished',['Não informado','Sim','Não'],r.furnished||'Não informado')}${input('Aluguel mensal','f-rent',r.rent,'number','min="0" step="0.01"')}${input('Condomínio','f-condominium',r.condominium,'number','min="0" step="0.01"')}${input('IPTU mensal','f-iptu',r.iptu,'number','min="0" step="0.01"')}<div class="form-field full utility-mini"><div class="utility-mini-title">⚡ Dados de energia e água</div></div>${input('CEMIG · ID eletrônico','f-cemig-electronic-id',r.cemigElectronicId)}${input('CEMIG · Nº da instalação','f-cemig-installation',r.cemigInstallation)}${input('SAAE · Nº da instalação / matrícula','f-saae-installation',r.saaeInstallation)}${input('SAAE · Nº do hidrômetro','f-saae-hydrometer',r.saaeHydrometer)}<div class="form-field"><label>Proprietário</label><select id="f-owner">${opts('owners',r.ownerId)}</select></div>${textarea('Observações','f-notes',r.notes)}</div>`;
       if(kind==='contract')return `<div class="form-grid"><div class="form-field"><label>Imóvel</label><select id="f-property">${opts('properties',r.propertyId)}</select></div><div class="form-field"><label>Proprietário</label><select id="f-owner">${opts('owners',r.ownerId)}</select></div><div class="form-field"><label>Locatário</label><select id="f-tenant">${opts('tenants',r.tenantId)}</select></div><div class="form-field"><label>Fiador</label><select id="f-guarantor">${opts('guarantors',r.guarantorId)}</select></div>${select('Tipo de contrato','f-contract-type',['Residencial','Comercial','Temporada','Outro'],r.contractType||'Residencial')}${input('Início da vigência','f-start',r.start,'date')}${input('Fim da vigência','f-end',r.end,'date')}${input('Aluguel vigente','f-rent',r.rent,'number','min="0" step="0.01"')}${input('Dia de vencimento','f-due-day',r.dueDay,'number','min="1" max="31"')}${input('Índice de reajuste','f-index',r.index)}${input('Próximo reajuste','f-adjustment',r.adjustment,'date')}${input('Taxa de administração','f-admin-fee',r.adminFee,'number','min="0" step="0.01"')}${select('Tipo de garantia','f-guarantee',['Caução','Fiador','Seguro-fiança','Título de capitalização','Sem garantia'],r.guarantee||'Caução')}${select('Status','f-status',['Rascunho','Ativo','Encerrado','Rescindido'],r.status||'Rascunho')}${textarea('Observações','f-notes',r.notes)}</div>`;
       if(kind==='deposit')return `<div class="form-grid"><div class="form-field"><label>Contrato</label><select id="f-contract">${opts('contracts',r.contractId)}</select></div><div class="form-field"><label>Imóvel</label><select id="f-property">${opts('properties',r.propertyId)}</select></div>${select('Tipo de garantia','f-type',['Caução em dinheiro','Título de capitalização','Outra garantia'],r.type||'Caução em dinheiro')}${input('Valor da caução','f-amount',r.amount,'number','min="0" step="0.01"')}${input('Data do recebimento','f-received-date',r.receivedDate,'date')}${select('Status','f-status',['Pendente','Recebido','Devolvido','Retido'],r.status||'Pendente')}${input('Valor devolvido','f-returned-amount',r.returnedAmount,'number','min="0" step="0.01"')}${input('Data da devolução','f-return-date',r.returnDate,'date')}${input('Correção / rendimentos','f-yield',r.yield,'number','step="0.01"')}${textarea('Observações','f-notes',r.notes)}</div>`;
        if(kind==='task'){const assigned=providerRecord(r.assigneeDocument||r.assignee),currentProvider=assigned?.document||r.assigneeDocument||'';return `<div class="form-grid">${input('Tarefa','f-title',r.title,'text','class="full"')}<div class="form-field"><label for="f-assignee">Prestador responsável</label><select id="f-assignee">${providerOptions(currentProvider,r.assignee)}</select><span class="attachments-help">A lista é a mesma dos prestadores disponíveis nos recibos.</span></div><div class="form-field"><label for="f-property">Imóvel relacionado</label><select id="f-property">${opts('properties',r.propertyId)}</select></div>${input('Prazo','f-due',r.due,'date')}${select('Prioridade','f-priority',['Baixa','Média','Alta'],r.priority||'Média')}${select('Status','f-status',['Aberta','Em andamento','Concluída'],r.status||'Aberta')}${textarea('Observações','f-notes',r.notes)}</div>`}
@@ -577,7 +619,7 @@ async function carregarDadosSupabase(){
     }
     function collect(kind){
        const common={id:uid()};if(kind==='owner'||kind==='tenant'||kind==='guarantor')return {...common,name:val('f-name'),personType:val('f-person-type'),document:val('f-document'),identity:val('f-identity'),birthDate:val('f-birth-date'),maritalStatus:val('f-marital-status'),phone:val('f-phone'),whatsapp:val('f-whatsapp'),email:val('f-email'),profession:val('f-profession'),company:val('f-company'),income:val('f-income'),zip:val('f-zip'),address:val('f-address'),number:val('f-number'),complement:val('f-complement'),neighborhood:val('f-neighborhood'),city:val('f-city'),state:val('f-state'),bank:val('f-bank'),agency:val('f-agency'),account:val('f-account'),pix:val('f-pix'),emergency:val('f-emergency'),references:val('f-references'),assets:val('f-assets'),notes:val('f-notes')};
-      if(kind==='property')return {...common,name:val('f-name'),code:val('f-code'),registration:val('f-registration'),type:val('f-type'),status:val('f-status'),zip:val('f-zip'),address:val('f-address'),number:val('f-number'),complement:val('f-complement'),neighborhood:val('f-neighborhood'),city:val('f-city'),state:val('f-state'),area:val('f-area'),rooms:val('f-rooms'),bathrooms:val('f-bathrooms'),parking:val('f-parking'),furnished:val('f-furnished'),rent:val('f-rent'),condominium:val('f-condominium'),iptu:val('f-iptu'),ownerId:val('f-owner'),notes:val('f-notes')};
+      if(kind==='property')return {...common,name:val('f-name'),code:val('f-code'),registration:val('f-registration'),type:val('f-type'),status:val('f-status'),zip:val('f-zip'),address:val('f-address'),number:val('f-number'),complement:val('f-complement'),neighborhood:val('f-neighborhood'),city:val('f-city'),state:val('f-state'),area:val('f-area'),rooms:val('f-rooms'),bathrooms:val('f-bathrooms'),parking:val('f-parking'),furnished:val('f-furnished'),rent:val('f-rent'),condominium:val('f-condominium'),iptu:val('f-iptu'),ownerId:val('f-owner'),cemigElectronicId:val('f-cemig-electronic-id'),cemigInstallation:val('f-cemig-installation'),saaeInstallation:val('f-saae-installation'),saaeHydrometer:val('f-saae-hydrometer'),notes:val('f-notes')};
       if(kind==='contract')return {...common,propertyId:val('f-property'),ownerId:val('f-owner'),tenantId:val('f-tenant'),guarantorId:val('f-guarantor'),contractType:val('f-contract-type'),start:val('f-start'),end:val('f-end'),rent:val('f-rent'),dueDay:val('f-due-day'),index:val('f-index'),adjustment:val('f-adjustment'),adminFee:val('f-admin-fee'),guarantee:val('f-guarantee'),status:val('f-status'),notes:val('f-notes')};
       if(kind==='deposit')return {...common,contractId:val('f-contract'),propertyId:val('f-property'),type:val('f-type'),amount:val('f-amount'),receivedDate:val('f-received-date'),status:val('f-status'),returnedAmount:val('f-returned-amount'),returnDate:val('f-return-date'),yield:val('f-yield'),retentionReason:val('f-retention-reason'),notes:val('f-notes')};
        if(kind==='task'){const provider=providerRecord(val('f-assignee'));return {...common,title:val('f-title'),assignee:provider?.name||val('f-assignee'),assigneeDocument:provider?.document||'',propertyId:val('f-property'),due:val('f-due'),priority:val('f-priority'),status:val('f-status'),notes:val('f-notes')}}
@@ -648,6 +690,7 @@ async function carregarDadosSupabase(){
 }
 
 function showLogin(message=''){
+  showPortalChooser();
   const screen=document.getElementById('login-screen');
   const app=document.querySelector('.app');
   if(screen)screen.hidden=false;
@@ -665,24 +708,48 @@ function hideLogin(){
   if(app)app.style.display='';
 }
 
-async function handleLogin(event){
+function showPortalChooser(){
+  document.getElementById('portal-chooser')?.removeAttribute('hidden');
+  document.getElementById('portal-login-imobiliaria')?.setAttribute('hidden','');
+  document.getElementById('portal-login-prestador')?.setAttribute('hidden','');
+}
+function selectLoginPortal(kind){
+  document.getElementById('portal-chooser')?.setAttribute('hidden','');
+  document.getElementById('portal-login-imobiliaria')?.toggleAttribute('hidden',kind!=='imobiliaria');
+  document.getElementById('portal-login-prestador')?.toggleAttribute('hidden',kind!=='prestador');
+  setTimeout(()=>document.getElementById(kind==='imobiliaria'?'login-username':'login-email')?.focus(),50);
+}
+async function handlePortalLogin(event,kind){
   event.preventDefault();
-  const email=document.getElementById('login-email')?.value.trim();
-  const password=document.getElementById('login-password')?.value||'';
-  const button=document.getElementById('login-button');
-  const errorEl=document.getElementById('login-error');
+  const button=document.getElementById(kind==='imobiliaria'?'login-button-imob':'login-button');
+  const errorEl=document.getElementById(kind==='imobiliaria'?'login-error-imob':'login-error');
   if(errorEl)errorEl.textContent='';
   if(button){button.disabled=true;button.textContent='Entrando...';}
-
   try{
-    const {error}=await supabaseClient.auth.signInWithPassword({email,password});
-    if(error)throw error;
+    let email='';
+    if(kind==='imobiliaria'){
+      const username=document.getElementById('login-username')?.value.trim().toLowerCase();
+      const password=document.getElementById('login-password-imob')?.value||'';
+      if(!username||!password)throw new Error('Preencha usuário e senha.');
+      const res=await fetch(SUPABASE_URL+'/functions/v1/dormus-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})});
+      const info=await res.json().catch(()=>({}));
+      if(!res.ok||!info?.email)throw new Error('Usuário ou senha inválidos.');
+      email=info.email;
+      const {error}=await supabaseClient.auth.signInWithPassword({email,password});
+      if(error)throw error;
+    }else{
+      email=document.getElementById('login-email')?.value.trim();
+      const password=document.getElementById('login-password')?.value||'';
+      const {error}=await supabaseClient.auth.signInWithPassword({email,password});
+      if(error)throw error;
+    }
   }catch(error){
     console.error('Erro no login:',error);
-    if(errorEl)errorEl.textContent='Não foi possível entrar. Confira o e-mail e a senha.';
-    if(button){button.disabled=false;button.textContent='Entrar';}
+    if(errorEl)errorEl.textContent='Não foi possível entrar. Confira os dados e tente novamente.';
+    if(button){button.disabled=false;button.textContent=kind==='imobiliaria'?'Entrar na imobiliária':'Entrar como prestador';}
   }
 }
+async function handleLogin(event){return handlePortalLogin(event,'prestador')}
 
 async function logoutDormus(){
   const {error}=await supabaseClient.auth.signOut();
@@ -716,6 +783,7 @@ async function initDormus(){
 
 async function enterDormus(session){
   if(!session)return;
+  window.DormusCurrentUser=session.user;
   hideLogin();
   const emailEl=document.getElementById('auth-email');
   if(emailEl)emailEl.textContent=session.user?.email||'Usuário';
@@ -2248,5 +2316,278 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
 })();
 </script>
 
+
+<style id="dormus-visual-theme-835">
+/* DORMUS 8.37 — apenas identidade visual/layout. Funcionalidades e IDs existentes permanecem intactos. */
+:root{
+  --ink:#eaf1ff!important;
+  --ink-2:#c8d4ea!important;
+  --paper:#050b18!important;
+  --card:#0b1428!important;
+  --line:#1b2a47!important;
+  --muted:#8295b5!important;
+  --brass:#8b5cf6!important;
+  --brass-2:#a78bfa!important;
+  --green:#073d3a!important;
+  --red:#3a1d2a!important;
+  --shadow:0 16px 42px rgba(0,0,0,.25)!important;
+}
+html,body{background:#050b18!important;color:#eaf1ff!important}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important}
+.app{background:#050b18!important}
+.side{width:258px!important;flex-basis:258px!important;background:linear-gradient(180deg,#071126 0%,#050b18 100%)!important;border-right:1px solid #182744!important;padding:18px 13px 18px!important;color:#dbe7fb!important}
+.brand{border-bottom:1px solid #ffffff10!important;margin-bottom:14px!important;padding:3px 9px 19px!important}
+.brand-mark{width:43px!important;height:43px!important;border:0!important;border-radius:12px!important;background:linear-gradient(135deg,#2563eb,#7c3aed)!important;color:#fff!important;font:700 23px Arial!important;box-shadow:0 8px 22px rgba(59,130,246,.24)!important}
+.brand strong{font:800 21px Arial!important;color:#fff!important;letter-spacing:-.4px}
+.brand small{color:#8295b5!important;font-size:9px!important;letter-spacing:1.2px!important}
+.nav-title{padding:11px 10px 8px!important;color:#566d91!important}
+.nav{gap:4px!important}
+.nav button{min-height:42px!important;border:1px solid transparent!important;border-radius:10px!important;padding:10px 12px!important;color:#b9c8df!important;background:transparent!important;font-size:14px!important;transition:.18s ease!important}
+.nav button:hover{background:#0c1930!important;color:#dfeaff!important;border-color:#173052!important}
+.nav button.active{background:linear-gradient(90deg,#30206d,#162a50)!important;color:#fff!important;border-color:#4c3a9c!important;box-shadow:inset 3px 0 0 #8b5cf6!important}
+.nav-icon{color:#7890b7!important;font-size:17px!important}.nav button.active .nav-icon{color:#9b7cff!important}
+.nav-chat-badge{background:#ef476f!important;color:#fff!important;border-radius:999px!important;padding:2px 6px!important;font-size:9px!important;margin-left:auto!important}
+.side-foot{border-top:1px solid #ffffff10!important;color:#6f84a5!important}
+.side-status-dot{background:#18d4a5!important;box-shadow:0 0 9px #18d4a5!important}
+.main{width:calc(100% - 258px)!important;max-width:none!important;background:#050b18!important;padding:0 30px 46px!important}
+.top{height:78px!important;background:#071126!important;border-bottom:1px solid #182744!important;margin:0 -30px!important;padding:0 30px!important;box-shadow:0 8px 30px rgba(0,0,0,.12)!important}
+.global-search{height:46px!important;width:min(610px,52vw)!important;background:#0d1930!important;border:1px solid #1b2b4a!important;border-radius:13px!important;color:#7890b7!important}
+.global-search input{color:#eaf1ff!important}.global-search input::placeholder{color:#667b9d!important}.global-search:focus-within{border-color:#4d4bd1!important;box-shadow:0 0 0 3px rgba(99,102,241,.10)!important}
+.top-actions{gap:8px!important}.top-icon{color:#9db0cf!important;background:transparent!important}.top-icon:hover{color:#fff!important}.top-icon i{background:#ef476f!important;box-shadow:0 0 8px #ef476f!important}
+.avatar{width:44px!important;height:44px!important;background:linear-gradient(135deg,#4338ca,#8b5cf6)!important;color:#fff!important;box-shadow:0 8px 22px rgba(99,102,241,.25)!important}
+.auth-user-display{display:flex!important;flex-direction:column!important;min-width:110px!important;max-width:180px!important;margin-left:0!important;line-height:1.15!important}
+.auth-user-display strong{color:#f3f7ff!important;font-size:13px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.auth-user-display small{color:#7187aa!important;font-size:10px!important;margin-top:4px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.auth-email{display:none!important}
+.view{padding-top:30px!important}
+.page-head h1{font:800 34px Arial!important;color:#f2f6ff!important;letter-spacing:-.8px!important}
+.eyebrow{color:#8b7cf6!important}.lead{color:#7f94b5!important}
+#home .dormus-home-head{position:relative;overflow:hidden;min-height:180px!important;margin-bottom:17px!important;padding:27px 29px!important;border:1px solid #283466!important;border-radius:17px!important;background:radial-gradient(circle at 82% 35%,rgba(111,76,255,.34),transparent 27%),linear-gradient(135deg,#111c57 0%,#16114b 48%,#0b1835 100%)!important;box-shadow:0 20px 50px rgba(25,20,85,.24)!important}
+#home .dormus-home-head:after{content:"";position:absolute;right:-70px;bottom:-120px;width:330px;height:330px;border:1px solid rgba(139,92,246,.28);border-radius:50%;box-shadow:0 0 0 30px rgba(139,92,246,.05),0 0 0 60px rgba(59,130,246,.04);pointer-events:none}
+#home .dormus-home-head>*{position:relative;z-index:1}
+#home .dormus-home-head h1{font-size:37px!important;margin-top:10px!important}.dormus-home-head h1 span{background:linear-gradient(90deg,#b8b4ff,#8b5cf6,#38bdf8);-webkit-background-clip:text;background-clip:text;color:transparent}
+#home .dormus-home-head .lead{max-width:660px;color:#b2c0dc!important}
+.button{border:1px solid #263858!important;background:#0d1930!important;color:#dce8fa!important;border-radius:10px!important;box-shadow:none!important}
+.button:hover{filter:none!important;transform:translateY(-1px)!important;border-color:#40567e!important;background:#111f39!important}
+.button-primary{background:linear-gradient(135deg,#4f46e5,#7c3aed)!important;border-color:#6d5ce7!important;color:#fff!important;box-shadow:0 8px 22px rgba(99,102,241,.22)!important}
+.button-brass{background:#102b3c!important;border-color:#165b71!important;color:#45d6ff!important}
+.button-danger{background:#3a1724!important;border-color:#71334c!important;color:#ff91ad!important}
+.button-quiet{background:transparent!important}
+.panel,.metric,.property,.dash-stat,.provider-restricted-card,.provider-restricted-service,.maint-ops19,.contract360-card,.contract360-kpi{background:#0b1428!important;border-color:#1b2c4a!important;box-shadow:0 10px 30px rgba(0,0,0,.18)!important;color:#eaf1ff!important}
+.panel{border-radius:15px!important}.panel-title{font:700 18px Arial!important;color:#edf3ff!important}.panel-kicker{color:#7187aa!important}
+.metric{border-radius:14px!important}.metric-label,.metric-meta{color:#7187aa!important}.metric-value{color:#f2f6ff!important}
+.dashboard-stats{gap:14px!important}.dash-stat{background:#0b1428!important;border-color:#1b2c4a!important}.dash-stat:hover{border-color:#334c78!important;background:#0e1930!important;box-shadow:0 12px 28px rgba(0,0,0,.28)!important}.dash-stat-value{color:#f3f7ff!important}.dash-stat-label{color:#8da1bf!important}.dash-stat-hint{color:#607797!important}.dash-stat>b{color:#8b7cf6!important}
+.dash-stat-icon.emerald{background:#073c38!important;color:#20e0b2!important}.dash-stat-icon.blue{background:#102c59!important;color:#59a7ff!important}.dash-stat-icon.amber{background:#402d0a!important;color:#ffb53e!important}.dash-stat-icon.violet{background:#281950!important;color:#c09aff!important}
+.bar-track,.hbar-track{background:#15243c!important}.bar-track i{background:linear-gradient(90deg,#8b5cf6,#38bdf8)!important}.hbar-track i{background:linear-gradient(90deg,#2563eb,#06b6d4)!important}.bar-label,.hbar-label{color:#8398b7!important}.bar-label strong,.hbar-label strong{color:#d7e4f8!important}
+.badge{background:#16253e!important;color:#9bb0ce!important}.badge.green{background:#083b37!important;color:#35e0b7!important}.badge.red{background:#3d1928!important;color:#ff8eaa!important}.badge.gold{background:#402d0b!important;color:#ffc25a!important}
+.quick-finance>div,.quick-actions button,.summary{background:#0e1930!important;border-color:#1c2d4b!important;color:#dce8fa!important}.quick-actions button{color:#c7d6ed!important}.quick-actions button:hover{background:#14233d!important;border-color:#36517c!important}
+.searchbar input,.toolbar-search,.filter-btn,.form-field input,.form-field select,.form-field textarea,.login-field input,.chat19-compose textarea{background:#0a1427!important;border-color:#223657!important;color:#eaf1ff!important}.searchbar input::placeholder,.toolbar-search::placeholder,.form-field input::placeholder,.form-field textarea::placeholder{color:#647a9d!important}
+.filter-btn{color:#9eb0ca!important}.filter-btn.active{background:#30206d!important;border-color:#6049a9!important;color:#fff!important}
+.table{color:#d8e4f5!important}.table th{color:#6f85a7!important}.table td{border-color:#1b2b46!important}.table tr:hover td{background:#0e1930!important}
+.property{overflow:hidden}.cover{background:linear-gradient(135deg,#101e36,#182b4c)!important}.cover:before{color:#667e9f!important}.property-name{color:#eef4ff!important}.property-address{color:#758bad!important}.property-data{border-color:#1b2b46!important}.property-data span{color:#7187aa!important}.property-data strong{color:#d9e5f7!important}.card-actions{border-color:#1b2b46!important}
+.maintenance-panel,.maintenance-table,.maint-ops19{background:#0b1428!important}.maintenance-table th,.maintenance-table td{border-color:#1b2b46!important}.maintenance-table td:first-child small{color:#7187aa!important}.maintenance-table .money{color:#65d8ff!important}
+.maint-ops19-head{border-color:#1b2b46!important}.maint-ops19-head h3,.maint-quote19-title strong{color:#e9f1ff!important}.maint-ops19-head p,.maint-quote19-title small,.maint-quote19-value small{color:#7187aa!important}.maint-quote19{border-color:#1b2b46!important}.quote-action19{background:#0f1c31!important;border-color:#263b5d!important;color:#bdd0e9!important}.quote-action19.approve{background:#083b37!important;border-color:#176b5b!important;color:#35e0b7!important}.quote-action19.reject{background:#3d1928!important;border-color:#71334c!important;color:#ff8eaa!important}.quote-action19.wait{background:#402d0b!important;border-color:#6b4b16!important;color:#ffc25a!important}
+.modal-bg{background:rgba(2,7,18,.78)!important}.modal{background:#0b1428!important;border-color:#263858!important;color:#eaf1ff!important}.modal h2{color:#f0f5ff!important}.modal-head{border-color:#1b2b46!important}.form-field label{color:#8197b7!important}.icon{background:#0e1a30!important;border-color:#263858!important;color:#dbe8fa!important}
+.notice{background:#3a2b0b!important;border-color:#71551a!important;color:#ffd071!important}.empty{background:#0e1930!important;color:#7187aa!important}.empty strong{color:#e7effb!important}
+.presentation-modal,.presentation-body{background:#0b1428!important;color:#eaf1ff!important}.presentation-head{background:linear-gradient(135deg,#151d58,#25124e)!important}.presentation-head p{color:#a8b8d2!important}.presentation-body{border-top:1px solid #1b2b46!important}.presentation-file,.presentation-grid>div{background:#0e1930!important;border-color:#1b2b46!important}.presentation-grid span{color:#7187aa!important}
+.hero{background:linear-gradient(135deg,#151d58,#21134c,#0c1932)!important}.hero .address{color:#a7b7d1!important}
+.provider-restricted-card,.provider-restricted-service{background:#0b1428!important;border-color:#1b2c4a!important}.provider-restricted-kpi{background:#0e1930!important;border-color:#1b2c4a!important}.provider-restricted-kpi span{color:#7187aa!important}.provider-restricted-kpi strong{color:#edf4ff!important}.provider-restricted-service h3{color:#edf4ff!important}.provider-restricted-service p{color:#7f95b4!important}.provider-restricted-meta div{background:#101d34!important}.provider-restricted-meta span{color:#7187aa!important}.provider-restricted-meta strong{color:#d7e5f8!important}
+.maintenance-control-provider,.received-quote-box,.provider-admin-banner{background:#0e1930!important;border-color:#263b5d!important}.maintenance-control-provider span,.maintenance-control-provider small,.provider-admin-banner-grid span{color:#7187aa!important}.maintenance-control-provider strong,.provider-admin-banner-head strong{color:#eaf2ff!important}.received-quote-box{background:#083b37!important;border-color:#176b5b!important}.received-quote-box span,.received-quote-box small{color:#71e5c8!important}.received-quote-box strong{color:#35e0b7!important}.provider-admin-banner.authorized{background:#083b37!important;border-color:#176b5b!important}.provider-admin-banner p{color:#9db0ca!important}
+.chat19-list,.chat-hub-messages{background:#071126!important;border-color:#1b2c4a!important}.chat19-bubble,.chat-hub-bubble{background:#101d34!important;border-color:#243958!important;color:#dce8fa!important}.chat19-msg.admin .chat19-bubble,.chat-hub-msg.admin .chat-hub-bubble{background:linear-gradient(135deg,#30206d,#1e275d)!important;border-color:#5846a8!important}.chat19-bubble strong,.chat-hub-bubble strong{color:#8ea4c2!important}.chat19-bubble small,.chat-hub-bubble small{color:#637b9e!important}
+.chat-hub-shell,.chat-hub-main,.chat-thread-list{background:#0b1428!important;border-color:#1b2c4a!important}.chat-thread{background:#0b1428!important;color:#dbe7f8!important;border-color:#1b2c4a!important}.chat-thread:hover,.chat-thread.active{background:#141e3c!important;border-color:#4c3a9c!important}.chat-thread-title strong{color:#edf4ff!important}.chat-thread-preview{color:#7187aa!important}.chat-thread-avatar{background:#21174b!important}
+.notifications-panel,.profile-menu{background:#0b1428!important;border-color:#263858!important;color:#eaf1ff!important;box-shadow:0 18px 50px rgba(0,0,0,.45)!important}.notifications-panel p,.profile-menu p{color:#7f94b4!important}.menu-action{background:#0f1c31!important;color:#dbe8fa!important;border-color:#243858!important}
+.toast19{background:#111d35!important}.toast19.success{background:#087f68!important}.toast19.error{background:#b82d55!important}
+.login-card{background:#0b1428!important;border-color:#263858!important;color:#eaf1ff!important}.login-title,.login-brand strong{color:#f0f5ff!important}.login-sub,.login-note{color:#8197b7!important}.login-brand-mark{background:linear-gradient(135deg,#2563eb,#7c3aed)!important;border:0!important;color:#fff!important}.login-brand small{color:#9b8cf8!important}.login-button{background:linear-gradient(135deg,#4f46e5,#7c3aed)!important;border-color:#6d5ce7!important}.login-error{color:#ff8eaa!important}
+#loading-bar{background:linear-gradient(90deg,#4f46e5,#8b5cf6,#22d3ee)!important}
+@media(max-width:760px){
+  .side{width:100%!important;background:#071126!important}.main{width:100%!important;padding:0 14px 30px!important}.top{margin:0 -14px!important;padding:0 14px!important}.global-search{left:14px!important;width:calc(100% - 220px)!important}.auth-user-display{display:none!important}
+  #home .dormus-home-head{padding:23px 19px!important}.dormus-home-head h1{font-size:29px!important}.page-head h1{font-size:29px!important}.dashboard-stats{grid-template-columns:1fr 1fr!important}.dashboard-columns{grid-template-columns:1fr!important}
+}
+@media(max-width:560px){.dashboard-stats{grid-template-columns:1fr!important}.global-search{width:calc(100% - 185px)!important}.top-actions{gap:3px!important}.avatar{width:40px!important;height:40px!important}}
+</style>
+
+
+<script id="dormus-836-assistant-utilities">
+(function(){
+  const escA=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const moneyA=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  function prop(id){return (window.DormusDB?.properties||[]).find(x=>String(x.id)===String(id))||null}
+  function person(kind,id){return (window.DormusDB?.[kind]||[]).find(x=>String(x.id)===String(id))||null}
+  function initUtilitySelect(){const s=document.getElementById('utility-property');if(!s)return;const props=window.DormusDB?.properties||[];s.innerHTML='<option value="">Selecione um imóvel</option>'+props.map(p=>`<option value="${escA(p.id)}">${escA(p.name||'Imóvel')} · ${escA([p.address,p.number,p.city].filter(Boolean).join(', '))}</option>`).join('');if(props.length&&!s.value){s.value=String(props[0].id);loadUtilityRecord()}}
+  function currentUtility(){const id=document.getElementById('utility-property')?.value;if(!id)return null;window.DormusDB.utilityRecords=Array.isArray(window.DormusDB.utilityRecords)?window.DormusDB.utilityRecords:[];let r=window.DormusDB.utilityRecords.find(x=>String(x.propertyId)===String(id));if(!r){r={id:'utility-'+id,propertyId:id};window.DormusDB.utilityRecords.push(r)}return r}
+  function fill(id,v){const e=document.getElementById(id);if(e)e.value=v??''}
+  window.loadUtilityRecord=function(){const r=currentUtility();if(!r)return;const p=prop(r.propertyId)||{};fill('utility-cemig-id',r.cemigElectronicId||p.cemigElectronicId);fill('utility-cemig-installation',r.cemigInstallation||p.cemigInstallation);fill('utility-cemig-holder',r.cemigHolder||'');fill('utility-cemig-debt',r.cemigDebt||'');fill('utility-saae-installation',r.saaeInstallation||p.saaeInstallation);fill('utility-saae-hydrometer',r.saaeHydrometer||p.saaeHydrometer);fill('utility-saae-holder',r.saaeHolder||'');fill('utility-saae-debt',r.saaeDebt||'')}
+  window.saveUtilityRecord=async function(){const r=currentUtility();if(!r){alert('Selecione um imóvel.');return}Object.assign(r,{cemigElectronicId:valU('utility-cemig-id'),cemigInstallation:valU('utility-cemig-installation'),cemigHolder:valU('utility-cemig-holder'),cemigDebt:valU('utility-cemig-debt'),saaeInstallation:valU('utility-saae-installation'),saaeHydrometer:valU('utility-saae-hydrometer'),saaeHolder:valU('utility-saae-holder'),saaeDebt:valU('utility-saae-debt'),updatedAt:new Date().toISOString()});const p=prop(r.propertyId);if(p){p.cemigElectronicId=r.cemigElectronicId;p.cemigInstallation=r.cemigInstallation;p.saaeInstallation=r.saaeInstallation;p.saaeHydrometer=r.saaeHydrometer}const ok=await save();if(ok)alert('Dados de energia e água salvos no imóvel.')}
+  const valU=id=>document.getElementById(id)?.value?.trim()||'';
+  function openUtility(){initUtilitySelect();loadUtilityRecord()}
+  const originalShow=window.showView;
+  window.showView=function(id){const r=originalShow(id);if(id==='utilities')setTimeout(openUtility,80);return r}
+  function addMsg(kind,text){const host=document.getElementById('assistant-messages');if(!host)return;const d=document.createElement('div');d.className='assistant-msg '+kind;d.innerHTML='<strong>'+ (kind==='user'?'Você':'Assistente') +'</strong><p>'+escA(text)+'</p>';host.appendChild(d);host.scrollTop=host.scrollHeight}
+  function answer(q){
+    const t=String(q||'').toLowerCase();const db=window.DormusDB||{};
+    if(/im[oó]ve|propriedade/.test(t)){const rows=db.properties||[];return rows.length?`Encontrei ${rows.length} imóvel(is):\n`+rows.slice(0,20).map(p=>`• ${p.name||'Sem nome'} — ${[p.address,p.number,p.city].filter(Boolean).join(', ')||'endereço não informado'} — ${p.status||'sem status'}`).join('\n'):'Não há imóveis cadastrados.'}
+    if(/contrat/.test(t)){const rows=db.contracts||[];const ativos=rows.filter(c=>/ativo/i.test(c.status||''));if(!rows.length)return'Não há contratos cadastrados.';return `Há ${rows.length} contrato(s), sendo ${ativos.length} ativo(s).\n`+ativos.slice(0,15).map(c=>`• ${nameU('properties',c.propertyId)} — ${nameU('tenants',c.tenantId)} — ${c.rent?moneyA(c.rent):'aluguel não informado'} — ${c.status||''}`).join('\n')}
+    if(/manuten/.test(t)){const rows=db.maintenance||[];const open=rows.filter(x=>!/conclu|cancel/i.test(x.status||''));return `Há ${open.length} manutenção(ões) aberta(s).\n`+(open.slice(0,15).map(x=>`• ${x.description||'Chamado'} — ${nameU('properties',x.propertyId)} — ${x.status||'Aberto'} — ${x.provider||'sem prestador'}`).join('\n')||'Nenhuma pendência aberta.')}
+    if(/cl[aá]usula|contrato/.test(t)){const c=(db.contracts||[]).slice().sort((a,b)=>String(b.start||'').localeCompare(String(a.start||'')))[0];if(!c)return'Não encontrei contratos para explicar.';const p=prop(c.propertyId)||{},o=person('owners',c.ownerId)||{},te=person('tenants',c.tenantId)||{};return `Contrato mais recente encontrado:\n\nImóvel: ${p.name||'—'}\nLocador: ${o.name||'—'}\nLocatário: ${te.name||'—'}\nVigência: ${c.start||'—'} até ${c.end||'—'}\nAluguel: ${c.rent?moneyA(c.rent):'—'}\nGarantia: ${c.guarantee||'—'}\nÍndice: ${c.index||'—'}\n\nO gerador de contrato do DORMUS possui cláusulas padronizadas. Para uma análise jurídica de uma cláusula específica, o texto deve ser conferido por profissional habilitado.`}
+    if(/d[eé]bito|pend[eê]ncia/.test(t)){const ms=(db.maintenance||[]).filter(x=>!/conclu|cancel/i.test(x.status||''));const pays=(db.payments||[]);return `No cadastro local, encontrei ${ms.length} manutenção(ões) em aberto e ${pays.length} pagamento(s) registrado(s). Para débitos CEMIG/SAAE, use a Central Energia & Água: o DORMUS não consulta dados externos automaticamente sem integração oficial/autorização.`}
+    return 'Posso consultar os dados locais do DORMUS. Tente perguntar sobre imóveis, contratos, locatários, proprietários, manutenções, cauções ou condições de um contrato.'
+  }
+  function nameU(kind,id){return (window.DormusDB?.[kind]||[]).find(x=>String(x.id)===String(id))?.name||'—'}
+  window.assistantAsk=function(q){const input=document.getElementById('assistant-input');if(input)input.value=q;addMsg('user',q);setTimeout(()=>addMsg('assistant',answer(q)),80)}
+  window.assistantSubmit=function(e){e.preventDefault();const input=document.getElementById('assistant-input');const q=input?.value.trim();if(!q)return;input.value='';addMsg('user',q);setTimeout(()=>addMsg('assistant',answer(q)),80)}
+  setTimeout(()=>{if(document.getElementById('utilities'))initUtilitySelect()},1200)
+})();
+</script>
+<script id="dormus-user-identity-835">
+(function(){
+  function cleanName(v){return String(v||'').trim().replace(/\s+/g,' ')}
+  function displayName(session){
+    const access=window.DormusProviderPortal?.access;
+    const meta=session?.user?.user_metadata||{};
+    return cleanName(access?.nome||meta.full_name||meta.fullName||meta.name||meta.nome||'') || cleanName((session?.user?.email||'').split('@')[0]) || 'Usuário';
+  }
+  function initials(name){
+    const parts=cleanName(name).split(' ').filter(Boolean);
+    if(!parts.length)return 'U';
+    return parts.length===1?parts[0].slice(0,2):parts.slice(0,2).map(x=>x[0]).join('');
+  }
+  function apply(session){
+    if(!session?.user)return;
+    const name=displayName(session);
+    const access=window.DormusProviderPortal?.access;
+    const role=access?.nome?'Prestador':'Equipe da imobiliária';
+    const n=document.getElementById('auth-name');if(n)n.textContent=name;
+    const r=document.getElementById('auth-role');if(r)r.textContent=role;
+    const a=document.getElementById('profile-button');if(a)a.textContent=initials(name).toUpperCase();
+    const h=document.getElementById('home-user-name');if(h)h.textContent=name;
+  }
+  async function sync(){
+    try{const s=(await supabaseClient.auth.getSession()).data?.session;if(s)apply(s)}catch(e){}
+  }
+  window.DormusApplyUserIdentity835=apply;
+  setTimeout(sync,1200);
+  if(window.supabaseClient?.auth?.onAuthStateChange)window.supabaseClient.auth.onAuthStateChange((_e,s)=>{if(s)setTimeout(()=>apply(s),150)});
+  setInterval(()=>{if(document.getElementById('auth-name')?.textContent==='Usuário')sync()},3000);
+})();
+</script>
+
+<script id="dormus-836-property-utility-view">
+(function(){
+  const old=window.propertyPresentation;
+  if(typeof old!=='function')return;
+  const e=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  window.propertyPresentation=function(r,files){const base=old(r,files);const u=(window.DormusDB?.utilityRecords||[]).find(x=>String(x.propertyId)===String(r.id))||{};return base+`<div class="showcase-section"><h3>Energia e água</h3><div class="presentation-grid">${[['CEMIG · ID eletrônico',r.cemigElectronicId||u.cemigElectronicId],['CEMIG · Instalação',r.cemigInstallation||u.cemigInstallation],['SAAE · Matrícula',r.saaeInstallation||u.saaeInstallation],['SAAE · Hidrômetro',r.saaeHydrometer||u.saaeHydrometer]].filter(x=>x[1]).map(x=>`<div class="presentation-item"><span>${e(x[0])}</span><strong>${e(x[1])}</strong></div>`).join('')||'<div class="empty">Nenhum identificador de energia/água cadastrado.</div>'}</div></div>`}
+})();
+</script>
+
+<style id="dormus-837-pro-suite-css">
+.smart-command{display:grid;grid-template-columns:1.35fr 1fr;gap:15px;margin:16px 0}.smart-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:0 8px 24px #20372d0b}.smart-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.smart-card-title{font-weight:800}.smart-card-kicker{font-size:11px;color:var(--muted);margin-top:3px}.smart-attention{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.smart-alert{border:1px solid var(--line);border-radius:11px;padding:10px;background:#faf8f1;cursor:pointer}.smart-alert:hover{transform:translateY(-1px);box-shadow:0 6px 18px #20372d0d}.smart-alert strong{display:block;font-size:19px}.smart-alert span{font-size:11px;color:var(--muted)}.smart-timeline{display:grid;gap:8px;max-height:245px;overflow:auto}.smart-timeline-row{display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)}.smart-timeline-row:last-child{border-bottom:0}.smart-dot{width:9px;height:9px;border-radius:50%;background:var(--brass);margin-top:5px;flex:0 0 auto}.smart-timeline-row strong{display:block;font-size:12px}.smart-timeline-row small{color:var(--muted);font-size:10px}.property-360-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.p360-modal{position:fixed;inset:0;background:#0c1710a8;z-index:10050;display:grid;place-items:center;padding:18px}.p360-box{width:min(1000px,100%);max-height:92vh;overflow:auto;background:var(--card);border-radius:18px;box-shadow:0 30px 90px #0007;padding:20px}.p360-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:12px 0}.p360-stat{padding:11px;border:1px solid var(--line);border-radius:10px;background:#f7f4ec}.p360-stat span{display:block;color:var(--muted);font-size:10px}.p360-stat strong{display:block;margin-top:5px;font-size:17px}.p360-sections{display:grid;grid-template-columns:1fr 1fr;gap:12px}.p360-section{border:1px solid var(--line);border-radius:12px;padding:13px}.p360-section h3{margin:0 0 9px;font-size:13px}.p360-list{display:grid;gap:7px;font-size:11px}.p360-item{padding:8px;border-radius:8px;background:#f8f6ef}.p360-item b{display:block}.maint-flow{display:inline-flex;gap:5px;align-items:center}.maint-flow button{padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:var(--card)}.doc-actions{display:flex;gap:7px;flex-wrap:wrap}.doc-drawer{position:fixed;right:18px;bottom:18px;z-index:10030;width:min(420px,calc(100vw - 36px));background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:0 20px 60px #0003;padding:16px}.doc-drawer h3{margin:0 0 5px}.doc-drawer p{font-size:11px;color:var(--muted);margin:0 0 12px}.doc-drawer .form-field{margin-bottom:9px}.doc-drawer select{width:100%}
+@media(max-width:900px){.smart-command,.p360-sections{grid-template-columns:1fr}.p360-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.smart-attention{grid-template-columns:1fr}.p360-grid{grid-template-columns:1fr 1fr}.p360-box{padding:14px}}
+</style>
+
+<script id="dormus-837-pro-suite">
+(function(){
+  const E=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+  const db=()=>window.DormusDB||{};
+  const name=(k,id)=>{const r=(db()[k]||[]).find(x=>String(x.id)===String(id));return r?.name||r?.title||'—'};
+  const money=v=>Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  const date=v=>{if(!v)return '—';try{return new Date(String(v).slice(0,10)+'T12:00:00').toLocaleDateString('pt-BR')}catch{return String(v)}};
+  function ensureSmart(){
+    const home=document.getElementById('home'); if(!home||document.getElementById('dormus-smart-command'))return;
+    const anchor=home.querySelector('.dashboard-stats'); if(!anchor)return;
+    const wrap=document.createElement('div');wrap.id='dormus-smart-command';wrap.className='smart-command';
+    wrap.innerHTML=`<section class="smart-card"><div class="smart-card-head"><div><div class="smart-card-title">O que precisa da sua atenção?</div><div class="smart-card-kicker">Indicadores calculados a partir dos dados do DORMUS.</div></div><button class="button button-small" onclick="showView('assistant')">🤖 Perguntar</button></div><div class="smart-attention" id="smart-attention-grid"></div></section><section class="smart-card"><div class="smart-card-head"><div><div class="smart-card-title">Últimas movimentações</div><div class="smart-card-kicker">Resumo dos registros mais recentes.</div></div></div><div class="smart-timeline" id="smart-timeline"></div></section>`;
+    anchor.insertAdjacentElement('afterend',wrap);
+  }
+  function renderSmart(){
+    ensureSmart();
+    const d=db(), props=d.properties||[], contracts=d.contracts||[], maint=d.maintenance||[], charges=d.rentalCharges||[], terms=d.terminations||[];
+    const now=new Date();
+    const active=contracts.filter(c=>/ativo|vencendo/i.test(c.status||''));
+    const exp=active.filter(c=>c.end&&((new Date(c.end+'T12:00:00')-now)/86400000)>=0&&((new Date(c.end+'T12:00:00')-now)/86400000)<=30).length;
+    const openMaint=maint.filter(m=>!/conclu|cancel/i.test(m.status||''));
+    const overdue=charges.filter(c=>/atras|vencid/i.test(c.status||'')).length;
+    const pendingTerms=terms.filter(t=>!/conclu|final/i.test(t.status||'')).length;
+    const alerts=[
+      {n:exp,l:'contratos vencendo em 30 dias',v:'contracts'},
+      {n:openMaint.length,l:'manutenções abertas',v:'maintenance'},
+      {n:overdue,l:'cobranças marcadas como atrasadas',v:'rents'},
+      {n:pendingTerms,l:'encerramentos pendentes',v:'terminations'}
+    ];
+    const ag=document.getElementById('smart-attention-grid');if(ag)ag.innerHTML=alerts.map(a=>`<div class="smart-alert" onclick="showView('${E(a.v)}')"><strong>${a.n}</strong><span>${E(a.l)}</span></div>`).join('');
+    const events=[];
+    props.forEach(x=>events.push({d:x.updatedAt||x.createdAt||'',icon:'🏠',t:x.name||'Imóvel',s:'Imóvel cadastrado/atualizado'}));
+    contracts.forEach(x=>events.push({d:x.updatedAt||x.start||'',icon:'📄',t:name('properties',x.propertyId),s:'Contrato'}));
+    maint.forEach(x=>events.push({d:x.updatedAt||x.date||'',icon:'🔧',t:x.description||'Manutenção',s:`${name('properties',x.propertyId)} · ${x.status||'Aberto'}`}));
+    charges.forEach(x=>events.push({d:x.updatedAt||x.dueDate||x.date||'',icon:'💰',t:name('properties',x.propertyId),s:`Cobrança · ${x.status||'registrada'}`}));
+    events.sort((a,b)=>String(b.d).localeCompare(String(a.d)));const tl=document.getElementById('smart-timeline');
+    if(tl)tl.innerHTML=events.slice(0,8).map(x=>`<div class="smart-timeline-row"><span class="smart-dot"></span><div><strong>${x.icon} ${E(x.t)}</strong><small>${E(x.s)} · ${E(date(x.d))}</small></div></div>`).join('')||'<div class="smart-timeline-row"><div><strong>Sem movimentações</strong><small>Cadastros e alterações aparecerão aqui.</small></div></div>';
+  }
+  function ensureP360(){
+    if(document.getElementById('dormus-p360'))return;
+    const d=document.createElement('div');d.id='dormus-p360';d.className='p360-modal';d.hidden=true;d.innerHTML='<div class="p360-box"><div id="p360-content"></div></div>';d.addEventListener('click',e=>{if(e.target===d)closeP360()});document.body.appendChild(d);
+  }
+  window.closeP360=function(){const e=document.getElementById('dormus-p360');if(e)e.hidden=true};
+  window.openProperty360=function(id){
+    ensureP360();const d=db(),p=(d.properties||[]).find(x=>String(x.id)===String(id));if(!p)return;
+    const owner=name('owners',p.ownerId), cont=(d.contracts||[]).find(c=>String(c.propertyId)===String(id)&&/ativo|vencendo/i.test(c.status||''));
+    const tenant=cont?name('tenants',cont.tenantId):'—';const ms=(d.maintenance||[]).filter(x=>String(x.propertyId)===String(id));const ins=(d.inspections||[]).filter(x=>String(x.propertyId)===String(id));const charges=(d.rentalCharges||[]).filter(x=>String(x.propertyId)===String(id));const docs=(d.documents||[]).filter(x=>String(x.propertyId)===String(id)||String(x.linked||'').toLowerCase().includes(String(p.name||'').toLowerCase()));
+    const u=(d.utilityRecords||[]).find(x=>String(x.propertyId)===String(id))||{};
+    const el=document.getElementById('p360-content');el.innerHTML=`<div class="page-head"><div><div class="eyebrow">Ficha 360º</div><h1>${E(p.name||'Imóvel')}</h1><p class="lead">${E([p.address,p.number,p.neighborhood,p.city].filter(Boolean).join(', '))}</p></div><div class="doc-actions"><button class="button button-small" onclick="openDocumentDrawer('${E(id)}')">📄 Gerar documento</button><button class="button button-small" onclick="showView('utilities');closeP360()">⚡ Energia & Água</button><button class="button button-small" onclick="closeP360()">Fechar</button></div></div><div class="p360-grid"><div class="p360-stat"><span>Status</span><strong>${E(p.status||'—')}</strong></div><div class="p360-stat"><span>Proprietário</span><strong>${E(owner)}</strong></div><div class="p360-stat"><span>Locatário</span><strong>${E(tenant)}</strong></div><div class="p360-stat"><span>Aluguel</span><strong>${cont?.rent?money(cont.rent):(p.rent?money(p.rent):'—')}</strong></div></div><div class="p360-sections"><section class="p360-section"><h3>📄 Contrato</h3><div class="p360-list">${cont?`<div class="p360-item"><b>${E(cont.status||'Ativo')}</b>${E(date(cont.start))} → ${E(date(cont.end))}<br>Garantia: ${E(cont.guarantee||'—')}</div>`:'<div class="p360-item">Nenhum contrato ativo.</div>'}</div></section><section class="p360-section"><h3>🔧 Manutenções</h3><div class="p360-list">${ms.slice(0,8).map(x=>`<div class="p360-item"><b>${E(x.description||'Chamado')}</b>${E(x.status||'Aberto')} · ${E(x.priority||'Média')} · ${x.cost?money(x.cost):'sem custo'}</div>`).join('')||'<div class="p360-item">Nenhuma manutenção registrada.</div>'}</div></section><section class="p360-section"><h3>⚡ Energia e água</h3><div class="p360-list"><div class="p360-item"><b>CEMIG</b>ID eletrônico: ${E(p.cemigElectronicId||u.cemigElectronicId||'—')}<br>Instalação: ${E(p.cemigInstallation||u.cemigInstallation||'—')}<br>Débito registrado: ${E(u.cemigDebt||'0')}</div><div class="p360-item"><b>SAAE</b>Matrícula: ${E(p.saaeInstallation||u.saaeInstallation||'—')}<br>Hidrômetro: ${E(p.saaeHydrometer||u.saaeHydrometer||'—')}<br>Débito registrado: ${E(u.saaeDebt||'0')}</div></div></section><section class="p360-section"><h3>📋 Vistorias e documentos</h3><div class="p360-list"><div class="p360-item"><b>${ins.length}</b> vistoria(s) registrada(s)</div><div class="p360-item"><b>${docs.length}</b> documento(s) relacionado(s)</div><div class="p360-item"><b>${charges.length}</b> cobrança(s) relacionada(s)</div></div></section></div>`;document.getElementById('dormus-p360').hidden=false;
+  };
+  function addP360Buttons(){
+    document.querySelectorAll('#properties .property').forEach(card=>{if(card.querySelector('[data-p360]'))return;const b=card.querySelector('.card-actions');const cover=card.querySelector('[data-property-cover]');const id=cover?.dataset.propertyCover;if(!b||!id)return;const x=document.createElement('button');x.className='button button-small';x.dataset.p360='1';x.textContent='Ficha 360º';x.onclick=()=>openProperty360(id);b.appendChild(x)});
+  }
+  const oldRenderProperties=window.renderProperties;if(typeof oldRenderProperties==='function')window.renderProperties=function(){oldRenderProperties();setTimeout(addP360Buttons,30)};
+  window.advanceMaintenance=function(id){const m=(db().maintenance||[]).find(x=>String(x.id)===String(id));if(!m)return;const flow=['Aberto','Em andamento','Aguardando aprovação','Concluído'];let i=flow.findIndex(x=>String(x).toLowerCase()===String(m.status||'Aberto').toLowerCase());if(i<0)i=0;m.status=flow[(i+1)%flow.length];m.updatedAt=new Date().toISOString();if(typeof save==='function')save().then(()=>{dormusToast?.('Status atualizado: '+m.status);if(typeof renderMaintenance==='function')renderMaintenance();renderSmart()});};
+  function addMaintFlow(){document.querySelectorAll('#maintenance-list tbody tr').forEach(tr=>{if(tr.querySelector('.maint-flow'))return;const cells=tr.querySelectorAll('td');const btn=cells[cells.length-1];const action=btn?.querySelector('button[onclick*="openPresentation"]');const match=action?.getAttribute('onclick')?.match(/'maintenance','([^']+)'/);if(!match||!btn)return;const d=document.createElement('div');d.className='maint-flow';d.innerHTML=`<button title="Avançar fluxo" onclick="advanceMaintenance('${E(match[1])}')">Avançar ▶</button>`;btn.appendChild(d)})}
+  const oldRM=window.renderMaintenance;if(typeof oldRM==='function')window.renderMaintenance=function(){oldRM();setTimeout(addMaintFlow,25)};
+  window.openDocumentDrawer=function(propertyId){
+    let d=document.getElementById('dormus-doc-drawer');if(!d){d=document.createElement('div');d.id='dormus-doc-drawer';d.className='doc-drawer';document.body.appendChild(d)}
+    d.innerHTML=`<h3>📄 Gerar documento</h3><p>Documento rápido baseado nos dados já cadastrados no DORMUS.</p><div class="form-field"><label>Tipo</label><select id="doc-type"><option value="dossier">Dossiê do imóvel</option><option value="closure">Checklist de encerramento</option><option value="maintenance">Relatório de manutenção</option><option value="utilities">Relatório de energia e água</option></select></div><div class="doc-actions"><button class="button button-primary" onclick="generateDormusDocument('${E(propertyId)}');document.getElementById('dormus-doc-drawer')?.remove()">Gerar / Imprimir</button><button class="button" onclick="this.closest('.doc-drawer').remove()">Cancelar</button></div>`;
+  };
+  window.generateDormusDocument=function(propertyId){
+    const d=db();
+    const p=(d.properties||[]).find(x=>String(x.id)===String(propertyId));
+    if(!p)return;
+    const type=document.getElementById('doc-type')?.value||'dossier';
+    const u=(d.utilityRecords||[]).find(x=>String(x.propertyId)===String(propertyId))||{};
+    const ms=(d.maintenance||[]).filter(x=>String(x.propertyId)===String(propertyId));
+    const c=(d.contracts||[]).find(x=>String(x.propertyId)===String(propertyId)&&/ativo|vencendo/i.test(x.status||''));
+    const title={dossier:'Dossiê do imóvel',closure:'Checklist de encerramento',maintenance:'Relatório de manutenção',utilities:'Relatório de energia e água'}[type]||'Documento DORMUS';
+    const rows=[];
+    rows.push('<h1>'+E(title)+'</h1>');
+    rows.push('<h2>'+E(p.name||'Imóvel')+'</h2>');
+    rows.push('<p>'+E([p.address,p.number,p.neighborhood,p.city].filter(Boolean).join(', '))+'</p>');
+    if(type==='dossier'){
+      rows.push('<h3>Cadastro</h3><p>Status: '+E(p.status||'—')+'<br>Proprietário: '+E(name('owners',p.ownerId))+'<br>Locatário: '+(c?name('tenants',c.tenantId):'—')+'<br>Aluguel: '+(c?.rent?money(c.rent):(p.rent?money(p.rent):'—'))+'</p>');
+      rows.push('<h3>Energia e água</h3><p>CEMIG: '+E(p.cemigInstallation||u.cemigInstallation||'—')+' · ID eletrônico: '+E(p.cemigElectronicId||u.cemigElectronicId||'—')+'<br>SAAE: '+E(p.saaeInstallation||u.saaeInstallation||'—')+' · Hidrômetro: '+E(p.saaeHydrometer||u.saaeHydrometer||'—')+'</p>');
+    }
+    if(type==='closure'){
+      rows.push('<h3>Checklist</h3><ul><li>☐ Vistoria final</li><li>☐ Chaves entregues</li><li>☐ CEMIG verificada</li><li>☐ SAAE verificado</li><li>☐ Débitos verificados</li><li>☐ Caução conferida</li><li>☐ Contrato encerrado</li></ul>');
+    }
+    if(type==='maintenance'){
+      const html=ms.map(x=>'<p><b>'+E(x.description||'Chamado')+'</b> — '+E(x.status||'Aberto')+' — '+E(x.priority||'Média')+' — '+(x.cost?money(x.cost):'sem custo')+'</p>').join('')||'<p>Nenhuma manutenção registrada.</p>';
+      rows.push('<h3>Manutenções</h3>'+html);
+    }
+    if(type==='utilities'){
+      rows.push('<h3>CEMIG</h3><p>ID eletrônico: '+E(p.cemigElectronicId||u.cemigElectronicId||'—')+'<br>Instalação: '+E(p.cemigInstallation||u.cemigInstallation||'—')+'<br>Débito registrado: '+E(u.cemigDebt||'0')+'</p>');
+      rows.push('<h3>SAAE</h3><p>Matrícula: '+E(p.saaeInstallation||u.saaeInstallation||'—')+'<br>Hidrômetro: '+E(p.saaeHydrometer||u.saaeHydrometer||'—')+'<br>Débito registrado: '+E(u.saaeDebt||'0')+'</p>');
+    }
+    const w=window.open('','_blank','width=900,height=700');
+    if(!w){alert('Permita pop-ups para gerar o documento.');return}
+    w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+E(title)+'</title><style>body{font:14px Arial;color:#20372d;padding:40px;line-height:1.6}h1{font:28px Georgia}h2{font:21px Georgia;border-bottom:1px solid #ddd;padding-bottom:8px}h3{margin-top:25px;color:#496b59}li{margin:7px 0}@media print{button{display:none}}</style></head><body>'+rows.join('')+'<p style="margin-top:50px;color:#777">Gerado pelo DORMUS em '+new Date().toLocaleString('pt-BR')+'</p><button onclick="print()">Imprimir / Salvar PDF</button></body></html>');
+    w.document.close();
+  };
+  function enhanceAssistant(){
+    if(window.__dormus837Assistant)return;window.__dormus837Assistant=true;const old=window.assistantSubmit;window.assistantSubmit=function(e){if(e)e.preventDefault();const input=document.getElementById('assistant-input');const q=input?.value.trim();if(!q)return;input.value='';const add=window.assistantAsk;add(q)};
+  }
+  const oldShow=window.showView;if(typeof oldShow==='function'&&!window.__dormus837Show){window.__dormus837Show=true;window.showView=function(id){const r=oldShow(id);setTimeout(()=>{if(id==='home')renderSmart();if(id==='properties')addP360Buttons();if(id==='maintenance')addMaintFlow()},70);return r}}
+  function boot(){ensureSmart();renderSmart();addP360Buttons();addMaintFlow();enhanceAssistant()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,700));else setTimeout(boot,700);
+  setInterval(()=>{if(document.querySelector('.view.active')?.id==='home')renderSmart()},8000);
+})();
+</script>
 </body>
 </html>
