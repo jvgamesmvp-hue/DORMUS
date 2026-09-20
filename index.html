@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.37</title>
+  <title>Dormus | Gestão imobiliária · 8.38</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -2589,5 +2589,209 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sa
   setInterval(()=>{if(document.querySelector('.view.active')?.id==='home')renderSmart()},8000);
 })();
 </script>
+
+
+<style id="dormus-838-provider-pro-css">
+/* DORMUS 8.38 — Portal do Prestador: visual profissional, alto contraste e mobile-first */
+body.provider-mode{
+  --provider-bg:#07111f!important;--provider-panel:#0d1b2f!important;--provider-panel-2:#10243c!important;
+  --provider-line:#203b5b!important;--provider-text:#f4f8ff!important;--provider-muted:#91a8c5!important;
+  --provider-primary:#4f7cff!important;--provider-primary-2:#7c5cff!important;--provider-accent:#20d6a3!important;
+  background:var(--provider-bg)!important;color:var(--provider-text)!important;
+}
+body.provider-mode .app{background:linear-gradient(180deg,#07111f 0%,#081526 100%)!important}
+body.provider-mode .side{background:linear-gradient(180deg,#081426 0%,#07111f 100%)!important;border-right:1px solid #18304e!important}
+body.provider-mode .brand-mark{background:linear-gradient(135deg,#4f7cff,#7c5cff)!important;box-shadow:0 8px 24px #4f7cff3d!important}
+body.provider-mode .brand strong{color:#fff!important}
+body.provider-mode .brand small{color:#8fa9cb!important}
+body.provider-mode .nav-title{color:#6e89aa!important}
+body.provider-mode .nav button{min-height:48px!important;border-radius:13px!important;color:#b8c9df!important;font-weight:700!important}
+body.provider-mode .nav button:hover{background:#0e2037!important;border-color:#21466d!important}
+body.provider-mode .nav button.active{background:linear-gradient(135deg,#1b3770,#27225e)!important;border-color:#4f7cff!important;box-shadow:inset 3px 0 0 #20d6a3,0 8px 24px #0003!important;color:#fff!important}
+body.provider-mode .nav button.active .nav-icon{color:#20d6a3!important}
+body.provider-mode .side-foot{color:#718aa9!important}
+body.provider-mode .main{width:calc(100% - 258px)!important;background:transparent!important;padding:0 30px 50px!important}
+body.provider-mode .top{background:#081426!important;border-color:#18304e!important}
+body.provider-mode .global-search{display:none!important}
+body.provider-mode .top-actions .top-icon{display:none!important}
+body.provider-mode .top-actions{margin-left:auto!important}
+body.provider-mode .auth-user-display strong{color:#fff!important}
+body.provider-mode .auth-user-display small{color:#86a0bf!important}
+body.provider-mode .avatar{background:linear-gradient(135deg,#4f7cff,#7c5cff)!important}
+body.provider-mode .view{padding-top:24px!important}
+body.provider-mode .page-head{margin-bottom:18px!important}
+body.provider-mode .page-head h1{font-size:32px!important;color:#f7fbff!important}
+body.provider-mode .page-head .eyebrow{color:#20d6a3!important}
+body.provider-mode .page-head .lead{color:#91a8c5!important}
+/* Cabeçalho do portal */
+body.provider-mode #provider-maintenance-view .provider-portal-shell{max-width:1180px;margin:0 auto}
+body.provider-mode #provider-maintenance-view .page-head{padding:22px 24px;border:1px solid #1d395b;border-radius:18px;background:radial-gradient(circle at 88% 15%,#4f7cff30,transparent 28%),linear-gradient(135deg,#0d2440,#0b1830);box-shadow:0 18px 50px #0003}
+body.provider-mode #provider-maintenance-view .page-head h1{margin-top:6px;font-size:34px!important}
+body.provider-mode #provider-maintenance-view .page-head .lead{max-width:700px}
+/* KPIs */
+body.provider-mode .provider-portal-kpis{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 14px!important}
+body.provider-mode .provider-portal-kpis .metric{min-height:104px!important;padding:16px!important;background:linear-gradient(145deg,#0e2036,#0b1729)!important;border:1px solid #1c3858!important;border-radius:16px!important;box-shadow:0 10px 30px #0002!important}
+body.provider-mode .provider-portal-kpis .metric-label{color:#8da6c4!important;font-weight:700!important}
+body.provider-mode .provider-portal-kpis .metric-value{color:#fff!important;font:800 30px Arial!important;margin-top:12px!important}
+body.provider-mode .provider-portal-kpis .metric-meta{color:#6883a5!important}
+/* Painel e cartões */
+body.provider-mode #provider-maintenance-view .panel{background:#0b182b!important;border:1px solid #1b3655!important;box-shadow:0 14px 40px #0003!important;border-radius:18px!important;padding:18px!important}
+body.provider-mode #provider-maintenance-view .panel-title{color:#f2f7ff!important;font-size:18px!important}
+body.provider-mode #provider-maintenance-view .panel-kicker{color:#7893b4!important}
+body.provider-mode #provider-maintenance-view .panel-head{align-items:center!important}
+body.provider-mode #provider-maintenance-view .panel-head .button{min-height:42px!important}
+body.provider-mode .provider-service-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px!important}
+body.provider-mode .provider-service-card{position:relative!important;overflow:hidden!important;background:linear-gradient(160deg,#0e2035,#0a1728)!important;border:1px solid #1d3b5c!important;border-radius:18px!important;padding:18px!important;box-shadow:0 14px 34px #0003!important;transition:.18s ease!important}
+body.provider-mode .provider-service-card:hover{transform:translateY(-2px)!important;border-color:#335b89!important;box-shadow:0 18px 42px #0004!important}
+body.provider-mode .provider-service-card.is-urgent{border-color:#b65c73!important;box-shadow:0 14px 34px #7b1f3d22!important}
+body.provider-mode .provider-service-top{gap:12px!important;align-items:flex-start!important}
+body.provider-mode .provider-service-avatar{width:46px!important;height:46px!important;display:grid!important;place-items:center!important;flex:0 0 46px!important;border-radius:14px!important;background:linear-gradient(135deg,#16385d,#25306d)!important;border:1px solid #315987!important;font-size:21px!important}
+body.provider-mode .provider-service-heading strong{color:#f4f8ff!important;font-size:16px!important;line-height:1.3!important}
+body.provider-mode .provider-service-heading small{color:#8fa7c4!important;font-size:11px!important;margin-top:5px!important}
+body.provider-mode .provider-service-location{background:#0a1728!important;border:1px solid #1a3452!important;border-radius:12px!important;padding:11px!important;margin-top:12px!important}
+body.provider-mode .provider-service-location strong{color:#e8f0fb!important}
+body.provider-mode .provider-service-location small{color:#819bb9!important}
+body.provider-mode .provider-service-meta{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;margin-top:10px!important}
+body.provider-mode .provider-service-meta>div{background:#0c1b2e!important;border:1px solid #1a3451!important;border-radius:10px!important;padding:9px!important}
+body.provider-mode .provider-service-meta span{color:#718aa9!important;font-size:9px!important;text-transform:uppercase!important;letter-spacing:.5px!important}
+body.provider-mode .provider-service-meta strong{color:#dce8f6!important;font-size:12px!important;margin-top:3px!important;display:block!important}
+body.provider-mode .provider-service-description{margin-top:11px!important;padding-top:11px!important;border-top:1px solid #1a3451!important}
+body.provider-mode .provider-service-description strong{color:#b8cce4!important;font-size:11px!important}
+body.provider-mode .provider-service-description p{color:#91a8c5!important;font-size:12px!important;line-height:1.55!important;margin:5px 0 0!important;white-space:pre-wrap!important}
+body.provider-mode .provider-service-actions{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;margin-top:14px!important}
+body.provider-mode .provider-service-actions .button{min-height:44px!important;border-radius:11px!important;padding:9px 10px!important;font-size:12px!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important}
+body.provider-mode .provider-service-actions .button-primary{background:linear-gradient(135deg,#4f7cff,#6756e8)!important;border-color:#688bff!important}
+body.provider-mode .provider-service-actions .button-quote{background:#0c2e35!important;border-color:#1d665e!important;color:#45dfb7!important}
+body.provider-mode .provider-chat-button19{background:#19285a!important;border-color:#4554a5!important;color:#b8c4ff!important}
+body.provider-mode .provider-service-badges{gap:6px!important}
+body.provider-mode .provider-service-badge{background:#172a43!important;color:#b6cbe4!important;border:1px solid #284667!important}
+body.provider-mode .provider-priority-urgent{background:#4b1e2c!important;color:#ff9fb6!important;border-color:#7d354c!important}
+body.provider-mode .provider-priority-high{background:#4a2f0c!important;color:#ffc766!important;border-color:#765019!important}
+body.provider-mode .provider-priority-medium{background:#152c47!important;color:#79b7ff!important;border-color:#2d547e!important}
+body.provider-mode .provider-priority-low{background:#12332d!important;color:#5fe2bd!important;border-color:#216a58!important}
+body.provider-mode .provider-admin-banner{background:#0d2237!important;border-color:#245076!important;color:#cfe0f3!important;border-radius:12px!important}
+body.provider-mode .provider-admin-banner.authorized{background:#0b302c!important;border-color:#1a6b5c!important}
+body.provider-mode .provider-admin-banner-head strong{color:#eef7ff!important}
+body.provider-mode .provider-admin-banner p{color:#a7bdd6!important}
+body.provider-mode .provider-decision19.wait{background:#4a330b!important;color:#ffd06b!important}
+body.provider-mode .provider-decision19.ok{background:#0b382f!important;color:#55e4bd!important}
+body.provider-mode .provider-decision19.no{background:#4a1c2c!important;color:#ff9ab2!important}
+body.provider-mode .provider-service-empty{padding:42px 18px!important;text-align:center!important;background:#0b192b!important;border:1px dashed #294866!important;border-radius:14px!important;color:#8da5c2!important;line-height:1.6!important}
+body.provider-mode .provider-service-empty strong{color:#f2f7ff!important}
+/* Campos: nunca deixar texto branco sobre fundo branco */
+body.provider-mode input,body.provider-mode select,body.provider-mode textarea,
+body.provider-mode .form-field input,body.provider-mode .form-field select,body.provider-mode .form-field textarea,
+body.provider-mode .chat-hub-compose textarea,body.provider-mode .chat19-compose textarea{
+  background:#081729!important;color:#f4f8ff!important;border:1px solid #2a4868!important;border-radius:12px!important;outline:none!important;
+}
+body.provider-mode input:focus,body.provider-mode select:focus,body.provider-mode textarea:focus{border-color:#5f84ff!important;box-shadow:0 0 0 3px #5f84ff22!important}
+body.provider-mode input::placeholder,body.provider-mode textarea::placeholder{color:#6883a5!important;opacity:1!important}
+body.provider-mode .form-field label{color:#9db4cf!important}
+body.provider-mode .access-help{color:#7894b4!important;background:#0b1c30!important;border-color:#203c5b!important}
+/* Modais do prestador */
+body.provider-mode .modal-bg{background:#020914d9!important;backdrop-filter:blur(5px)!important}
+body.provider-mode .modal{background:#0b182b!important;border-color:#21405f!important;color:#eaf2fc!important;border-radius:18px!important;box-shadow:0 30px 90px #0008!important}
+body.provider-mode .modal h2{color:#f5f9ff!important}
+body.provider-mode .modal .icon{background:#10233a!important;color:#d9e7f8!important;border-color:#2a4868!important}
+body.provider-mode .provider-quote-summary,.provider-mode .provider-detail-hero{background:#0d2137!important;border-color:#214260!important;color:#dce9f7!important}
+body.provider-mode .provider-detail-section{background:#0b1a2c!important;border-color:#1d3957!important}
+body.provider-mode .provider-detail-section h3{color:#dce9f7!important}
+body.provider-mode .provider-detail-section p{color:#9bb2cc!important}
+body.provider-mode .provider-detail-grid>div{background:#0d1e32!important;border-color:#1d3957!important}
+body.provider-mode .provider-detail-grid span{color:#718bab!important}
+body.provider-mode .provider-detail-grid strong{color:#e6f0fb!important}
+body.provider-mode .modal-actions .button{min-height:44px!important}
+/* Chats */
+body.provider-mode #chats{max-width:1180px;margin:0 auto}
+body.provider-mode .chat-hub-shell,body.provider-mode .chat-hub-main,body.provider-mode .chat-hub-list{background:#0b182b!important;border-color:#1d3957!important;color:#edf5ff!important}
+body.provider-mode .chat-hub-head{background:#0d2035!important;border-bottom-color:#1d3957!important}
+body.provider-mode .chat-hub-head h3{color:#f5f9ff!important}
+body.provider-mode .chat-hub-head p{color:#829bb9!important}
+body.provider-mode .chat-hub-messages{background:#071526!important}
+body.provider-mode .chat-hub-compose{background:#0b182b!important;border-top-color:#1d3957!important}
+body.provider-mode .chat-hub-compose textarea{min-height:52px!important}
+body.provider-mode .chat-hub-compose button{min-width:100px!important;min-height:46px!important;border-radius:12px!important}
+body.provider-mode .chat-thread-item{background:#0d1d31!important;border-color:#1b3857!important;color:#dce8f6!important}
+body.provider-mode .chat-thread-item.active{background:#172b52!important;border-color:#4f7cff!important}
+body.provider-mode .chat-thread-item strong{color:#f0f6ff!important}
+body.provider-mode .chat-thread-item small{color:#8199b7!important}
+/* Barra inferior no celular: toque fácil */
+@media(max-width:760px){
+  body.provider-mode{padding-bottom:78px!important}
+  body.provider-mode .app{display:block!important;min-height:100vh!important}
+  body.provider-mode .side{position:fixed!important;left:0!important;right:0!important;bottom:0!important;top:auto!important;width:100%!important;height:72px!important;min-height:72px!important;z-index:10040!important;padding:7px 8px!important;border-right:0!important;border-top:1px solid #1b3655!important;background:#071322ee!important;backdrop-filter:blur(16px)!important;box-shadow:0 -12px 35px #0006!important}
+  body.provider-mode .brand,body.provider-mode .nav-title,body.provider-mode .side-foot{display:none!important}
+  body.provider-mode .side .nav{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin:0!important;height:100%!important}
+  body.provider-mode .side .nav button{height:58px!important;min-height:58px!important;justify-content:center!important;flex-direction:column!important;gap:2px!important;padding:5px!important;font-size:10px!important;border-radius:12px!important}
+  body.provider-mode .side .nav-icon{width:auto!important;font-size:19px!important;line-height:20px!important}
+  body.provider-mode .main{width:100%!important;padding:0 12px 20px!important}
+  body.provider-mode .top{height:64px!important;margin:0 -12px!important;padding:0 12px!important}
+  body.provider-mode .auth-user-display{max-width:170px!important;min-width:0!important}
+  body.provider-mode .auth-user-display strong{font-size:12px!important}
+  body.provider-mode .view{padding-top:14px!important}
+  body.provider-mode #provider-maintenance-view .page-head{padding:17px!important;border-radius:16px!important}
+  body.provider-mode #provider-maintenance-view .page-head h1{font-size:27px!important}
+  body.provider-mode .provider-portal-kpis{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+  body.provider-mode .provider-portal-kpis .metric{min-height:88px!important;padding:13px!important;border-radius:14px!important}
+  body.provider-mode .provider-portal-kpis .metric-value{font-size:25px!important;margin-top:8px!important}
+  body.provider-mode .provider-service-grid{grid-template-columns:1fr!important;gap:11px!important}
+  body.provider-mode .provider-service-card{padding:14px!important;border-radius:16px!important}
+  body.provider-mode .provider-service-actions{grid-template-columns:1fr 1fr!important}
+  body.provider-mode .provider-service-actions .button{min-height:48px!important;font-size:11px!important}
+  body.provider-mode .provider-service-meta{grid-template-columns:1fr 1fr!important}
+  body.provider-mode .panel{padding:13px!important;border-radius:15px!important}
+  body.provider-mode .panel-head{display:block!important}
+  body.provider-mode .panel-head>button{margin-top:10px!important;width:100%!important}
+  body.provider-mode .modal-bg{padding:8px!important;align-items:end!important}
+  body.provider-mode .modal{width:100%!important;max-height:92vh!important;border-radius:20px 20px 0 0!important;padding:15px!important}
+  body.provider-mode .form-grid{grid-template-columns:1fr!important}
+  body.provider-mode .form-field.full{grid-column:auto!important}
+  body.provider-mode .modal-actions{display:grid!important;grid-template-columns:1fr 1fr!important}
+  body.provider-mode .modal-actions .button{width:100%!important;min-height:48px!important}
+  body.provider-mode .chat-hub-shell{display:flex!important;flex-direction:column!important;height:calc(100vh - 170px)!important;min-height:430px!important}
+  body.provider-mode .chat-hub-list{max-height:150px!important;overflow:auto!important}
+  body.provider-mode .chat-hub-main{min-height:0!important;flex:1!important}
+}
+</style>
+
+
+<script id="dormus-838-provider-fixes">
+(function(){
+  function toast(msg,type){
+    if(typeof window.dormusToast==='function')window.dormusToast(msg,type||'success');
+    else if(typeof window.toast==='function')window.toast(msg);
+    else alert(msg);
+  }
+  function refresh(){setTimeout(()=>{try{window.renderProviderPortal?.()}catch(e){}},120)}
+  // Garante que o portal do prestador nunca seja redirecionado para uma tela administrativa.
+  const oldShow=window.showView;
+  if(typeof oldShow==='function'&&!window.__dormus838ProviderNav){
+    window.__dormus838ProviderNav=true;
+    window.showView=function(id){
+      if(window.DormusProviderPortal?.access){
+        if(id!=='maintenance'&&id!=='chats')id='maintenance';
+      }
+      try{return oldShow.apply(this,[id])}catch(e){toast('Não foi possível abrir esta área.','error');return null}
+    };
+  }
+  // Ações com tratamento de erro visível no celular.
+  function wrap(name){
+    const fn=window[name]; if(typeof fn!=='function'||fn['__838'])return;
+    const w=async function(){
+      try{return await fn.apply(this,arguments)}catch(e){console.error('DORMUS 8.38',name,e);toast('Não foi possível concluir a ação. Verifique sua conexão e tente novamente.','error');}
+    };w['__838']=true;window[name]=w;
+  }
+  ['providerAcceptService','providerStartService','providerCompleteService','providerQuoteService','submitProviderQuote','providerServiceDetails','providerServiceDetails18'].forEach(wrap);
+  // Campos de orçamento/conclusão: foco automático confiável.
+  document.addEventListener('click',function(e){
+    const b=e.target.closest?.('.provider-service-actions button');
+    if(b){b.style.transform='scale(.98)';setTimeout(()=>b.style.transform='',120)}
+  },true);
+  // Atualiza o portal ao voltar para a aba/app.
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&window.DormusProviderPortal?.access)refresh()});
+  setTimeout(()=>{if(window.DormusProviderPortal?.access)refresh()},1200);
+})();
+</script>
+
 </body>
 </html>
