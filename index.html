@@ -343,6 +343,189 @@ body.provider-mode .provider-chat-button19{background:#2f6f61!important;border-c
 }
 </style>
 
+
+<style id="dormus-851-global-juntos">
+/* DORMUS 8.51 — PALETA GLOBAL JUNTOS
+   Aplicada ao SISTEMA INTEIRO, não somente à tela de acesso. */
+:root{
+ --j-green:#2f7461 !important;
+ --j-green-dark:#24594b !important;
+ --j-green-mid:#4f8a78 !important;
+ --j-green-soft:#dfeae4 !important;
+ --j-cream:#f6f3eb !important;
+ --j-cream-2:#eeeae0 !important;
+ --j-surface:#fbfaf5 !important;
+ --j-surface-2:#edf1ea !important;
+ --j-text:#203b34 !important;
+ --j-muted:#688078 !important;
+ --j-line:#d9ddd3 !important;
+ --j-coral:#e39a7b !important;
+ --j-coral-soft:#f4dfd4 !important;
+ --j-white:#fffdf8 !important;
+}
+
+html,body,.app,.main,.content,.view,.page,.page-content,
+.dashboard,.dashboard-page,.workspace,.shell,.app-shell{
+ background:var(--j-cream)!important;
+ color:var(--j-text)!important;
+}
+
+/* MENU / SIDEBAR */
+.side,.sidebar,.app-sidebar{
+ background:var(--j-green)!important;
+ color:var(--j-white)!important;
+ border-color:transparent!important;
+}
+.side *,.sidebar *,.app-sidebar *{border-color:rgba(255,255,255,.10)}
+.brand strong,.brand-name,.side .brand strong{color:var(--j-white)!important}
+.brand small,.brand-subtitle,.side .brand small{color:#cfe0d9!important}
+.brand-mark,.logo-mark,.app-logo{
+ background:var(--j-coral)!important;
+ color:var(--j-white)!important;
+ box-shadow:none!important;
+}
+.nav-title,.side .nav-title{color:#b8d1c8!important}
+.nav button,.side .nav button,.sidebar button{
+ background:transparent!important;
+ color:#f1f5f1!important;
+ border-color:transparent!important;
+}
+.nav button:hover,.nav button.active,
+.side .nav button:hover,.side .nav button.active{
+ background:rgba(255,255,255,.13)!important;
+ color:#fff!important;
+ border-color:rgba(227,154,123,.75)!important;
+}
+
+/* TOPO */
+.top,.header,.app-header{
+ background:var(--j-cream)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+}
+.global-search,.global-search input,.searchbar input,.toolbar-search,
+.top input[type="search"]{
+ background:var(--j-surface-2)!important;
+ color:var(--j-text)!important;
+ -webkit-text-fill-color:var(--j-text)!important;
+ border-color:#cdd8d0!important;
+}
+.avatar{background:var(--j-coral)!important;color:#fff!important}
+.top-icon,.icon,.top-actions button{background:var(--j-surface-2)!important;color:var(--j-green-dark)!important;border-color:var(--j-line)!important}
+
+/* CABEÇALHOS / TEXTOS */
+h1,h2,h3,h4,.page-head h1,.panel-title,.metric-value,.property-name,
+.section-title,.dashboard-title{color:var(--j-text)!important}
+.kicker,.eyebrow,.panel-kicker,.metric-label,.metric-meta,.muted,.property-code,
+label,.table th,.small,.help,.subtitle{color:var(--j-muted)!important}
+
+/* PAINÉIS E CARDS — elimina o branco/azul antigo */
+.panel,.metric,.property,.card,.table-wrap,.dashboard-card,.dash-card,
+.dashboard-panel,.summary,.list-card,.stat-card,.dash-stat,.box,.module-card,
+.chart-card,.activity-card,.financial-card,.contract-card,.maintenance-card,
+.chat-hub-shell,.chat-hub-list,.chat-hub-main,.provider-service-card,
+.modal,.modal-card,.drawer,.settings-card,.report-card,.crm-card{
+ background:var(--j-surface)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+ box-shadow:0 7px 24px rgba(32,59,52,.07)!important;
+}
+
+/* DASHBOARD ANTIGO AZUL/ROXO */
+.dash-stat-icon,.metric-icon,.stat-icon,.card-icon,.module-icon{
+ background:var(--j-green-soft)!important;
+ color:var(--j-green-dark)!important;
+}
+.dash-stat-icon.emerald,.dash-stat-icon.blue,.dash-stat-icon.amber,
+.dash-stat-icon.violet,.metric-icon.blue,.metric-icon.violet,.metric-icon.amber{
+ background:var(--j-green-soft)!important;
+ color:var(--j-green-dark)!important;
+}
+.dash-stat-icon.coral,.metric-icon.coral{background:var(--j-coral-soft)!important;color:#a85d43!important}
+
+/* BOTÕES */
+button,.btn,.button,.primary,.btn-primary,.action-btn,.save-btn,
+button.primary,button.btn-primary,.toolbar button,.page-head button{
+ background:var(--j-green)!important;
+ color:#fff!important;
+ border-color:var(--j-green)!important;
+}
+button:hover,.btn:hover,.button:hover,.primary:hover,.btn-primary:hover,
+.action-btn:hover,.save-btn:hover,.toolbar button:hover,.page-head button:hover{
+ background:var(--j-green-dark)!important;
+ border-color:var(--j-green-dark)!important;
+}
+.btn-coral,.coral-btn,.danger-soft{background:var(--j-coral)!important;color:#fff!important;border-color:var(--j-coral)!important}
+
+/* CAMPOS */
+input,select,textarea,.field input,.field select,.field textarea,
+.form-control,.input,.select,.textarea{
+ background:var(--j-surface-2)!important;
+ color:var(--j-text)!important;
+ -webkit-text-fill-color:var(--j-text)!important;
+ border-color:#cdd8d0!important;
+}
+input::placeholder,textarea::placeholder{color:#81948d!important;-webkit-text-fill-color:#81948d!important;opacity:1!important}
+input:focus,select:focus,textarea:focus{
+ background:#e5eee8!important;
+ border-color:var(--j-green-mid)!important;
+ box-shadow:0 0 0 3px rgba(47,116,97,.13)!important;
+}
+
+/* TABELAS / LISTAS */
+.table th,.table td,.data-table th,.data-table td{border-color:var(--j-line)!important}
+.table th,.data-table th{background:var(--j-cream-2)!important;color:var(--j-muted)!important}
+.table tr:hover,.data-table tr:hover,.list-row:hover{background:var(--j-surface-2)!important}
+
+/* BADGES / DESTAQUES */
+.badge,.tag,.chip,.status-badge,.pill{background:var(--j-green-soft)!important;color:var(--j-green-dark)!important;border-color:var(--j-line)!important}
+.badge.coral,.tag.coral,.chip.coral,.pill.coral{background:var(--j-coral-soft)!important;color:#a85d43!important}
+
+/* BARRAS E GRÁFICOS */
+.progress,.progress-track,.bar-bg{background:#dfe5de!important}
+.progress-bar,.bar-fill,.chart-bar{background:var(--j-green)!important}
+.progress-bar.coral,.bar-fill.coral{background:var(--j-coral)!important}
+
+/* IMÓVEIS */
+.cover{background:linear-gradient(135deg,var(--j-green-dark),var(--j-green-mid))!important}
+.cover.olive,.cover.blue,.cover.brass{background:linear-gradient(135deg,var(--j-green),var(--j-green-mid))!important}
+.property-label,.property-status{background:var(--j-green-soft)!important;color:var(--j-green-dark)!important}
+
+/* MODAIS */
+.modal-bg,.overlay,.modal-backdrop{background:rgba(32,59,52,.35)!important}
+
+/* CHAT / PRESTADOR */
+.chat-thread.active,.chat-thread:hover,.chat-item.active,.chat-item:hover{
+ background:var(--j-green-soft)!important;
+ border-color:#b9d1c5!important;
+}
+.chat-send,.chat-input button{background:var(--j-green)!important;color:#fff!important}
+.provider-service-location,.provider-service-meta>div,.provider-admin-banner{
+ background:var(--j-surface-2)!important;
+ border-color:var(--j-line)!important;
+ color:var(--j-text)!important;
+}
+
+/* ALERTAS: mantém a função visual, mas dentro da nova paleta */
+.notice,.warning,.info-box{background:var(--j-coral-soft)!important;color:#7d503f!important;border-color:#e5c0ae!important}
+
+/* IMPORTAR ALTERDATA */
+.import-btn,#importAlterdataBtn,.alterdata-btn{background:var(--j-green)!important;color:#fff!important;border-color:var(--j-green)!important}
+
+/* RODAPÉ / ELEMENTOS CLAROS */
+.footer,.empty-state,.empty,.placeholder{background:var(--j-surface)!important;color:var(--j-muted)!important;border-color:var(--j-line)!important}
+
+/* QUALQUER SEÇÃO QUE AINDA TENHA FUNDO BRANCO PURO */
+section,article,.section,.content-card,.white-card{
+ border-color:var(--j-line)!important;
+}
+
+@media(max-width:760px){
+ html,body,.app,.main,.content,.view{background:var(--j-cream)!important}
+ .side,.sidebar{background:var(--j-green)!important}
+ .panel,.metric,.property,.card,.dash-stat,.dashboard-card{box-shadow:0 6px 20px rgba(32,59,52,.08)!important}
+}
+</style>
 </head>
 <body>
 
@@ -2864,6 +3047,807 @@ a{color:#397965!important}
 .icon,.top-icon{background:#e4e9e2!important;color:#29483f!important}
 </style>
 
+
+<style id="dormus-848-juntos-palette">
+/* DORMUS 8.48 — paleta baseada diretamente na referência "juntos".
+   Somente visual: nenhuma regra de dados, login, Supabase ou funcionalidades é alterada. */
+:root{
+  --j-green:#286858!important;
+  --j-green-2:#387060!important;
+  --j-green-3:#407868!important;
+  --j-cream:#f8f8f0!important;
+  --j-cream-2:#f0f0e8!important;
+  --j-card:#f8f8f0!important;
+  --j-card-2:#e8eee8!important;
+  --j-text:#203830!important;
+  --j-muted:#607860!important;
+  --j-line:#e0e0d8!important;
+  --j-coral:#e0a088!important;
+  --j-coral-soft:#f0e0d8!important;
+  --j-white:#fffdf8!important;
+}
+
+/* base */
+html,body,.app,.main,.content{
+  background:var(--j-cream)!important;
+  color:var(--j-text)!important;
+}
+body{color:var(--j-text)!important}
+.main{background:var(--j-cream)!important}
+.top{
+  background:var(--j-cream)!important;
+  border-color:var(--j-line)!important;
+}
+
+/* lateral — verde da referência */
+.side{
+  background:var(--j-green)!important;
+  color:#f8f8f0!important;
+  border-right:0!important;
+}
+.side *{color:inherit}
+.brand strong{color:#fffdf8!important}
+.brand small{color:#c9ddd5!important}
+.brand-mark{
+  background:var(--j-coral)!important;
+  color:var(--j-text)!important;
+  box-shadow:none!important;
+}
+.nav-title{color:#a9c8bd!important}
+.nav button{
+  color:#eef5f0!important;
+  background:transparent!important;
+  border-color:transparent!important;
+}
+.nav button:hover{
+  background:rgba(255,255,255,.10)!important;
+  color:#fff!important;
+}
+.nav button.active{
+  background:rgba(255,255,255,.14)!important;
+  color:#fff!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+}
+.nav-icon{color:#d8e8e1!important}
+.nav button.active .nav-icon{color:#fff!important}
+.side-foot{
+  border-color:rgba(255,255,255,.16)!important;
+  color:#c9ddd5!important;
+}
+
+/* barra superior */
+.global-search,
+.global-search input,
+.searchbar,
+.searchbar input,
+.toolbar-search{
+  background:#e8eee8!important;
+  color:var(--j-text)!important;
+  -webkit-text-fill-color:var(--j-text)!important;
+  border-color:#d5ded7!important;
+}
+.global-search input::placeholder,
+.searchbar input::placeholder,
+input::placeholder,
+textarea::placeholder{
+  color:#789087!important;
+  -webkit-text-fill-color:#789087!important;
+  opacity:1!important;
+}
+.top-icon,.icon{
+  background:#e8eee8!important;
+  color:var(--j-green)!important;
+  border-color:#d5ded7!important;
+}
+.avatar{
+  background:var(--j-coral)!important;
+  color:#fffdf8!important;
+}
+.auth-user-display strong{color:var(--j-text)!important}
+.auth-user-display small{color:var(--j-muted)!important}
+
+/* títulos e textos */
+h1,h2,h3,h4,h5,h6,
+.panel-title,.property-name,.metric strong,
+.card h1,.card h2,.card h3,
+.panel h1,.panel h2,.panel h3,
+.dash-stat-value{
+  color:var(--j-text)!important;
+}
+.crumb,.muted,.small,.lead,.panel-kicker,.metric-label,.metric-meta,
+.property-address,.property-code,.row-sub,
+.chat-thread-preview,.chat-thread-title small,
+.dash-stat-label,.dash-stat-hint{
+  color:var(--j-muted)!important;
+}
+.eyebrow{color:var(--j-muted)!important}
+
+/* campos — creme suave, nunca branco puro */
+input,select,textarea,
+input[type="text"],input[type="email"],input[type="password"],
+input[type="number"],input[type="date"],input[type="tel"],
+.form-field input,.form-field select,.form-field textarea,
+.login-field input,.portal-login-form input,
+.modal input,.modal select,.modal textarea,
+.drawer input,.drawer select,.drawer textarea{
+  background:#eef0e9!important;
+  color:var(--j-text)!important;
+  -webkit-text-fill-color:var(--j-text)!important;
+  border:1px solid #d0dad2!important;
+  box-shadow:none!important;
+}
+input:focus,select:focus,textarea:focus{
+  background:#e8eee8!important;
+  border-color:var(--j-green-3)!important;
+  box-shadow:0 0 0 3px rgba(64,120,104,.12)!important;
+}
+
+/* cartões/painéis */
+.panel,.metric,.property,.card,.card-body,.list,.list-item,
+.summary,.row,.modal,.drawer,.table-wrap,.dashboard-card,
+.maintenance-panel,.crm-card,.finance-card,.report-card,
+.chat-card,.list-card,.contract360-card,.contract360-kpi,
+.dash-stat,.quick-finance>div,.quick-actions button,
+.provider-restricted-card,.provider-restricted-service,
+.chat-thread,.chat-notify-box,.smart-alert,
+.p360-stat,.p360-item,.provider-service-card,
+.provider-service-location,.provider-service-meta>div,
+.provider-admin-banner,.received-quote-box,.maint-quote19,
+.maint-ops19,.provider-detail-section,.provider-detail-grid>div,
+.attachments-block,.attachment-item,.photo-room,.photo-gallery,
+.documents-list,.person-contact-actions,.selected-file-row,
+.image-viewer,.filters,.filter-bar{
+  background:var(--j-card)!important;
+  color:var(--j-text)!important;
+  border-color:var(--j-line)!important;
+  box-shadow:none!important;
+}
+
+/* cards de indicadores */
+.metric,.dash-stat{
+  background:var(--j-card)!important;
+}
+.metric:first-child,
+.hero-card{
+  background:var(--j-green)!important;
+  color:#fffdf8!important;
+}
+.metric:first-child *,.hero-card *{color:#fffdf8!important}
+
+/* hero / boas-vindas — verde, não azul/roxo */
+.hero,.welcome,.dashboard-hero{
+  background:linear-gradient(135deg,#286858,#347262 72%,#407868)!important;
+  color:#fffdf8!important;
+  border-color:transparent!important;
+}
+.hero *,.welcome *,.dashboard-hero *{color:#fffdf8!important}
+.hero .button,.welcome .button,.dashboard-hero .button{
+  background:var(--j-coral)!important;
+  color:#203830!important;
+  border-color:var(--j-coral)!important;
+}
+
+/* botões principais */
+.button,.button-primary,.btn-primary,
+button.primary,.quick-actions .primary{
+  background:var(--j-green)!important;
+  color:#fffdf8!important;
+  border-color:var(--j-green)!important;
+}
+.button:hover,.button-primary:hover,.btn-primary:hover,
+button.primary:hover,.quick-actions .primary:hover{
+  background:var(--j-green-2)!important;
+  border-color:var(--j-green-2)!important;
+}
+.button-brass{
+  background:var(--j-coral-soft)!important;
+  color:#6f5147!important;
+  border-color:#e3b7a7!important;
+}
+
+/* coral só como destaque, igual à referência */
+.brand-mark,.accent,.highlight,
+.status-dot,.notification-dot{
+  color:var(--j-coral)!important;
+}
+.badge.red,.badge.gold{
+  background:var(--j-coral-soft)!important;
+  color:#765448!important;
+  border-color:#e3b7a7!important;
+}
+.badge.green,.success-text{
+  background:#e0ece5!important;
+  color:var(--j-green)!important;
+}
+
+/* tabelas */
+.table,.table-wrap table{
+  background:var(--j-card)!important;
+  color:var(--j-text)!important;
+}
+.table th{
+  background:#e8eee8!important;
+  color:var(--j-text)!important;
+  border-color:var(--j-line)!important;
+}
+.table td{
+  background:var(--j-card)!important;
+  color:var(--j-text)!important;
+  border-color:var(--j-line)!important;
+}
+
+/* filtros e estados selecionados */
+.property-filters .filter-btn{
+  background:#e8eee8!important;
+  color:var(--j-text)!important;
+  border-color:#d0dad2!important;
+}
+.property-filters .filter-btn.active{
+  background:var(--j-green)!important;
+  color:#fff!important;
+  border-color:var(--j-green)!important;
+}
+.chat-thread:hover,.chat-thread.active{
+  background:#e0ece5!important;
+  border-color:#a9c8bd!important;
+}
+
+/* áreas de chat */
+.chat19-list,.chat-hub-list,.chat-hub-main,
+.chat-hub-messages,.chat19-compose,.chat-hub-compose{
+  background:var(--j-cream-2)!important;
+  color:var(--j-text)!important;
+  border-color:var(--j-line)!important;
+}
+.chat19-message,.chat-hub-message{
+  background:#e8eee8!important;
+  color:var(--j-text)!important;
+  border-color:#d0dad2!important;
+}
+.chat19-message.mine,.chat-hub-message.mine{
+  background:#dce9e1!important;
+  border-color:#a9c8bd!important;
+}
+
+/* assistente / importação */
+.presentation-head{
+  background:var(--j-green)!important;
+  color:#fffdf8!important;
+}
+.presentation-head p{color:#c9ddd5!important}
+.modal-bg{background:rgba(32,56,48,.45)!important}
+a{color:var(--j-green-2)!important}
+.icon,.top-icon{background:#e8eee8!important;color:var(--j-green)!important}
+
+/* portal do prestador — mesma identidade, não azul/roxo */
+body.provider-mode{
+  --provider-bg:var(--j-green)!important;
+  --provider-panel:#e8eee8!important;
+  --provider-panel-2:#dfe9e2!important;
+  --provider-line:#c9d8cf!important;
+  --provider-text:var(--j-text)!important;
+  --provider-muted:var(--j-muted)!important;
+  --provider-primary:var(--j-green)!important;
+  --provider-primary-2:var(--j-green-2)!important;
+  --provider-accent:var(--j-coral)!important;
+  background:var(--j-cream)!important;
+  color:var(--j-text)!important;
+}
+body.provider-mode .app,
+body.provider-mode .main{
+  background:var(--j-cream)!important;
+}
+body.provider-mode .side{
+  background:var(--j-green)!important;
+  border-color:transparent!important;
+}
+body.provider-mode .brand-mark{
+  background:var(--j-coral)!important;
+  box-shadow:none!important;
+}
+body.provider-mode .top{
+  background:var(--j-cream)!important;
+  border-color:var(--j-line)!important;
+}
+body.provider-mode .provider-service-card,
+body.provider-mode #provider-maintenance-view .panel,
+body.provider-mode .provider-portal-kpis .metric,
+body.provider-mode .chat-hub-shell,
+body.provider-mode .chat-hub-list,
+body.provider-mode .chat-hub-main{
+  background:var(--j-card)!important;
+  border-color:var(--j-line)!important;
+  color:var(--j-text)!important;
+}
+body.provider-mode .provider-service-location,
+body.provider-mode .provider-service-meta>div,
+body.provider-mode .provider-admin-banner{
+  background:#e8eee8!important;
+  border-color:#d0dad2!important;
+}
+body.provider-mode .nav button.active{
+  background:rgba(255,255,255,.14)!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+}
+body.provider-mode .button-primary{
+  background:var(--j-green)!important;
+  border-color:var(--j-green)!important;
+}
+body.provider-mode .page-head h1,
+body.provider-mode .page-head .eyebrow{
+  color:var(--j-text)!important;
+}
+body.provider-mode .page-head .lead{
+  color:var(--j-muted)!important;
+}
+
+/* mobile */
+@media(max-width:760px){
+  body,.app,.main{background:var(--j-cream)!important}
+  .side{background:var(--j-green)!important}
+  .panel,.metric,.property,.card,.provider-service-card,.chat-hub-shell{
+    box-shadow:0 8px 24px rgba(32,56,48,.08)!important;
+  }
+  input,select,textarea{font-size:16px!important;min-height:46px!important}
+}
+
+/* impressão permanece branca */
+@media print{
+  .d6-print-sheet,.contract-print-sheet,.receipt-print-sheet,
+  .inspection-print-sheet,.end-print-sheet{
+    background:#fff!important;color:#222!important;
+  }
+}
+</style>
+
+
+<style id="dormus-850-global-juntos">
+/* DORMUS 8.50 — PALETA JUNTOS APLICADA AO SISTEMA INTEIRO.
+   Este bloco fica por ultimo para vencer estilos antigos. */
+:root{
+ --j-bg:#f6f4ec!important;
+ --j-surface:#fbfaf5!important;
+ --j-surface-2:#edf0e9!important;
+ --j-green:#2f6f5e!important;
+ --j-green-dark:#285f50!important;
+ --j-green-mid:#3b7868!important;
+ --j-green-soft:#dfe9e2!important;
+ --j-coral:#e5a07f!important;
+ --j-coral-soft:#f3e2d9!important;
+ --j-text:#27443b!important;
+ --j-muted:#678078!important;
+ --j-line:#dddcd2!important;
+ --j-white:#fffdf8!important;
+}
+
+/* base de toda a aplicação */
+html,body,#root,.app,.main,.content,.page,.shell,.workspace,
+#app,#main,.main-content,.content-area,.page-content{
+ background:var(--j-bg)!important;
+ color:var(--j-text)!important;
+}
+body{background:var(--j-bg)!important;color:var(--j-text)!important}
+
+/* lateral inteira */
+.side,.sidebar,.left-sidebar,.app-sidebar,.nav-sidebar{
+ background:var(--j-green)!important;
+ color:var(--j-white)!important;
+ border-color:transparent!important;
+}
+.side *,.sidebar *,.left-sidebar *,.app-sidebar *,.nav-sidebar *{color:inherit}
+.brand strong,.brand-name,.sidebar-brand,.side .brand strong{color:#fffdf8!important}
+.brand small,.sidebar-brand small{color:#c9ddd5!important}
+.brand-mark,.logo-mark,.sidebar .brand-mark{
+ background:var(--j-coral)!important;color:#fffdf8!important;border-color:transparent!important;box-shadow:none!important
+}
+.nav-title{color:#b9d1c8!important}
+.nav button,.sidebar button,.side .nav button{
+ background:transparent!important;color:#edf5f0!important;border-color:transparent!important
+}
+.nav button:hover,.nav button.active,.sidebar .nav button:hover,.sidebar .nav button.active{
+ background:rgba(255,255,255,.13)!important;color:#fff!important;border-color:transparent!important;box-shadow:none!important
+}
+
+/* topo */
+.top,.header,.topbar,.app-header{
+ background:var(--j-bg)!important;color:var(--j-text)!important;border-color:var(--j-line)!important
+}
+.global-search,.global-search input,.searchbar,.searchbar input,.toolbar-search,
+.top-search,.top-search input{
+ background:var(--j-surface-2)!important;color:var(--j-text)!important;-webkit-text-fill-color:var(--j-text)!important;border-color:#d5ddd7!important
+}
+.avatar,.user-avatar,.profile-avatar{background:var(--j-coral)!important;color:#fffdf8!important}
+.auth-user-display strong,.user-name,.profile-name{color:var(--j-text)!important}
+.auth-user-display small,.user-role,.profile-role{color:var(--j-muted)!important}
+
+/* títulos */
+h1,h2,h3,h4,h5,h6,.page-head h1,.page-title,.panel-title,.section-title,
+.metric strong,.metric-value,.dash-stat-value,.property-name,.card-title{
+ color:var(--j-text)!important
+}
+.muted,.small,.lead,.eyebrow,.panel-kicker,.metric-label,.metric-meta,
+.property-address,.property-code,.row-sub,.dash-stat-label,.dash-stat-hint,
+.page-head .lead{color:var(--j-muted)!important}
+
+/* todos os campos */
+input,select,textarea,button:not(.nav button),
+.form-field input,.form-field select,.form-field textarea,
+.login-field input,.portal-login-form input,.modal input,.modal select,.modal textarea,
+.drawer input,.drawer select,.drawer textarea{
+ background:var(--j-surface-2)!important;
+ color:var(--j-text)!important;
+ -webkit-text-fill-color:var(--j-text)!important;
+ border-color:#cfd9d1!important;
+}
+input::placeholder,textarea::placeholder,select::placeholder{color:#71867d!important;-webkit-text-fill-color:#71867d!important;opacity:1!important}
+input:focus,select:focus,textarea:focus{
+ background:#e5ebe5!important;border-color:var(--j-green-mid)!important;
+ box-shadow:0 0 0 3px rgba(59,120,104,.13)!important
+}
+
+/* cartões e painéis de TODAS as áreas */
+.panel,.metric,.property,.card,.card-body,.list,.list-item,.summary,.row,
+.modal,.drawer,.table-wrap,.dashboard-card,.maintenance-panel,.crm-card,.finance-card,
+.report-card,.chat-card,.list-card,.contract360-card,.contract360-kpi,.dash-stat,
+.quick-finance>div,.provider-restricted-card,.provider-restricted-service,
+.chat-thread,.chat-notify-box,.smart-alert,.p360-stat,.p360-item,.provider-service-card,
+.provider-service-location,.provider-service-meta>div,.provider-admin-banner,
+.received-quote-box,.maint-quote19,.maint-ops19,.provider-detail-section,
+.provider-detail-grid>div,.attachments-block,.attachment-item,.photo-room,.photo-gallery,
+.documents-list,.person-contact-actions,.selected-file-row,.image-viewer,.filters,.filter-bar,
+.table,.table-wrap table{
+ background:var(--j-surface)!important;color:var(--j-text)!important;border-color:var(--j-line)!important;box-shadow:none!important
+}
+.metric:first-child,.hero-card,.presentation-head{background:var(--j-green)!important;color:#fffdf8!important}
+.metric:first-child *,.hero-card *,.presentation-head *{color:#fffdf8!important}
+
+/* qualquer hero/dashboard antigo azul ou roxo */
+.hero,.welcome,.dashboard-hero,.hero-card,.welcome-card,.dashboard-banner{
+ background:linear-gradient(135deg,var(--j-green),var(--j-green-mid))!important;
+ color:#fffdf8!important;border-color:transparent!important
+}
+.hero *,.welcome *,.dashboard-hero *,.hero-card *,.welcome-card *,.dashboard-banner *{color:#fffdf8!important}
+
+/* botões */
+.button,.button-primary,.btn-primary,button.primary,.primary,
+.quick-actions .primary,.login-button,.btn-success,.btn-save{
+ background:var(--j-green)!important;color:#fffdf8!important;border-color:var(--j-green)!important
+}
+.button:hover,.button-primary:hover,.btn-primary:hover,button.primary:hover,.primary:hover,
+.login-button:hover,.btn-success:hover,.btn-save:hover{background:var(--j-green-mid)!important;border-color:var(--j-green-mid)!important}
+
+/* coral para detalhes, alertas e ações secundárias */
+.brand-mark,.accent,.highlight,.notification-dot,.status-dot{background-color:var(--j-coral)!important;color:var(--j-coral)!important}
+.badge.red,.badge.gold,.tag-coral{background:var(--j-coral-soft)!important;color:#7b594c!important;border-color:#e3b6a2!important}
+.badge.green,.success-text{background:var(--j-green-soft)!important;color:var(--j-green)!important}
+
+/* tabelas */
+.table th,.table-wrap th{background:var(--j-surface-2)!important;color:var(--j-text)!important;border-color:var(--j-line)!important}
+.table td,.table-wrap td{background:var(--j-surface)!important;color:var(--j-text)!important;border-color:var(--j-line)!important}
+
+/* chats */
+.chat19-list,.chat-hub-list,.chat-hub-main,.chat-hub-messages,.chat19-compose,.chat-hub-compose{
+ background:var(--j-bg)!important;color:var(--j-text)!important;border-color:var(--j-line)!important
+}
+.chat19-message,.chat-hub-message{background:var(--j-surface-2)!important;color:var(--j-text)!important;border-color:#d0dad2!important}
+.chat19-message.mine,.chat-hub-message.mine{background:var(--j-green-soft)!important;color:var(--j-text)!important;border-color:#b9d1c5!important}
+.chat-thread.active,.chat-thread:hover{background:var(--j-green-soft)!important;border-color:#b9d1c5!important}
+
+/* portal do prestador: mesma paleta */
+body.provider-mode,body.provider-mode .app,body.provider-mode .main{background:var(--j-bg)!important;color:var(--j-text)!important}
+body.provider-mode .side{background:var(--j-green)!important}
+body.provider-mode .top{background:var(--j-bg)!important;border-color:var(--j-line)!important}
+body.provider-mode .provider-service-card,body.provider-mode .chat-hub-shell,
+body.provider-mode .chat-hub-list,body.provider-mode .chat-hub-main,
+body.provider-mode .panel,body.provider-mode .metric{background:var(--j-surface)!important;color:var(--j-text)!important;border-color:var(--j-line)!important}
+body.provider-mode .provider-service-location,body.provider-mode .provider-service-meta>div,
+body.provider-mode .provider-admin-banner{background:var(--j-surface-2)!important;border-color:#d0dad2!important;color:var(--j-text)!important}
+
+/* tela de acesso também */
+#login-screen,.login-screen,.portal-screen{background:var(--j-bg)!important;color:var(--j-text)!important}
+#login-screen .login-card,#login-screen .login-shell,#login-screen .portal-card,
+.login-card,.portal-login-card{background:var(--j-surface)!important;color:var(--j-text)!important;border-color:var(--j-line)!important}
+#login-screen .portal-choice,.portal-choice{background:var(--j-surface-2)!important;color:var(--j-text)!important;border-color:#d0dad2!important}
+#login-screen .portal-choice:hover,.portal-choice:hover{background:var(--j-green-soft)!important;border-color:var(--j-green-mid)!important}
+#login-screen .portal-choice-icon{background:var(--j-green)!important;color:#fff!important}
+#login-screen .portal-choice:nth-of-type(3) .portal-choice-icon{background:var(--j-coral)!important}
+#login-screen .login-brand-mark{background:var(--j-coral)!important;color:#fff!important}
+#login-screen .login-brand strong,#login-screen .login-title,#login-screen .portal-choice strong{color:var(--j-text)!important}
+#login-screen .login-sub,#login-screen .portal-choice small{color:var(--j-muted)!important}
+
+/* mobile */
+@media(max-width:760px){
+ html,body,.app,.main,.content{background:var(--j-bg)!important}
+ .side,.sidebar{background:var(--j-green)!important}
+ input,select,textarea{font-size:16px!important;min-height:46px!important}
+ .panel,.metric,.property,.card,.provider-service-card,.chat-hub-shell{box-shadow:0 8px 24px rgba(39,68,59,.08)!important}
+}
+</style>
+
+
+<style id="dormus-852-exact-juntos-global">
+/* DORMUS 8.52 — PALETA EXATA DA TELA DE PORTAL APLICADA AO SISTEMA INTEIRO */
+:root{
+ --j-cream:#f5f1e8 !important;
+ --j-cream-2:#fbfaf5 !important;
+ --j-green:#2f6f5e !important;
+ --j-green-dark:#285f50 !important;
+ --j-green-soft:#dfe9e2 !important;
+ --j-green-light:#e8eee8 !important;
+ --j-coral:#e5a07f !important;
+ --j-coral-soft:#f3e2d9 !important;
+ --j-text:#29483f !important;
+ --j-muted:#678078 !important;
+ --j-line:#ddd8ca !important;
+}
+
+/* ESTRUTURA */
+html,body,.app,.main,.content,.view,.workspace,.page,.page-content,.content-area{
+ background:var(--j-cream)!important;
+ color:var(--j-text)!important;
+}
+.side,.sidebar,.left-sidebar,.app-sidebar,.nav-sidebar{
+ background:var(--j-green)!important;
+ color:#fffdf8!important;
+}
+.side .nav button,.sidebar .nav button{
+ background:transparent!important;
+ color:#f7f4ec!important;
+}
+.side .nav button.active,.side .nav button:hover,
+.sidebar .nav button.active,.sidebar .nav button:hover{
+ background:rgba(255,255,255,.13)!important;
+ color:#fff!important;
+ border-color:rgba(229,160,127,.75)!important;
+}
+.top,.header,.topbar,.app-header{
+ background:var(--j-cream)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+}
+.global-search,.global-search input,.searchbar,.searchbar input,.toolbar-search,.top-search,.top-search input{
+ background:var(--j-cream-2)!important;
+ color:var(--j-text)!important;
+ -webkit-text-fill-color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+}
+
+/* MARCA */
+.brand-mark,.login-brand-mark{
+ background:var(--j-coral)!important;
+ color:#fffdf8!important;
+ border-color:transparent!important;
+}
+.brand strong,.brand-name,.sidebar-brand{color:#fffdf8!important}
+
+/* DASHBOARD — REMOVE COMPLETAMENTE O ROXO/AZUL */
+#home .dormus-home-head,
+.dormus-home-head,
+#home .modern-head{
+ background:var(--j-cream-2)!important;
+ background-image:none!important;
+ border:1px solid var(--j-line)!important;
+ box-shadow:0 12px 30px rgba(41,72,63,.08)!important;
+ color:var(--j-text)!important;
+}
+#home .dormus-home-head:after{display:none!important}
+#home .dormus-home-head h1,
+#home .dormus-home-head h1 span{
+ background:none!important;
+ -webkit-text-fill-color:var(--j-text)!important;
+ color:var(--j-text)!important;
+}
+#home .dormus-home-head .lead{
+ color:var(--j-muted)!important;
+}
+#home .dormus-home-head .button,
+#home .dormus-home-head .button-primary{
+ background:var(--j-green)!important;
+ color:#fffdf8!important;
+ border-color:var(--j-green)!important;
+}
+
+/* CARDS DO DASHBOARD */
+#home .dash-stat,.dash-stat,
+#home .panel,.dashboard-columns .panel,.upcoming-panel,
+.dashboard-card,.chart-panel{
+ background:var(--j-cream-2)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+ box-shadow:0 8px 24px rgba(41,72,63,.06)!important;
+}
+#home .dash-stat:hover,.dash-stat:hover{
+ background:#f8f5ed!important;
+}
+.dash-stat-icon,
+.dash-stat-icon.emerald,.dash-stat-icon.blue,.dash-stat-icon.amber,.dash-stat-icon.violet,
+.metric-icon,.metric-icon.blue,.metric-icon.violet,.metric-icon.amber{
+ background:var(--j-green-soft)!important;
+ color:var(--j-green)!important;
+}
+.dash-stat-icon.amber{
+ background:var(--j-coral-soft)!important;
+ color:#9a5d45!important;
+}
+.dash-stat-icon.violet,.metric-icon.violet{
+ background:var(--j-coral-soft)!important;
+ color:#9a5d45!important;
+}
+.dash-stat-value,.dash-stat-label,.dash-stat-hint,.dash-stat>b,
+.panel-title,.panel-kicker,.bar-label,.hbar-label,
+.bar-label strong,.hbar-label strong{
+ color:var(--j-text)!important;
+}
+.dash-stat-label,.dash-stat-hint,.panel-kicker{
+ color:var(--j-muted)!important;
+}
+
+/* GRÁFICOS */
+.bar-track,.hbar-track{
+ background:var(--j-green-light)!important;
+}
+.bar-track i{
+ background:var(--j-green)!important;
+}
+.hbar-track i{
+ background:var(--j-coral)!important;
+}
+.expiring-row{
+ border-color:var(--j-line)!important;
+}
+.warning-icon{
+ color:var(--j-coral)!important;
+}
+
+/* TODOS OS PAINÉIS/CARDS */
+.panel,.metric,.property,.card,.card-body,.list,.list-item,.summary,.row,
+.modal,.drawer,.table-wrap,.dashboard-card,.maintenance-panel,.crm-card,.finance-card,
+.report-card,.chat-card,.list-card,.contract360-card,.contract360-kpi,.dash-stat,
+.quick-finance>div,.provider-restricted-card,.provider-restricted-service,
+.chat-thread,.chat-notify-box,.smart-alert,.p360-stat,.p360-item,.provider-service-card,
+.provider-service-location,.provider-service-meta>div,.provider-admin-banner,
+.received-quote-box,.maint-quote19,.maint-ops19,.provider-detail-section,
+.provider-detail-grid>div,.attachments-block,.attachment-item,.photo-room,.photo-gallery,
+.documents-list,.person-contact-actions,.selected-file-row,.image-viewer,.filters,.filter-bar{
+ background:var(--j-cream-2)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+}
+.quick-finance>div,.provider-service-location,.provider-service-meta>div{
+ background:var(--j-green-light)!important;
+}
+
+/* FORMULÁRIOS */
+input,select,textarea,.form-control,.input,.select,.textarea,
+.form-field input,.form-field select,.form-field textarea,
+.login-field input,.portal-login-form input,.modal input,.modal select,.modal textarea{
+ background:var(--j-green-light)!important;
+ color:var(--j-text)!important;
+ -webkit-text-fill-color:var(--j-text)!important;
+ border:1px solid #cbd8d0!important;
+}
+input::placeholder,textarea::placeholder{
+ color:#71867d!important;
+ -webkit-text-fill-color:#71867d!important;
+ opacity:1!important;
+}
+input:focus,select:focus,textarea:focus{
+ background:#e1e9e3!important;
+ border-color:var(--j-green)!important;
+ box-shadow:0 0 0 3px rgba(47,111,94,.14)!important;
+}
+
+/* BOTÕES */
+button,.button,.btn,.primary,.btn-primary,.button-primary,.action-btn,.save-btn,
+.toolbar button,.page-head button,.login-button,.btn-save{
+ background:var(--j-green)!important;
+ color:#fffdf8!important;
+ border-color:var(--j-green)!important;
+}
+button:hover,.button:hover,.btn:hover,.primary:hover,.btn-primary:hover,
+.button-primary:hover,.action-btn:hover,.save-btn:hover,.toolbar button:hover{
+ background:var(--j-green-dark)!important;
+ border-color:var(--j-green-dark)!important;
+}
+.btn-coral,.coral-btn{
+ background:var(--j-coral)!important;
+ color:#fffdf8!important;
+ border-color:var(--j-coral)!important;
+}
+
+/* BADGES / DESTAQUES */
+.badge.red,.badge.gold,.tag-coral,.warning,.notice,.info-box{
+ background:var(--j-coral-soft)!important;
+ color:#875844!important;
+ border-color:#e5b9a5!important;
+}
+.badge.green,.success-text{
+ background:var(--j-green-soft)!important;
+ color:var(--j-green)!important;
+}
+.notification-dot,.status-dot,.accent,.highlight{
+ background:var(--j-coral)!important;
+}
+
+/* TABELAS */
+.table,.table-wrap table,.table th,.table-wrap th{
+ background:var(--j-cream-2)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+}
+.table td,.table-wrap td{
+ background:var(--j-cream-2)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+}
+.table th,.table-wrap th{
+ background:var(--j-green-soft)!important;
+}
+
+/* CHAT */
+.chat19-list,.chat-hub-list,.chat-hub-main,.chat-hub-messages,.chat19-compose,.chat-hub-compose{
+ background:var(--j-cream)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+}
+.chat19-message,.chat-hub-message{
+ background:var(--j-green-light)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+}
+.chat19-message.mine,.chat-hub-message.mine,.chat-thread.active,.chat-thread:hover{
+ background:var(--j-green-soft)!important;
+ color:var(--j-text)!important;
+ border-color:#b9d1c5!important;
+}
+
+/* PORTAL DO PRESTADOR */
+body.provider-mode,.provider-mode .app,.provider-mode .main,.provider-mode .content{
+ background:var(--j-cream)!important;
+ color:var(--j-text)!important;
+}
+body.provider-mode .side{background:var(--j-green)!important}
+body.provider-mode .top{background:var(--j-cream)!important}
+
+/* LOGIN */
+#login-screen,.login-screen,.portal-screen{
+ background:var(--j-cream)!important;
+ color:var(--j-text)!important;
+}
+#login-screen .login-card,.login-card,.portal-login-card{
+ background:var(--j-cream-2)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+ box-shadow:0 18px 45px rgba(41,72,63,.10)!important;
+}
+#login-screen .portal-choice,.portal-choice{
+ background:var(--j-green-light)!important;
+ color:var(--j-text)!important;
+ border-color:#cbd8d0!important;
+}
+#login-screen .portal-choice:hover,.portal-choice:hover{
+ background:var(--j-green-soft)!important;
+ border-color:var(--j-green)!important;
+}
+#login-screen .portal-choice-icon{
+ background:var(--j-green)!important;
+ color:#fff!important;
+}
+#login-screen .portal-choice:nth-of-type(3) .portal-choice-icon{
+ background:var(--j-coral)!important;
+}
+#login-screen .login-brand-mark{
+ background:var(--j-coral)!important;
+}
+
+/* REMOVE CORES ANTIGAS DO DASHBOARD */
+#home .blue,.blue{color:var(--j-green)!important}
+#home .violet,.violet{color:var(--j-coral)!important}
+#home .emerald{color:var(--j-green)!important}
+</style>
+
 </body></html>');
     w.document.close();
   };
@@ -3478,4 +4462,1052 @@ button.button-small,button.button-quiet{border-color:var(--ref-line)!important}
   },800));
 })();
 </script>
+
+<style id="dormus-848-juntos-palette">
+/* DORMUS 8.48 — paleta baseada diretamente na referência "juntos".
+   Somente visual: nenhuma regra de dados, login, Supabase ou funcionalidades é alterada. */
+:root{
+  --j-green:#286858!important;
+  --j-green-2:#387060!important;
+  --j-green-3:#407868!important;
+  --j-cream:#f8f8f0!important;
+  --j-cream-2:#f0f0e8!important;
+  --j-card:#f8f8f0!important;
+  --j-card-2:#e8eee8!important;
+  --j-text:#203830!important;
+  --j-muted:#607860!important;
+  --j-line:#e0e0d8!important;
+  --j-coral:#e0a088!important;
+  --j-coral-soft:#f0e0d8!important;
+  --j-white:#fffdf8!important;
+}
+
+/* base */
+html,body,.app,.main,.content{
+  background:var(--j-cream)!important;
+  color:var(--j-text)!important;
+}
+body{color:var(--j-text)!important}
+.main{background:var(--j-cream)!important}
+.top{
+  background:var(--j-cream)!important;
+  border-color:var(--j-line)!important;
+}
+
+/* lateral — verde da referência */
+.side{
+  background:var(--j-green)!important;
+  color:#f8f8f0!important;
+  border-right:0!important;
+}
+.side *{color:inherit}
+.brand strong{color:#fffdf8!important}
+.brand small{color:#c9ddd5!important}
+.brand-mark{
+  background:var(--j-coral)!important;
+  color:var(--j-text)!important;
+  box-shadow:none!important;
+}
+.nav-title{color:#a9c8bd!important}
+.nav button{
+  color:#eef5f0!important;
+  background:transparent!important;
+  border-color:transparent!important;
+}
+.nav button:hover{
+  background:rgba(255,255,255,.10)!important;
+  color:#fff!important;
+}
+.nav button.active{
+  background:rgba(255,255,255,.14)!important;
+  color:#fff!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+}
+.nav-icon{color:#d8e8e1!important}
+.nav button.active .nav-icon{color:#fff!important}
+.side-foot{
+  border-color:rgba(255,255,255,.16)!important;
+  color:#c9ddd5!important;
+}
+
+/* barra superior */
+.global-search,
+.global-search input,
+.searchbar,
+.searchbar input,
+.toolbar-search{
+  background:#e8eee8!important;
+  color:var(--j-text)!important;
+  -webkit-text-fill-color:var(--j-text)!important;
+  border-color:#d5ded7!important;
+}
+.global-search input::placeholder,
+.searchbar input::placeholder,
+input::placeholder,
+textarea::placeholder{
+  color:#789087!important;
+  -webkit-text-fill-color:#789087!important;
+  opacity:1!important;
+}
+.top-icon,.icon{
+  background:#e8eee8!important;
+  color:var(--j-green)!important;
+  border-color:#d5ded7!important;
+}
+.avatar{
+  background:var(--j-coral)!important;
+  color:#fffdf8!important;
+}
+.auth-user-display strong{color:var(--j-text)!important}
+.auth-user-display small{color:var(--j-muted)!important}
+
+/* títulos e textos */
+h1,h2,h3,h4,h5,h6,
+.panel-title,.property-name,.metric strong,
+.card h1,.card h2,.card h3,
+.panel h1,.panel h2,.panel h3,
+.dash-stat-value{
+  color:var(--j-text)!important;
+}
+.crumb,.muted,.small,.lead,.panel-kicker,.metric-label,.metric-meta,
+.property-address,.property-code,.row-sub,
+.chat-thread-preview,.chat-thread-title small,
+.dash-stat-label,.dash-stat-hint{
+  color:var(--j-muted)!important;
+}
+.eyebrow{color:var(--j-muted)!important}
+
+/* campos — creme suave, nunca branco puro */
+input,select,textarea,
+input[type="text"],input[type="email"],input[type="password"],
+input[type="number"],input[type="date"],input[type="tel"],
+.form-field input,.form-field select,.form-field textarea,
+.login-field input,.portal-login-form input,
+.modal input,.modal select,.modal textarea,
+.drawer input,.drawer select,.drawer textarea{
+  background:#eef0e9!important;
+  color:var(--j-text)!important;
+  -webkit-text-fill-color:var(--j-text)!important;
+  border:1px solid #d0dad2!important;
+  box-shadow:none!important;
+}
+input:focus,select:focus,textarea:focus{
+  background:#e8eee8!important;
+  border-color:var(--j-green-3)!important;
+  box-shadow:0 0 0 3px rgba(64,120,104,.12)!important;
+}
+
+/* cartões/painéis */
+.panel,.metric,.property,.card,.card-body,.list,.list-item,
+.summary,.row,.modal,.drawer,.table-wrap,.dashboard-card,
+.maintenance-panel,.crm-card,.finance-card,.report-card,
+.chat-card,.list-card,.contract360-card,.contract360-kpi,
+.dash-stat,.quick-finance>div,.quick-actions button,
+.provider-restricted-card,.provider-restricted-service,
+.chat-thread,.chat-notify-box,.smart-alert,
+.p360-stat,.p360-item,.provider-service-card,
+.provider-service-location,.provider-service-meta>div,
+.provider-admin-banner,.received-quote-box,.maint-quote19,
+.maint-ops19,.provider-detail-section,.provider-detail-grid>div,
+.attachments-block,.attachment-item,.photo-room,.photo-gallery,
+.documents-list,.person-contact-actions,.selected-file-row,
+.image-viewer,.filters,.filter-bar{
+  background:var(--j-card)!important;
+  color:var(--j-text)!important;
+  border-color:var(--j-line)!important;
+  box-shadow:none!important;
+}
+
+/* cards de indicadores */
+.metric,.dash-stat{
+  background:var(--j-card)!important;
+}
+.metric:first-child,
+.hero-card{
+  background:var(--j-green)!important;
+  color:#fffdf8!important;
+}
+.metric:first-child *,.hero-card *{color:#fffdf8!important}
+
+/* hero / boas-vindas — verde, não azul/roxo */
+.hero,.welcome,.dashboard-hero{
+  background:linear-gradient(135deg,#286858,#347262 72%,#407868)!important;
+  color:#fffdf8!important;
+  border-color:transparent!important;
+}
+.hero *,.welcome *,.dashboard-hero *{color:#fffdf8!important}
+.hero .button,.welcome .button,.dashboard-hero .button{
+  background:var(--j-coral)!important;
+  color:#203830!important;
+  border-color:var(--j-coral)!important;
+}
+
+/* botões principais */
+.button,.button-primary,.btn-primary,
+button.primary,.quick-actions .primary{
+  background:var(--j-green)!important;
+  color:#fffdf8!important;
+  border-color:var(--j-green)!important;
+}
+.button:hover,.button-primary:hover,.btn-primary:hover,
+button.primary:hover,.quick-actions .primary:hover{
+  background:var(--j-green-2)!important;
+  border-color:var(--j-green-2)!important;
+}
+.button-brass{
+  background:var(--j-coral-soft)!important;
+  color:#6f5147!important;
+  border-color:#e3b7a7!important;
+}
+
+/* coral só como destaque, igual à referência */
+.brand-mark,.accent,.highlight,
+.status-dot,.notification-dot{
+  color:var(--j-coral)!important;
+}
+.badge.red,.badge.gold{
+  background:var(--j-coral-soft)!important;
+  color:#765448!important;
+  border-color:#e3b7a7!important;
+}
+.badge.green,.success-text{
+  background:#e0ece5!important;
+  color:var(--j-green)!important;
+}
+
+/* tabelas */
+.table,.table-wrap table{
+  background:var(--j-card)!important;
+  color:var(--j-text)!important;
+}
+.table th{
+  background:#e8eee8!important;
+  color:var(--j-text)!important;
+  border-color:var(--j-line)!important;
+}
+.table td{
+  background:var(--j-card)!important;
+  color:var(--j-text)!important;
+  border-color:var(--j-line)!important;
+}
+
+/* filtros e estados selecionados */
+.property-filters .filter-btn{
+  background:#e8eee8!important;
+  color:var(--j-text)!important;
+  border-color:#d0dad2!important;
+}
+.property-filters .filter-btn.active{
+  background:var(--j-green)!important;
+  color:#fff!important;
+  border-color:var(--j-green)!important;
+}
+.chat-thread:hover,.chat-thread.active{
+  background:#e0ece5!important;
+  border-color:#a9c8bd!important;
+}
+
+/* áreas de chat */
+.chat19-list,.chat-hub-list,.chat-hub-main,
+.chat-hub-messages,.chat19-compose,.chat-hub-compose{
+  background:var(--j-cream-2)!important;
+  color:var(--j-text)!important;
+  border-color:var(--j-line)!important;
+}
+.chat19-message,.chat-hub-message{
+  background:#e8eee8!important;
+  color:var(--j-text)!important;
+  border-color:#d0dad2!important;
+}
+.chat19-message.mine,.chat-hub-message.mine{
+  background:#dce9e1!important;
+  border-color:#a9c8bd!important;
+}
+
+/* assistente / importação */
+.presentation-head{
+  background:var(--j-green)!important;
+  color:#fffdf8!important;
+}
+.presentation-head p{color:#c9ddd5!important}
+.modal-bg{background:rgba(32,56,48,.45)!important}
+a{color:var(--j-green-2)!important}
+.icon,.top-icon{background:#e8eee8!important;color:var(--j-green)!important}
+
+/* portal do prestador — mesma identidade, não azul/roxo */
+body.provider-mode{
+  --provider-bg:var(--j-green)!important;
+  --provider-panel:#e8eee8!important;
+  --provider-panel-2:#dfe9e2!important;
+  --provider-line:#c9d8cf!important;
+  --provider-text:var(--j-text)!important;
+  --provider-muted:var(--j-muted)!important;
+  --provider-primary:var(--j-green)!important;
+  --provider-primary-2:var(--j-green-2)!important;
+  --provider-accent:var(--j-coral)!important;
+  background:var(--j-cream)!important;
+  color:var(--j-text)!important;
+}
+body.provider-mode .app,
+body.provider-mode .main{
+  background:var(--j-cream)!important;
+}
+body.provider-mode .side{
+  background:var(--j-green)!important;
+  border-color:transparent!important;
+}
+body.provider-mode .brand-mark{
+  background:var(--j-coral)!important;
+  box-shadow:none!important;
+}
+body.provider-mode .top{
+  background:var(--j-cream)!important;
+  border-color:var(--j-line)!important;
+}
+body.provider-mode .provider-service-card,
+body.provider-mode #provider-maintenance-view .panel,
+body.provider-mode .provider-portal-kpis .metric,
+body.provider-mode .chat-hub-shell,
+body.provider-mode .chat-hub-list,
+body.provider-mode .chat-hub-main{
+  background:var(--j-card)!important;
+  border-color:var(--j-line)!important;
+  color:var(--j-text)!important;
+}
+body.provider-mode .provider-service-location,
+body.provider-mode .provider-service-meta>div,
+body.provider-mode .provider-admin-banner{
+  background:#e8eee8!important;
+  border-color:#d0dad2!important;
+}
+body.provider-mode .nav button.active{
+  background:rgba(255,255,255,.14)!important;
+  border-color:transparent!important;
+  box-shadow:none!important;
+}
+body.provider-mode .button-primary{
+  background:var(--j-green)!important;
+  border-color:var(--j-green)!important;
+}
+body.provider-mode .page-head h1,
+body.provider-mode .page-head .eyebrow{
+  color:var(--j-text)!important;
+}
+body.provider-mode .page-head .lead{
+  color:var(--j-muted)!important;
+}
+
+/* mobile */
+@media(max-width:760px){
+  body,.app,.main{background:var(--j-cream)!important}
+  .side{background:var(--j-green)!important}
+  .panel,.metric,.property,.card,.provider-service-card,.chat-hub-shell{
+    box-shadow:0 8px 24px rgba(32,56,48,.08)!important;
+  }
+  input,select,textarea{font-size:16px!important;min-height:46px!important}
+}
+
+/* impressão permanece branca */
+@media print{
+  .d6-print-sheet,.contract-print-sheet,.receipt-print-sheet,
+  .inspection-print-sheet,.end-print-sheet{
+    background:#fff!important;color:#222!important;
+  }
+}
+</style>
+
+
+<style id="dormus-849-login-juntos-fix">
+/* DORMUS — aplicar a paleta Juntos também na tela de escolha do portal */
+#login-screen{
+  background:var(--j-cream)!important;
+  color:var(--j-text)!important;
+}
+#login-screen .login-shell{
+  background:var(--j-cream)!important;
+}
+#login-screen .login-card,
+#login-screen .login-portal-card{
+  background:var(--j-card)!important;
+  color:var(--j-text)!important;
+  border:1px solid var(--j-line)!important;
+  box-shadow:0 24px 70px rgba(32,56,48,.10)!important;
+}
+#login-screen .login-brand-mark{
+  background:var(--j-coral)!important;
+  border:0!important;
+  color:#fffdf8!important;
+}
+#login-screen .login-brand strong{color:var(--j-text)!important}
+#login-screen .login-brand small{color:var(--j-green-2)!important}
+#login-screen .login-title{color:var(--j-text)!important}
+#login-screen .login-sub{color:var(--j-muted)!important}
+#login-screen .portal-choice{
+  background:var(--j-card-2)!important;
+  color:var(--j-text)!important;
+  border:1px solid #d0dad2!important;
+  box-shadow:none!important;
+}
+#login-screen .portal-choice:hover{
+  background:#e0ece5!important;
+  border-color:var(--j-green-3)!important;
+  box-shadow:0 8px 25px rgba(32,56,48,.10)!important;
+}
+#login-screen .portal-choice-icon{
+  background:var(--j-green)!important;
+  color:#fffdf8!important;
+}
+#login-screen .portal-choice:nth-of-type(3) .portal-choice-icon{
+  background:var(--j-coral)!important;
+  color:#fffdf8!important;
+}
+#login-screen .portal-choice strong{color:var(--j-text)!important}
+#login-screen .portal-choice small{color:var(--j-muted)!important}
+#login-screen .portal-choice b{color:var(--j-green)!important}
+#login-screen .login-back{color:var(--j-green)!important}
+#login-screen .portal-kicker{color:var(--j-green)!important}
+#login-screen .login-button{
+  background:var(--j-green)!important;
+  border-color:var(--j-green)!important;
+  color:#fffdf8!important;
+}
+#login-screen .login-button:hover{background:var(--j-green-2)!important}
+#login-screen .login-note{color:var(--j-muted)!important}
+#login-screen .login-error{color:#b85c4c!important}
+#login-screen .login-field label{color:var(--j-text)!important}
+</style>
+
+<style id="dormus-850-global-juntos">
+/* DORMUS 8.50 — PALETA JUNTOS APLICADA AO SISTEMA INTEIRO.
+   Este bloco fica por ultimo para vencer estilos antigos. */
+:root{
+ --j-bg:#f6f4ec!important;
+ --j-surface:#fbfaf5!important;
+ --j-surface-2:#edf0e9!important;
+ --j-green:#2f6f5e!important;
+ --j-green-dark:#285f50!important;
+ --j-green-mid:#3b7868!important;
+ --j-green-soft:#dfe9e2!important;
+ --j-coral:#e5a07f!important;
+ --j-coral-soft:#f3e2d9!important;
+ --j-text:#27443b!important;
+ --j-muted:#678078!important;
+ --j-line:#dddcd2!important;
+ --j-white:#fffdf8!important;
+}
+
+/* base de toda a aplicação */
+html,body,#root,.app,.main,.content,.page,.shell,.workspace,
+#app,#main,.main-content,.content-area,.page-content{
+ background:var(--j-bg)!important;
+ color:var(--j-text)!important;
+}
+body{background:var(--j-bg)!important;color:var(--j-text)!important}
+
+/* lateral inteira */
+.side,.sidebar,.left-sidebar,.app-sidebar,.nav-sidebar{
+ background:var(--j-green)!important;
+ color:var(--j-white)!important;
+ border-color:transparent!important;
+}
+.side *,.sidebar *,.left-sidebar *,.app-sidebar *,.nav-sidebar *{color:inherit}
+.brand strong,.brand-name,.sidebar-brand,.side .brand strong{color:#fffdf8!important}
+.brand small,.sidebar-brand small{color:#c9ddd5!important}
+.brand-mark,.logo-mark,.sidebar .brand-mark{
+ background:var(--j-coral)!important;color:#fffdf8!important;border-color:transparent!important;box-shadow:none!important
+}
+.nav-title{color:#b9d1c8!important}
+.nav button,.sidebar button,.side .nav button{
+ background:transparent!important;color:#edf5f0!important;border-color:transparent!important
+}
+.nav button:hover,.nav button.active,.sidebar .nav button:hover,.sidebar .nav button.active{
+ background:rgba(255,255,255,.13)!important;color:#fff!important;border-color:transparent!important;box-shadow:none!important
+}
+
+/* topo */
+.top,.header,.topbar,.app-header{
+ background:var(--j-bg)!important;color:var(--j-text)!important;border-color:var(--j-line)!important
+}
+.global-search,.global-search input,.searchbar,.searchbar input,.toolbar-search,
+.top-search,.top-search input{
+ background:var(--j-surface-2)!important;color:var(--j-text)!important;-webkit-text-fill-color:var(--j-text)!important;border-color:#d5ddd7!important
+}
+.avatar,.user-avatar,.profile-avatar{background:var(--j-coral)!important;color:#fffdf8!important}
+.auth-user-display strong,.user-name,.profile-name{color:var(--j-text)!important}
+.auth-user-display small,.user-role,.profile-role{color:var(--j-muted)!important}
+
+/* títulos */
+h1,h2,h3,h4,h5,h6,.page-head h1,.page-title,.panel-title,.section-title,
+.metric strong,.metric-value,.dash-stat-value,.property-name,.card-title{
+ color:var(--j-text)!important
+}
+.muted,.small,.lead,.eyebrow,.panel-kicker,.metric-label,.metric-meta,
+.property-address,.property-code,.row-sub,.dash-stat-label,.dash-stat-hint,
+.page-head .lead{color:var(--j-muted)!important}
+
+/* todos os campos */
+input,select,textarea,button:not(.nav button),
+.form-field input,.form-field select,.form-field textarea,
+.login-field input,.portal-login-form input,.modal input,.modal select,.modal textarea,
+.drawer input,.drawer select,.drawer textarea{
+ background:var(--j-surface-2)!important;
+ color:var(--j-text)!important;
+ -webkit-text-fill-color:var(--j-text)!important;
+ border-color:#cfd9d1!important;
+}
+input::placeholder,textarea::placeholder,select::placeholder{color:#71867d!important;-webkit-text-fill-color:#71867d!important;opacity:1!important}
+input:focus,select:focus,textarea:focus{
+ background:#e5ebe5!important;border-color:var(--j-green-mid)!important;
+ box-shadow:0 0 0 3px rgba(59,120,104,.13)!important
+}
+
+/* cartões e painéis de TODAS as áreas */
+.panel,.metric,.property,.card,.card-body,.list,.list-item,.summary,.row,
+.modal,.drawer,.table-wrap,.dashboard-card,.maintenance-panel,.crm-card,.finance-card,
+.report-card,.chat-card,.list-card,.contract360-card,.contract360-kpi,.dash-stat,
+.quick-finance>div,.provider-restricted-card,.provider-restricted-service,
+.chat-thread,.chat-notify-box,.smart-alert,.p360-stat,.p360-item,.provider-service-card,
+.provider-service-location,.provider-service-meta>div,.provider-admin-banner,
+.received-quote-box,.maint-quote19,.maint-ops19,.provider-detail-section,
+.provider-detail-grid>div,.attachments-block,.attachment-item,.photo-room,.photo-gallery,
+.documents-list,.person-contact-actions,.selected-file-row,.image-viewer,.filters,.filter-bar,
+.table,.table-wrap table{
+ background:var(--j-surface)!important;color:var(--j-text)!important;border-color:var(--j-line)!important;box-shadow:none!important
+}
+.metric:first-child,.hero-card,.presentation-head{background:var(--j-green)!important;color:#fffdf8!important}
+.metric:first-child *,.hero-card *,.presentation-head *{color:#fffdf8!important}
+
+/* qualquer hero/dashboard antigo azul ou roxo */
+.hero,.welcome,.dashboard-hero,.hero-card,.welcome-card,.dashboard-banner{
+ background:linear-gradient(135deg,var(--j-green),var(--j-green-mid))!important;
+ color:#fffdf8!important;border-color:transparent!important
+}
+.hero *,.welcome *,.dashboard-hero *,.hero-card *,.welcome-card *,.dashboard-banner *{color:#fffdf8!important}
+
+/* botões */
+.button,.button-primary,.btn-primary,button.primary,.primary,
+.quick-actions .primary,.login-button,.btn-success,.btn-save{
+ background:var(--j-green)!important;color:#fffdf8!important;border-color:var(--j-green)!important
+}
+.button:hover,.button-primary:hover,.btn-primary:hover,button.primary:hover,.primary:hover,
+.login-button:hover,.btn-success:hover,.btn-save:hover{background:var(--j-green-mid)!important;border-color:var(--j-green-mid)!important}
+
+/* coral para detalhes, alertas e ações secundárias */
+.brand-mark,.accent,.highlight,.notification-dot,.status-dot{background-color:var(--j-coral)!important;color:var(--j-coral)!important}
+.badge.red,.badge.gold,.tag-coral{background:var(--j-coral-soft)!important;color:#7b594c!important;border-color:#e3b6a2!important}
+.badge.green,.success-text{background:var(--j-green-soft)!important;color:var(--j-green)!important}
+
+/* tabelas */
+.table th,.table-wrap th{background:var(--j-surface-2)!important;color:var(--j-text)!important;border-color:var(--j-line)!important}
+.table td,.table-wrap td{background:var(--j-surface)!important;color:var(--j-text)!important;border-color:var(--j-line)!important}
+
+/* chats */
+.chat19-list,.chat-hub-list,.chat-hub-main,.chat-hub-messages,.chat19-compose,.chat-hub-compose{
+ background:var(--j-bg)!important;color:var(--j-text)!important;border-color:var(--j-line)!important
+}
+.chat19-message,.chat-hub-message{background:var(--j-surface-2)!important;color:var(--j-text)!important;border-color:#d0dad2!important}
+.chat19-message.mine,.chat-hub-message.mine{background:var(--j-green-soft)!important;color:var(--j-text)!important;border-color:#b9d1c5!important}
+.chat-thread.active,.chat-thread:hover{background:var(--j-green-soft)!important;border-color:#b9d1c5!important}
+
+/* portal do prestador: mesma paleta */
+body.provider-mode,body.provider-mode .app,body.provider-mode .main{background:var(--j-bg)!important;color:var(--j-text)!important}
+body.provider-mode .side{background:var(--j-green)!important}
+body.provider-mode .top{background:var(--j-bg)!important;border-color:var(--j-line)!important}
+body.provider-mode .provider-service-card,body.provider-mode .chat-hub-shell,
+body.provider-mode .chat-hub-list,body.provider-mode .chat-hub-main,
+body.provider-mode .panel,body.provider-mode .metric{background:var(--j-surface)!important;color:var(--j-text)!important;border-color:var(--j-line)!important}
+body.provider-mode .provider-service-location,body.provider-mode .provider-service-meta>div,
+body.provider-mode .provider-admin-banner{background:var(--j-surface-2)!important;border-color:#d0dad2!important;color:var(--j-text)!important}
+
+/* tela de acesso também */
+#login-screen,.login-screen,.portal-screen{background:var(--j-bg)!important;color:var(--j-text)!important}
+#login-screen .login-card,#login-screen .login-shell,#login-screen .portal-card,
+.login-card,.portal-login-card{background:var(--j-surface)!important;color:var(--j-text)!important;border-color:var(--j-line)!important}
+#login-screen .portal-choice,.portal-choice{background:var(--j-surface-2)!important;color:var(--j-text)!important;border-color:#d0dad2!important}
+#login-screen .portal-choice:hover,.portal-choice:hover{background:var(--j-green-soft)!important;border-color:var(--j-green-mid)!important}
+#login-screen .portal-choice-icon{background:var(--j-green)!important;color:#fff!important}
+#login-screen .portal-choice:nth-of-type(3) .portal-choice-icon{background:var(--j-coral)!important}
+#login-screen .login-brand-mark{background:var(--j-coral)!important;color:#fff!important}
+#login-screen .login-brand strong,#login-screen .login-title,#login-screen .portal-choice strong{color:var(--j-text)!important}
+#login-screen .login-sub,#login-screen .portal-choice small{color:var(--j-muted)!important}
+
+/* mobile */
+@media(max-width:760px){
+ html,body,.app,.main,.content{background:var(--j-bg)!important}
+ .side,.sidebar{background:var(--j-green)!important}
+ input,select,textarea{font-size:16px!important;min-height:46px!important}
+ .panel,.metric,.property,.card,.provider-service-card,.chat-hub-shell{box-shadow:0 8px 24px rgba(39,68,59,.08)!important}
+}
+</style>
+
+
+<style id="dormus-852-exact-juntos-global">
+/* DORMUS 8.52 — PALETA EXATA DA TELA DE PORTAL APLICADA AO SISTEMA INTEIRO */
+:root{
+ --j-cream:#f5f1e8 !important;
+ --j-cream-2:#fbfaf5 !important;
+ --j-green:#2f6f5e !important;
+ --j-green-dark:#285f50 !important;
+ --j-green-soft:#dfe9e2 !important;
+ --j-green-light:#e8eee8 !important;
+ --j-coral:#e5a07f !important;
+ --j-coral-soft:#f3e2d9 !important;
+ --j-text:#29483f !important;
+ --j-muted:#678078 !important;
+ --j-line:#ddd8ca !important;
+}
+
+/* ESTRUTURA */
+html,body,.app,.main,.content,.view,.workspace,.page,.page-content,.content-area{
+ background:var(--j-cream)!important;
+ color:var(--j-text)!important;
+}
+.side,.sidebar,.left-sidebar,.app-sidebar,.nav-sidebar{
+ background:var(--j-green)!important;
+ color:#fffdf8!important;
+}
+.side .nav button,.sidebar .nav button{
+ background:transparent!important;
+ color:#f7f4ec!important;
+}
+.side .nav button.active,.side .nav button:hover,
+.sidebar .nav button.active,.sidebar .nav button:hover{
+ background:rgba(255,255,255,.13)!important;
+ color:#fff!important;
+ border-color:rgba(229,160,127,.75)!important;
+}
+.top,.header,.topbar,.app-header{
+ background:var(--j-cream)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+}
+.global-search,.global-search input,.searchbar,.searchbar input,.toolbar-search,.top-search,.top-search input{
+ background:var(--j-cream-2)!important;
+ color:var(--j-text)!important;
+ -webkit-text-fill-color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+}
+
+/* MARCA */
+.brand-mark,.login-brand-mark{
+ background:var(--j-coral)!important;
+ color:#fffdf8!important;
+ border-color:transparent!important;
+}
+.brand strong,.brand-name,.sidebar-brand{color:#fffdf8!important}
+
+/* DASHBOARD — REMOVE COMPLETAMENTE O ROXO/AZUL */
+#home .dormus-home-head,
+.dormus-home-head,
+#home .modern-head{
+ background:var(--j-cream-2)!important;
+ background-image:none!important;
+ border:1px solid var(--j-line)!important;
+ box-shadow:0 12px 30px rgba(41,72,63,.08)!important;
+ color:var(--j-text)!important;
+}
+#home .dormus-home-head:after{display:none!important}
+#home .dormus-home-head h1,
+#home .dormus-home-head h1 span{
+ background:none!important;
+ -webkit-text-fill-color:var(--j-text)!important;
+ color:var(--j-text)!important;
+}
+#home .dormus-home-head .lead{
+ color:var(--j-muted)!important;
+}
+#home .dormus-home-head .button,
+#home .dormus-home-head .button-primary{
+ background:var(--j-green)!important;
+ color:#fffdf8!important;
+ border-color:var(--j-green)!important;
+}
+
+/* CARDS DO DASHBOARD */
+#home .dash-stat,.dash-stat,
+#home .panel,.dashboard-columns .panel,.upcoming-panel,
+.dashboard-card,.chart-panel{
+ background:var(--j-cream-2)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+ box-shadow:0 8px 24px rgba(41,72,63,.06)!important;
+}
+#home .dash-stat:hover,.dash-stat:hover{
+ background:#f8f5ed!important;
+}
+.dash-stat-icon,
+.dash-stat-icon.emerald,.dash-stat-icon.blue,.dash-stat-icon.amber,.dash-stat-icon.violet,
+.metric-icon,.metric-icon.blue,.metric-icon.violet,.metric-icon.amber{
+ background:var(--j-green-soft)!important;
+ color:var(--j-green)!important;
+}
+.dash-stat-icon.amber{
+ background:var(--j-coral-soft)!important;
+ color:#9a5d45!important;
+}
+.dash-stat-icon.violet,.metric-icon.violet{
+ background:var(--j-coral-soft)!important;
+ color:#9a5d45!important;
+}
+.dash-stat-value,.dash-stat-label,.dash-stat-hint,.dash-stat>b,
+.panel-title,.panel-kicker,.bar-label,.hbar-label,
+.bar-label strong,.hbar-label strong{
+ color:var(--j-text)!important;
+}
+.dash-stat-label,.dash-stat-hint,.panel-kicker{
+ color:var(--j-muted)!important;
+}
+
+/* GRÁFICOS */
+.bar-track,.hbar-track{
+ background:var(--j-green-light)!important;
+}
+.bar-track i{
+ background:var(--j-green)!important;
+}
+.hbar-track i{
+ background:var(--j-coral)!important;
+}
+.expiring-row{
+ border-color:var(--j-line)!important;
+}
+.warning-icon{
+ color:var(--j-coral)!important;
+}
+
+/* TODOS OS PAINÉIS/CARDS */
+.panel,.metric,.property,.card,.card-body,.list,.list-item,.summary,.row,
+.modal,.drawer,.table-wrap,.dashboard-card,.maintenance-panel,.crm-card,.finance-card,
+.report-card,.chat-card,.list-card,.contract360-card,.contract360-kpi,.dash-stat,
+.quick-finance>div,.provider-restricted-card,.provider-restricted-service,
+.chat-thread,.chat-notify-box,.smart-alert,.p360-stat,.p360-item,.provider-service-card,
+.provider-service-location,.provider-service-meta>div,.provider-admin-banner,
+.received-quote-box,.maint-quote19,.maint-ops19,.provider-detail-section,
+.provider-detail-grid>div,.attachments-block,.attachment-item,.photo-room,.photo-gallery,
+.documents-list,.person-contact-actions,.selected-file-row,.image-viewer,.filters,.filter-bar{
+ background:var(--j-cream-2)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+}
+.quick-finance>div,.provider-service-location,.provider-service-meta>div{
+ background:var(--j-green-light)!important;
+}
+
+/* FORMULÁRIOS */
+input,select,textarea,.form-control,.input,.select,.textarea,
+.form-field input,.form-field select,.form-field textarea,
+.login-field input,.portal-login-form input,.modal input,.modal select,.modal textarea{
+ background:var(--j-green-light)!important;
+ color:var(--j-text)!important;
+ -webkit-text-fill-color:var(--j-text)!important;
+ border:1px solid #cbd8d0!important;
+}
+input::placeholder,textarea::placeholder{
+ color:#71867d!important;
+ -webkit-text-fill-color:#71867d!important;
+ opacity:1!important;
+}
+input:focus,select:focus,textarea:focus{
+ background:#e1e9e3!important;
+ border-color:var(--j-green)!important;
+ box-shadow:0 0 0 3px rgba(47,111,94,.14)!important;
+}
+
+/* BOTÕES */
+button,.button,.btn,.primary,.btn-primary,.button-primary,.action-btn,.save-btn,
+.toolbar button,.page-head button,.login-button,.btn-save{
+ background:var(--j-green)!important;
+ color:#fffdf8!important;
+ border-color:var(--j-green)!important;
+}
+button:hover,.button:hover,.btn:hover,.primary:hover,.btn-primary:hover,
+.button-primary:hover,.action-btn:hover,.save-btn:hover,.toolbar button:hover{
+ background:var(--j-green-dark)!important;
+ border-color:var(--j-green-dark)!important;
+}
+.btn-coral,.coral-btn{
+ background:var(--j-coral)!important;
+ color:#fffdf8!important;
+ border-color:var(--j-coral)!important;
+}
+
+/* BADGES / DESTAQUES */
+.badge.red,.badge.gold,.tag-coral,.warning,.notice,.info-box{
+ background:var(--j-coral-soft)!important;
+ color:#875844!important;
+ border-color:#e5b9a5!important;
+}
+.badge.green,.success-text{
+ background:var(--j-green-soft)!important;
+ color:var(--j-green)!important;
+}
+.notification-dot,.status-dot,.accent,.highlight{
+ background:var(--j-coral)!important;
+}
+
+/* TABELAS */
+.table,.table-wrap table,.table th,.table-wrap th{
+ background:var(--j-cream-2)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+}
+.table td,.table-wrap td{
+ background:var(--j-cream-2)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+}
+.table th,.table-wrap th{
+ background:var(--j-green-soft)!important;
+}
+
+/* CHAT */
+.chat19-list,.chat-hub-list,.chat-hub-main,.chat-hub-messages,.chat19-compose,.chat-hub-compose{
+ background:var(--j-cream)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+}
+.chat19-message,.chat-hub-message{
+ background:var(--j-green-light)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+}
+.chat19-message.mine,.chat-hub-message.mine,.chat-thread.active,.chat-thread:hover{
+ background:var(--j-green-soft)!important;
+ color:var(--j-text)!important;
+ border-color:#b9d1c5!important;
+}
+
+/* PORTAL DO PRESTADOR */
+body.provider-mode,.provider-mode .app,.provider-mode .main,.provider-mode .content{
+ background:var(--j-cream)!important;
+ color:var(--j-text)!important;
+}
+body.provider-mode .side{background:var(--j-green)!important}
+body.provider-mode .top{background:var(--j-cream)!important}
+
+/* LOGIN */
+#login-screen,.login-screen,.portal-screen{
+ background:var(--j-cream)!important;
+ color:var(--j-text)!important;
+}
+#login-screen .login-card,.login-card,.portal-login-card{
+ background:var(--j-cream-2)!important;
+ color:var(--j-text)!important;
+ border-color:var(--j-line)!important;
+ box-shadow:0 18px 45px rgba(41,72,63,.10)!important;
+}
+#login-screen .portal-choice,.portal-choice{
+ background:var(--j-green-light)!important;
+ color:var(--j-text)!important;
+ border-color:#cbd8d0!important;
+}
+#login-screen .portal-choice:hover,.portal-choice:hover{
+ background:var(--j-green-soft)!important;
+ border-color:var(--j-green)!important;
+}
+#login-screen .portal-choice-icon{
+ background:var(--j-green)!important;
+ color:#fff!important;
+}
+#login-screen .portal-choice:nth-of-type(3) .portal-choice-icon{
+ background:var(--j-coral)!important;
+}
+#login-screen .login-brand-mark{
+ background:var(--j-coral)!important;
+}
+
+/* REMOVE CORES ANTIGAS DO DASHBOARD */
+#home .blue,.blue{color:var(--j-green)!important}
+#home .violet,.violet{color:var(--j-coral)!important}
+#home .emerald{color:var(--j-green)!important}
+</style>
+
+
+<style id="dormus-853-paleta-global-final">
+/* DORMUS 8.53 — PALETA GLOBAL DEFINITIVA
+   Remove azul/roxo/preto do tema e usa somente creme claro + verde escuro + terracota. */
+html[data-dormus-theme], html[data-dormus-theme="p1"], html[data-dormus-theme="p2"],
+html[data-dormus-theme="p3"], html[data-dormus-theme="p4"], html[data-dormus-theme="p5"]{
+  --d-theme-primary:#2f6f5e!important;
+  --d-theme-secondary:#3b7868!important;
+  --d-theme-accent:#e5a07f!important;
+  --d-theme-paper:#f6f4ec!important;
+  --d-theme-text:#27443b!important;
+  --d-theme-muted:#678078!important;
+  --d-theme-panel:#fbfaf5!important;
+  --d-theme-panel2:#edf0e9!important;
+  --d-theme-line:#dddcd2!important;
+}
+
+/* FUNDO PRINCIPAL — SEM PRETO/AZUL */
+html,body,#root,.app,.main,.content,.page,.shell,.workspace,#app,#main,
+.main-content,.content-area,.page-content,body:not(.print-mode){
+  background:#f6f4ec!important;
+  color:#27443b!important;
+}
+
+/* MENU LATERAL */
+html[data-dormus-theme] body:not(.provider-mode) .side,
+html[data-dormus-theme] body.provider-mode .side,
+.side,.sidebar,.left-sidebar,.app-sidebar,.nav-sidebar{
+  background:#2f6f5e!important;
+  background-image:none!important;
+  color:#fffdf8!important;
+  border-color:transparent!important;
+}
+
+/* TOPO */
+html[data-dormus-theme] body:not(.provider-mode) .top,
+html[data-dormus-theme] body.provider-mode .top,
+.top,.header,.topbar,.app-header{
+  background:#f6f4ec!important;
+  background-image:none!important;
+  color:#27443b!important;
+  border-color:#dddcd2!important;
+}
+
+/* ÁREA CENTRAL */
+html[data-dormus-theme] body:not(.provider-mode) .main,
+html[data-dormus-theme] body.provider-mode .main,
+.main,.content{
+  background:#f6f4ec!important;
+  background-image:none!important;
+}
+
+/* TODOS OS PAINÉIS/CARTÕES */
+.panel,.metric,.property,.card,.card-body,.list,.list-item,.summary,.row,
+.modal,.drawer,.table-wrap,.dashboard-card,.maintenance-panel,.crm-card,
+.finance-card,.report-card,.chat-card,.list-card,.contract360-card,
+.contract360-kpi,.dash-stat,.quick-finance>div,.provider-restricted-card,
+.provider-restricted-service,.chat-thread,.chat-notify-box,.smart-alert,
+.p360-stat,.p360-item,.provider-service-card,.provider-service-location,
+.provider-service-meta>div,.provider-admin-banner,.received-quote-box,
+.maint-quote19,.maint-ops19,.provider-detail-section,.provider-detail-grid>div,
+.attachments-block,.attachment-item,.photo-room,.photo-gallery,.documents-list,
+.person-contact-actions,.selected-file-row,.image-viewer,.filters,.filter-bar,
+.presentation-body,.presentation-item,.presentation-file,.property-showcase,
+.showcase-info,.quick-actions,.access-help,.empty{
+  background:#fbfaf5!important;
+  background-image:none!important;
+  color:#27443b!important;
+  border-color:#dddcd2!important;
+}
+
+/* CAMPOS */
+input,select,textarea,.form-control,.input,.select,.textarea,
+.form-field input,.form-field select,.form-field textarea,
+.login-field input,.portal-login-form input,.modal input,.modal select,.modal textarea,
+.drawer input,.drawer select,.drawer textarea,.searchbar input,.toolbar-search,
+.global-search input,.chat19-compose textarea,.chat-hub-compose textarea{
+  background:#edf0e9!important;
+  background-image:none!important;
+  color:#27443b!important;
+  -webkit-text-fill-color:#27443b!important;
+  border:1px solid #cbd8d0!important;
+}
+
+/* BOTÕES VERDES */
+button,.button,.btn,.primary,.btn-primary,.button-primary,.action-btn,.save-btn,
+.toolbar button,.page-head button,.login-button,.btn-save{
+  background:#2f6f5e!important;
+  background-image:none!important;
+  color:#fffdf8!important;
+  border-color:#2f6f5e!important;
+}
+button:hover,.button:hover,.btn:hover,.primary:hover,.btn-primary:hover,
+.button-primary:hover,.action-btn:hover,.save-btn:hover,.toolbar button:hover{
+  background:#3b7868!important;
+  border-color:#3b7868!important;
+}
+
+/* TERRACOTA */
+.brand-mark,.logo-mark,.accent,.highlight,.notification-dot,.status-dot,
+.btn-coral,.coral-btn{
+  background:#e5a07f!important;
+  background-image:none!important;
+  color:#fffdf8!important;
+  border-color:#e5a07f!important;
+}
+
+/* MENU */
+.nav button,.sidebar button,.side .nav button{
+  background:transparent!important;
+  color:#edf5f0!important;
+  border-color:transparent!important;
+}
+.nav button:hover,.nav button.active,.sidebar .nav button:hover,.sidebar .nav button.active,
+html[data-dormus-theme] body:not(.provider-mode) .nav button.active{
+  background:#3b7868!important;
+  color:#fffdf8!important;
+  border-color:#e5a07f!important;
+}
+
+/* TABELAS — inclusive linhas alternadas que estavam ficando pretas */
+.table,.table-wrap,.table-wrap table{
+  background:#fbfaf5!important;
+  color:#27443b!important;
+  border-color:#dddcd2!important;
+}
+.table th,.table-wrap th{
+  background:#dfe9e2!important;
+  color:#27443b!important;
+  border-color:#dddcd2!important;
+}
+.table td,.table-wrap td,
+.table tr:nth-child(even) td,.table tr:nth-child(odd) td,
+.table tr:hover td,.table-wrap tr:nth-child(even) td,.table-wrap tr:nth-child(odd) td{
+  background:#fbfaf5!important;
+  color:#27443b!important;
+  border-color:#dddcd2!important;
+}
+
+/* DASHBOARD / BANNERS */
+.hero-card,.presentation-head,.dashboard-hero,.welcome-card,
+#home .hero-card,#home .presentation-head{
+  background:#2f6f5e!important;
+  background-image:none!important;
+  color:#fffdf8!important;
+  border-color:#2f6f5e!important;
+}
+
+/* GRÁFICOS/BARRAS */
+.progress,.progress-bar,.bar-fill,.chart-bar,.meter-fill{background:#2f6f5e!important}
+.progress .accent,.bar-fill.accent,.chart-bar.accent{background:#e5a07f!important}
+
+/* CHAT — sem azul/preto */
+.chat19-list,.chat-hub-list,.chat-hub-main,.chat-hub-messages,.chat19-compose,.chat-hub-compose{
+  background:#f6f4ec!important;
+  color:#27443b!important;
+  border-color:#dddcd2!important;
+}
+.chat19-message,.chat-hub-message{
+  background:#edf0e9!important;
+  color:#27443b!important;
+  border-color:#dddcd2!important;
+}
+.chat19-message.mine,.chat-hub-message.mine,.chat-thread.active,.chat-thread:hover{
+  background:#dfe9e2!important;
+  color:#27443b!important;
+  border-color:#b9d1c5!important;
+}
+
+/* BADGES */
+.badge,.chip,.tag,.status{background:#f3e2d9!important;color:#875844!important;border-color:#e5b9a5!important}
+.badge.green,.success-text{background:#dfe9e2!important;color:#2f6f5e!important}
+
+/* REMOVE GRADIENTS ESCUROS ANTIGOS */
+html[data-dormus-theme] body:not(.provider-mode) .side,
+html[data-dormus-theme] body.provider-mode .app,
+html[data-dormus-theme] body.provider-mode .side,
+html[data-dormus-theme] body.provider-mode .top,
+.presentation-head,.cover,.showcase-photo{
+  background-image:none!important;
+}
+
+/* Sombras suaves, sem efeito preto pesado */
+.panel,.metric,.property,.card,.table-wrap,.dashboard-card,.modal,.drawer{
+  box-shadow:0 8px 24px rgba(41,68,59,.08)!important;
+}
+</style>
 </body>
