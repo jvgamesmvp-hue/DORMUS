@@ -3848,6 +3848,207 @@ body.provider-mode .top{background:var(--j-cream)!important}
 #home .emerald{color:var(--j-green)!important}
 </style>
 
+
+<style id="dormus-854-fix-final">
+/* DORMUS 8.54 — PALETA GLOBAL + VISUALIZAÇÃO DO CADASTRO
+   Remove qualquer fundo preto/azul e garante texto legível em todos os componentes. */
+
+/* Base absoluta */
+html, body, #root, #app, .app, .main, .content, .page, .shell, .workspace,
+.main-content, .content-area, .page-content {
+  background:#f6f4ec!important;
+  background-image:none!important;
+  color:#27443b!important;
+}
+
+/* Nada de azul-marinho/preto em áreas principais */
+body, body * {
+  --dormus-cream:#f6f4ec;
+  --dormus-cream2:#fbfaf5;
+  --dormus-green:#2f6f5e;
+  --dormus-green2:#3b7868;
+  --dormus-green-soft:#dfe9e2;
+  --dormus-coral:#e5a07f;
+  --dormus-text:#27443b;
+  --dormus-muted:#678078;
+  --dormus-line:#dddcd2;
+}
+
+/* Cabeçalho do cadastro: creme, nunca preto */
+.presentation-head {
+  background:#fbfaf5!important;
+  background-image:none!important;
+  color:#27443b!important;
+  border-bottom:1px solid #dddcd2!important;
+}
+.presentation-head .eyebrow {
+  color:#2f6f5e!important;
+}
+.presentation-head h2,
+.presentation-head h2 * {
+  color:#27443b!important;
+  -webkit-text-fill-color:#27443b!important;
+  text-shadow:none!important;
+}
+.presentation-head p,
+.presentation-head .presentation-subtitle {
+  color:#678078!important;
+  -webkit-text-fill-color:#678078!important;
+}
+.presentation-head .icon,
+.presentation-modal .presentation-head .icon {
+  background:#2f6f5e!important;
+  background-image:none!important;
+  color:#fffdf8!important;
+  -webkit-text-fill-color:#fffdf8!important;
+  border-color:#2f6f5e!important;
+}
+
+/* Corpo da visualização */
+.presentation-modal,
+.presentation-body,
+.presentation-grid,
+.showcase-section {
+  background:#fbfaf5!important;
+  background-image:none!important;
+  color:#27443b!important;
+}
+.presentation-item,
+.presentation-file,
+.property-showcase,
+.showcase-info,
+.showcase-section > * {
+  background:#fbfaf5!important;
+  background-image:none!important;
+  color:#27443b!important;
+  border-color:#dddcd2!important;
+}
+.presentation-item span,
+.showcase-code,
+.showcase-address,
+.showcase-price small {
+  color:#678078!important;
+}
+.presentation-item strong,
+.showcase-info h1,
+.showcase-price {
+  color:#27443b!important;
+  -webkit-text-fill-color:#27443b!important;
+}
+
+/* Modal e fundo atrás dele: creme translúcido, não preto */
+.modal-bg {
+  background:rgba(246,244,236,.92)!important;
+  background-image:none!important;
+  backdrop-filter:blur(2px);
+}
+.modal,
+.drawer {
+  background:#fbfaf5!important;
+  background-image:none!important;
+  color:#27443b!important;
+  border-color:#dddcd2!important;
+}
+
+/* Botões da visualização */
+.presentation-actions .button-primary,
+.presentation-actions .button,
+.modal-actions .button-primary {
+  background:#2f6f5e!important;
+  background-image:none!important;
+  color:#fffdf8!important;
+  -webkit-text-fill-color:#fffdf8!important;
+  border-color:#2f6f5e!important;
+}
+.presentation-actions .button-brass {
+  background:#e5a07f!important;
+  background-image:none!important;
+  color:#fffdf8!important;
+  border-color:#e5a07f!important;
+}
+.presentation-actions .button-quiet,
+.modal-actions .button-quiet {
+  background:#edf0e9!important;
+  color:#27443b!important;
+  border-color:#cbd8d0!important;
+}
+
+/* Tabelas: nenhuma linha pode voltar a ficar preta */
+.table tr,.table tbody tr,.table thead tr,.table-wrap tr {
+  background:#fbfaf5!important;
+  background-image:none!important;
+}
+.table tr:nth-child(even),.table tr:nth-child(odd),
+.table tr:nth-child(even) td,.table tr:nth-child(odd) td,
+.table-wrap tr:nth-child(even),.table-wrap tr:nth-child(odd),
+.table-wrap tr:nth-child(even) td,.table-wrap tr:nth-child(odd) td {
+  background:#fbfaf5!important;
+  background-image:none!important;
+  color:#27443b!important;
+}
+.table th,.table-wrap th {
+  background:#dfe9e2!important;
+  color:#27443b!important;
+}
+
+/* Inputs e textos */
+input,select,textarea,
+.form-field input,.form-field select,.form-field textarea,
+.searchbar input,.global-search input,.toolbar-search {
+  background:#edf0e9!important;
+  color:#27443b!important;
+  -webkit-text-fill-color:#27443b!important;
+  border-color:#cbd8d0!important;
+}
+input::placeholder,textarea::placeholder {
+  color:#678078!important;
+  -webkit-text-fill-color:#678078!important;
+  opacity:1!important;
+}
+
+/* Títulos e textos que ficaram quase brancos */
+.page-head h1,.panel-title,.property-name,.metric-value,
+.row-title,.empty strong,.modal h2,.modal-head h2 {
+  color:#27443b!important;
+  -webkit-text-fill-color:#27443b!important;
+  text-shadow:none!important;
+}
+
+/* Fundo do menu continua verde escuro, sem preto */
+.side,.sidebar,.left-sidebar,.app-sidebar,.nav-sidebar {
+  background:#2f6f5e!important;
+  background-image:none!important;
+  color:#fffdf8!important;
+}
+.nav button,.sidebar button,.side .nav button {
+  color:#edf5f0!important;
+}
+.nav button:hover,.nav button.active,
+.sidebar .nav button:hover,.sidebar .nav button.active {
+  background:#3b7868!important;
+  color:#fffdf8!important;
+  border-color:#e5a07f!important;
+}
+
+/* Barra superior */
+.top,.header,.topbar,.app-header {
+  background:#f6f4ec!important;
+  background-image:none!important;
+  color:#27443b!important;
+  border-color:#dddcd2!important;
+}
+
+/* Remove especificamente as cores antigas do tema */
+[style*="background:#0"],
+[style*="background: #0"],
+[style*="background:#1"],
+[style*="background: #1"],
+[style*="background:#2"],
+[style*="background: #2"] {
+  /* As regras específicas abaixo prevalecem; esta seção serve apenas como marcador de compatibilidade. */
+}
+</style>
+
 </body></html>');
     w.document.close();
   };
@@ -5510,4 +5711,205 @@ html[data-dormus-theme] body.provider-mode .top,
   box-shadow:0 8px 24px rgba(41,68,59,.08)!important;
 }
 </style>
+
+<style id="dormus-854-fix-final">
+/* DORMUS 8.54 — PALETA GLOBAL + VISUALIZAÇÃO DO CADASTRO
+   Remove qualquer fundo preto/azul e garante texto legível em todos os componentes. */
+
+/* Base absoluta */
+html, body, #root, #app, .app, .main, .content, .page, .shell, .workspace,
+.main-content, .content-area, .page-content {
+  background:#f6f4ec!important;
+  background-image:none!important;
+  color:#27443b!important;
+}
+
+/* Nada de azul-marinho/preto em áreas principais */
+body, body * {
+  --dormus-cream:#f6f4ec;
+  --dormus-cream2:#fbfaf5;
+  --dormus-green:#2f6f5e;
+  --dormus-green2:#3b7868;
+  --dormus-green-soft:#dfe9e2;
+  --dormus-coral:#e5a07f;
+  --dormus-text:#27443b;
+  --dormus-muted:#678078;
+  --dormus-line:#dddcd2;
+}
+
+/* Cabeçalho do cadastro: creme, nunca preto */
+.presentation-head {
+  background:#fbfaf5!important;
+  background-image:none!important;
+  color:#27443b!important;
+  border-bottom:1px solid #dddcd2!important;
+}
+.presentation-head .eyebrow {
+  color:#2f6f5e!important;
+}
+.presentation-head h2,
+.presentation-head h2 * {
+  color:#27443b!important;
+  -webkit-text-fill-color:#27443b!important;
+  text-shadow:none!important;
+}
+.presentation-head p,
+.presentation-head .presentation-subtitle {
+  color:#678078!important;
+  -webkit-text-fill-color:#678078!important;
+}
+.presentation-head .icon,
+.presentation-modal .presentation-head .icon {
+  background:#2f6f5e!important;
+  background-image:none!important;
+  color:#fffdf8!important;
+  -webkit-text-fill-color:#fffdf8!important;
+  border-color:#2f6f5e!important;
+}
+
+/* Corpo da visualização */
+.presentation-modal,
+.presentation-body,
+.presentation-grid,
+.showcase-section {
+  background:#fbfaf5!important;
+  background-image:none!important;
+  color:#27443b!important;
+}
+.presentation-item,
+.presentation-file,
+.property-showcase,
+.showcase-info,
+.showcase-section > * {
+  background:#fbfaf5!important;
+  background-image:none!important;
+  color:#27443b!important;
+  border-color:#dddcd2!important;
+}
+.presentation-item span,
+.showcase-code,
+.showcase-address,
+.showcase-price small {
+  color:#678078!important;
+}
+.presentation-item strong,
+.showcase-info h1,
+.showcase-price {
+  color:#27443b!important;
+  -webkit-text-fill-color:#27443b!important;
+}
+
+/* Modal e fundo atrás dele: creme translúcido, não preto */
+.modal-bg {
+  background:rgba(246,244,236,.92)!important;
+  background-image:none!important;
+  backdrop-filter:blur(2px);
+}
+.modal,
+.drawer {
+  background:#fbfaf5!important;
+  background-image:none!important;
+  color:#27443b!important;
+  border-color:#dddcd2!important;
+}
+
+/* Botões da visualização */
+.presentation-actions .button-primary,
+.presentation-actions .button,
+.modal-actions .button-primary {
+  background:#2f6f5e!important;
+  background-image:none!important;
+  color:#fffdf8!important;
+  -webkit-text-fill-color:#fffdf8!important;
+  border-color:#2f6f5e!important;
+}
+.presentation-actions .button-brass {
+  background:#e5a07f!important;
+  background-image:none!important;
+  color:#fffdf8!important;
+  border-color:#e5a07f!important;
+}
+.presentation-actions .button-quiet,
+.modal-actions .button-quiet {
+  background:#edf0e9!important;
+  color:#27443b!important;
+  border-color:#cbd8d0!important;
+}
+
+/* Tabelas: nenhuma linha pode voltar a ficar preta */
+.table tr,.table tbody tr,.table thead tr,.table-wrap tr {
+  background:#fbfaf5!important;
+  background-image:none!important;
+}
+.table tr:nth-child(even),.table tr:nth-child(odd),
+.table tr:nth-child(even) td,.table tr:nth-child(odd) td,
+.table-wrap tr:nth-child(even),.table-wrap tr:nth-child(odd),
+.table-wrap tr:nth-child(even) td,.table-wrap tr:nth-child(odd) td {
+  background:#fbfaf5!important;
+  background-image:none!important;
+  color:#27443b!important;
+}
+.table th,.table-wrap th {
+  background:#dfe9e2!important;
+  color:#27443b!important;
+}
+
+/* Inputs e textos */
+input,select,textarea,
+.form-field input,.form-field select,.form-field textarea,
+.searchbar input,.global-search input,.toolbar-search {
+  background:#edf0e9!important;
+  color:#27443b!important;
+  -webkit-text-fill-color:#27443b!important;
+  border-color:#cbd8d0!important;
+}
+input::placeholder,textarea::placeholder {
+  color:#678078!important;
+  -webkit-text-fill-color:#678078!important;
+  opacity:1!important;
+}
+
+/* Títulos e textos que ficaram quase brancos */
+.page-head h1,.panel-title,.property-name,.metric-value,
+.row-title,.empty strong,.modal h2,.modal-head h2 {
+  color:#27443b!important;
+  -webkit-text-fill-color:#27443b!important;
+  text-shadow:none!important;
+}
+
+/* Fundo do menu continua verde escuro, sem preto */
+.side,.sidebar,.left-sidebar,.app-sidebar,.nav-sidebar {
+  background:#2f6f5e!important;
+  background-image:none!important;
+  color:#fffdf8!important;
+}
+.nav button,.sidebar button,.side .nav button {
+  color:#edf5f0!important;
+}
+.nav button:hover,.nav button.active,
+.sidebar .nav button:hover,.sidebar .nav button.active {
+  background:#3b7868!important;
+  color:#fffdf8!important;
+  border-color:#e5a07f!important;
+}
+
+/* Barra superior */
+.top,.header,.topbar,.app-header {
+  background:#f6f4ec!important;
+  background-image:none!important;
+  color:#27443b!important;
+  border-color:#dddcd2!important;
+}
+
+/* Remove especificamente as cores antigas do tema */
+[style*="background:#0"],
+[style*="background: #0"],
+[style*="background:#1"],
+[style*="background: #1"],
+[style*="background:#2"],
+[style*="background: #2"] {
+  /* As regras específicas abaixo prevalecem; esta seção serve apenas como marcador de compatibilidade. */
+}
+</style>
+
 </body>
