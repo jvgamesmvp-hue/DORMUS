@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.46</title>
+  <title>Dormus | Gestão imobiliária · 8.42</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -2722,7 +2722,149 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sa
     }
     const w=window.open('','_blank','width=900,height=700');
     if(!w){alert('Permita pop-ups para gerar o documento.');return}
-    w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+E(title)+'</title><style>body{font:14px Arial;color:#20372d;padding:40px;line-height:1.6}h1{font:28px Georgia}h2{font:21px Georgia;border-bottom:1px solid #ddd;padding-bottom:8px}h3{margin-top:25px;color:#496b59}li{margin:7px 0}@media print{button{display:none}}</style></head><body>'+rows.join('')+'<p style="margin-top:50px;color:#777">Gerado pelo DORMUS em '+new Date().toLocaleString('pt-BR')+'</p><button onclick="print()">Imprimir / Salvar PDF</button></body></html>');
+    w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+E(title)+'</title><style>body{font:14px Arial;color:#20372d;padding:40px;line-height:1.6}h1{font:28px Georgia}h2{font:21px Georgia;border-bottom:1px solid #ddd;padding-bottom:8px}h3{margin-top:25px;color:#496b59}li{margin:7px 0}@media print{button{display:none}}</style></head><body>'+rows.join('')+'<p style="margin-top:50px;color:#777">Gerado pelo DORMUS em '+new Date().toLocaleString('pt-BR')+'</p><button onclick="print()">Imprimir / Salvar PDF</button>
+<style id="dormus-847-final-palette">
+:root{
+  --ink:#29483f!important;
+  --paper:#f5f1e8!important;
+  --card:#ebe7dc!important;
+  --line:#d5d0c4!important;
+  --muted:#718079!important;
+  --teal:#2f6f5e!important;
+  --teal2:#397965!important;
+  --coral:#e5a386!important;
+  --field:#e4e9e2!important;
+}
+html,body,.app,.main,.content{
+  background:#f5f1e8!important;
+  color:#29483f!important;
+}
+.side{
+  background:#2f6f5e!important;
+  color:#f7f4ec!important;
+}
+.side *{color:inherit}
+.nav button{
+  background:transparent!important;
+  color:#edf4ef!important;
+}
+.nav button:hover,.nav button.active{
+  background:rgba(255,255,255,.14)!important;
+  color:#fff!important;
+  border-color:rgba(229,163,134,.8)!important;
+}
+.top{
+  background:#f5f1e8!important;
+  border-color:#d5d0c4!important;
+}
+.global-search,.global-search input,.searchbar input,.toolbar-search{
+  background:#e4e9e2!important;
+  color:#29483f!important;
+  -webkit-text-fill-color:#29483f!important;
+  border-color:#c5d0c7!important;
+}
+input,select,textarea,
+input[type="text"],input[type="email"],input[type="password"],
+input[type="number"],input[type="date"],input[type="tel"]{
+  background:#e4e9e2!important;
+  color:#29483f!important;
+  -webkit-text-fill-color:#29483f!important;
+  border:1px solid #c5d0c7!important;
+}
+input::placeholder,textarea::placeholder{
+  color:#718079!important;
+  -webkit-text-fill-color:#718079!important;
+  opacity:1!important;
+}
+input:focus,select:focus,textarea:focus{
+  background:#dce5dc!important;
+  color:#29483f!important;
+  border-color:#468875!important;
+  box-shadow:0 0 0 3px rgba(70,136,117,.15)!important;
+}
+.panel,.metric,.property,.card,.table-wrap,.dashboard-card,
+.maintenance-panel,.crm-card,.finance-card,.report-card,
+.chat-card,.list-card,.modal,.contract360-card,.contract360-kpi,
+.dash-stat,.quick-finance>div,.quick-actions button,
+.provider-restricted-card,.provider-restricted-service,
+.chat-thread,.chat-notify-box{
+  background:#ebe7dc!important;
+  color:#29483f!important;
+  border-color:#d5d0c4!important;
+}
+.dash-stat-value,.panel-title,.property-name,.metric strong,
+.card h1,.card h2,.card h3,.panel h1,.panel h2,.panel h3,
+.contract360-card h3,.contract360-card .value,
+.chat-thread-title strong,.chat-hub-head h3{
+  color:#29483f!important;
+}
+.dash-stat-label,.dash-stat-hint,.muted,.small,
+.property-address,.lead,.panel-kicker,.chat-thread-preview,
+.chat-thread-title small,.chat-hub-head p{
+  color:#718079!important;
+}
+.table{
+  background:#ebe7dc!important;
+  color:#29483f!important;
+}
+.table th{
+  background:#dedbd0!important;
+  color:#29483f!important;
+  border-color:#d5d0c4!important;
+}
+.table td{
+  background:#ebe7dc!important;
+  color:#29483f!important;
+  border-color:#d5d0c4!important;
+}
+.button,.button-primary,.btn-primary,button.primary{
+  background:#2f6f5e!important;
+  color:#fff!important;
+  border-color:#2f6f5e!important;
+}
+.button:hover,.button-primary:hover,.btn-primary:hover,button.primary:hover{
+  background:#397965!important;
+}
+.button-brass{
+  background:#f0dfd6!important;
+  color:#765044!important;
+  border-color:#e5c0b1!important;
+}
+.badge.green,.success-text{color:#2f6f5e!important}
+.badge.green{background:#dce9e1!important}
+.badge.red{background:#f1ddd6!important;color:#7b4b42!important}
+.hero,.welcome,.dashboard-hero{
+  background:linear-gradient(135deg,#285c4d,#2f6f5e 70%,#43816f)!important;
+  color:#fff!important;
+}
+.hero *,.welcome *,.dashboard-hero *{color:#fff!important}
+.modal-bg{background:rgba(41,72,63,.58)!important}
+a{color:#397965!important}
+.quick-finance>div{background:#e2e6de!important}
+.property-filters .filter-btn{
+  background:#e2e6de!important;
+  color:#29483f!important;
+  border-color:#cfd7cf!important;
+}
+.property-filters .filter-btn.active{
+  background:#2f6f5e!important;
+  color:#fff!important;
+}
+.chat-thread:hover,.chat-thread.active{
+  background:#dce9e1!important;
+  border-color:#9abcae!important;
+}
+.chat-hub-msg.admin .chat-hub-bubble{
+  background:#dce9e1!important;
+}
+.chat-hub-bubble{background:#dedbd0!important}
+.chat-hub-bubble p,.chat-hub-bubble strong{color:#29483f!important}
+.provider-restricted-meta div{background:#e1e6df!important}
+.cover{background:#ddd9cf!important}
+.icon,.top-icon{background:#e4e9e2!important;color:#29483f!important}
+</style>
+
+</body></html>');
     w.document.close();
   };
   function enhanceAssistant(){
