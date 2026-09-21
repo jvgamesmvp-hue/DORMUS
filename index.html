@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.55</title>
+  <title>Dormus | Gestão imobiliária · 8.56</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -1582,7 +1582,48 @@ initDormus();
       };
       function rentPaymentButton(r){return`<button class="button button-small button-brass" onclick="openRentPayment('${esc(r.id)}')">${rentNum(r.paidAmount)>0?'Editar baixa':'Dar baixa'}</button>`}
       window.openRentPayment=function(id){const r=db.rentalCharges.find(x=>x.id===id);if(!r)return;document.getElementById('modal-root').innerHTML=`<div class="modal-bg" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()"><div class="modal-head"><h2>Baixa do pagamento</h2><button class="icon" onclick="closeModal()">×</button></div><p class="lead">${esc(nameOf('properties',r.propertyId))} · ${esc(r.referenceMonth)} · total ${money(rentChargeTotal(r))}${rentLateDays(r)>0?` · ${rentLateDays(r)} dia(s) de atraso · multa automática ${money(rentAutomaticFine(r))}`:''}</p><div class="form-grid">${rentField('Valor recebido','rent-paid-amount',r.paidAmount,'number','min="0" step="0.01"')}${rentField('Data do pagamento','rent-payment-date',r.paymentDate||rentToday(),'date')}${rentSelect('Forma de pagamento','rent-payment-method',['PIX','Transferência','Boleto','Dinheiro','Cartão','Outro'],r.paymentMethod||'PIX')}${rentField('Comprovante / referência','rent-proof',r.proof)}${rentSelect('Situação','rent-status',['A vencer','Pago','Parcial','Em atraso','Inadimplente','Cancelado'],r.statusOverride||rentStatus(r))}${textarea('Observações da baixa','rent-notes',r.notes)}</div><div class="modal-actions"><button class="button button-quiet" onclick="closeModal()">Cancelar</button><button class="button button-primary" onclick="saveRentPayment('${esc(id)}')">Salvar baixa</button></div></div></div>`};
-      window.saveRentPayment=async function(id){const r=db.rentalCharges.find(x=>x.id===id);if(!r)return;const before=JSON.stringify(r);r.paidAmount=val('rent-paid-amount');r.paymentDate=val('rent-payment-date');r.paymentMethod=val('rent-payment-method');r.proof=val('rent-proof');r.statusOverride=val('rent-status');r.notes=val('rent-notes');r.updatedAt=new Date().toISOString();db.payments=db.rentalCharges.filter(x=>rentNum(x.paidAmount)>0);if(await save()){closeModal();showView('rents')}else Object.assign(r,JSON.parse(before))};
+      window.saveRentPayment=async function(id){
+  const r=db.rentalCharges.find(x=>x.id===id);
+  if(!r){alert('Lançamento de aluguel não encontrado.');return false;}
+  const before=JSON.stringify(r);
+  try{
+    const rawAmount=String(val('rent-paid-amount')||'').replace(/\./g,'').replace(',','.');
+    const amount=Number(rawAmount||0);
+    if(!Number.isFinite(amount)||amount<0){alert('Informe um valor recebido válido.');return false;}
+    r.paidAmount=amount;
+    r.paymentDate=val('rent-payment-date')||rentToday();
+    r.paymentMethod=val('rent-payment-method')||'PIX';
+    r.proof=val('rent-proof');
+    r.notes=val('rent-notes');
+    let chosenStatus=val('rent-status');
+    if(!chosenStatus||chosenStatus==='A vencer'){
+      const total=Number(rentChargeTotal(r)||0);
+      chosenStatus=amount<=0?'A vencer':(total>0&&amount<total?'Parcial':'Pago');
+    }
+    r.statusOverride=chosenStatus;
+    r.updatedAt=new Date().toISOString();
+    db.payments=db.rentalCharges.filter(x=>rentNum(x.paidAmount)>0);
+
+    const saved=await save();
+    if(!saved){Object.assign(r,JSON.parse(before));return false;}
+
+    // Confirma que o lançamento foi realmente gravado no Supabase.
+    const {data:check,error:checkError}=await supabaseClient.from('dormus_data').select('data').eq('id',1).maybeSingle();
+    if(checkError)throw checkError;
+    const remote=check?.data?.rentalCharges?.find(x=>x.id===id);
+    if(!remote || Number(remote.paidAmount||0)!==Number(r.paidAmount||0) || String(remote.paymentDate||'')!==String(r.paymentDate||'')){
+      throw new Error('O Supabase não confirmou a gravação desta baixa.');
+    }
+    closeModal();
+    showView('rents');
+    return true;
+  }catch(error){
+    Object.assign(r,JSON.parse(before));
+    console.error('Erro ao salvar baixa:',error);
+    alert('Não foi possível salvar a baixa.\n\n'+(error?.message||error));
+    return false;
+  }
+};
       function rentCalendar(month,records){
         const [y,mo]=month.split('-').map(Number),first=new Date(y,mo-1,1),days=new Date(y,mo,0).getDate(),lead=first.getDay(),labels=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];let html=labels.map(x=>`<div class="rent-calendar-weekday">${x}</div>`).join('');
         for(let i=0;i<lead;i++)html+='<div class="rent-calendar-day muted"></div>';
