@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.40</title>
+  <title>Dormus | Gestão imobiliária · 8.42</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -198,6 +198,151 @@ body.provider-mode #provider-receipts-view{display:block!important}
 <style id="dormus-836-portal-ai-css">
 .login-shell{width:100%;min-height:100%;display:grid;place-items:center}.login-portal-card{width:min(480px,100%)}.portal-chooser{display:grid;gap:11px}.portal-choice{display:flex;align-items:center;gap:13px;width:100%;padding:15px;border:1px solid var(--line);border-radius:13px;background:var(--card);color:var(--ink);text-align:left}.portal-choice:hover{border-color:#5b4ce2;box-shadow:0 8px 25px #4338ca18;transform:translateY(-1px)}.portal-choice-icon{width:43px;height:43px;border-radius:12px;display:grid;place-items:center;background:#eef2ff;font-size:21px}.portal-choice span:nth-child(2){flex:1}.portal-choice strong,.portal-choice small{display:block}.portal-choice strong{font-size:14px}.portal-choice small{color:var(--muted);font-size:11px;margin-top:4px}.portal-choice b{font-size:19px;color:#6557e8}.portal-login-form{animation:fadePortal .18s ease}.login-back{border:0;background:transparent;color:#6b5ce7;padding:0;margin-bottom:18px;font-weight:700}.portal-kicker{font-size:10px;letter-spacing:1.5px;color:#6b5ce7;font-weight:800;margin-bottom:7px}.assistant-hero{display:flex;gap:13px;align-items:center;padding:15px;border-radius:14px;background:linear-gradient(135deg,#111a4b,#24154d);color:#eef4ff}.assistant-avatar{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,#4f46e5,#a855f7);display:grid;place-items:center;font-size:22px}.assistant-hero strong{font-size:16px}.assistant-hero p{margin:4px 0 0;color:#b8c7df;font-size:12px;line-height:1.5}.assistant-suggestions{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0}.assistant-messages{min-height:320px;max-height:500px;overflow:auto;background:#071126;border:1px solid #1b2c4a;border-radius:13px;padding:14px;display:grid;align-content:start;gap:10px}.assistant-msg{max-width:82%;padding:10px 12px;border-radius:13px;background:#101d34;color:#dce8fa}.assistant-msg.user{justify-self:end;background:linear-gradient(135deg,#30206d,#1e275d)}.assistant-msg strong{font-size:10px;color:#91a6c3}.assistant-msg p{margin:4px 0 0;white-space:pre-wrap;line-height:1.5;font-size:13px}.assistant-compose{display:flex;gap:8px;margin-top:10px}.assistant-compose input{flex:1;min-width:0}.utility-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.utility-card{min-height:330px}.utility-card-head{display:flex;gap:11px;align-items:center;margin-bottom:14px}.utility-logo{width:43px;height:43px;border-radius:12px;display:grid;place-items:center;font-size:21px}.utility-logo.cemig{background:#fff3cf;color:#b87900}.utility-logo.saae{background:#dff5ff;color:#1686ad}.utility-card h2{margin:0;font-size:18px}.utility-card-head p{margin:4px 0 0;color:var(--muted);font-size:11px}.utility-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.utility-actions a{text-decoration:none}.utility-note,.utility-disclaimer{display:block;color:var(--muted);font-size:11px;line-height:1.5;margin-top:12px}.utility-disclaimer{margin-top:0}.utility-mini-title{font-weight:800;color:#5d4ce0;padding:5px 0}.utility-mini{grid-column:1/-1}.utility-mini-title{border-bottom:1px solid var(--line);padding-bottom:7px}@keyframes fadePortal{from{opacity:.3;transform:translateY(3px)}to{opacity:1;transform:none}}@media(max-width:900px){.utility-grid{grid-template-columns:1fr}}@media(max-width:600px){.assistant-compose{flex-direction:column}.assistant-compose .button{width:100%}.portal-choice{padding:13px}}
 </style>
+<style id="dormus-842-juntos-theme">
+/* DORMUS 8.42 — identidade inspirada na referência enviada: teal elegante + areia + coral */
+:root{
+  --ink:#203d37!important;
+  --ink-2:#31564e!important;
+  --paper:#f3f0e7!important;
+  --card:#fbfaf5!important;
+  --line:#d8ddd4!important;
+  --muted:#71847e!important;
+  --brass:#d98f73!important;
+  --brass-2:#efad92!important;
+  --green:#d9ebe4!important;
+  --red:#f4d8d2!important;
+  --shadow:0 12px 30px rgba(32,61,55,.10)!important;
+  --field:#e8eeea!important;
+  --field-focus:#e1ebe6!important;
+}
+html,body{background:var(--paper)!important;color:var(--ink)!important;color-scheme:light!important}
+body,.app,.main,.view{background:var(--paper)!important;color:var(--ink)!important}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important}
+/* barra lateral */
+.side{background:#2f6f61!important;color:#eef7f2!important;border-right:0!important;width:248px!important;flex-basis:248px!important;padding:26px 16px!important}
+.brand{padding:4px 8px 28px!important;border-bottom:1px solid rgba(255,255,255,.16)!important}
+.brand-mark{background:#efa88d!important;border:0!important;color:#24443d!important;border-radius:13px!important;width:43px!important;height:43px!important;font-family:Georgia!important}
+.brand strong{color:#fffdf7!important;font:25px Georgia!important}
+.brand small{color:#bfe0d6!important;letter-spacing:1.2px!important}
+.nav-title{color:#a9cec3!important}
+.nav{gap:7px!important}
+.nav button{color:#e6f2ee!important;border:0!important;border-radius:14px!important;padding:12px 13px!important}
+.nav button:hover,.nav button.active{background:#478675!important;color:#fff!important;border-color:transparent!important}
+.nav-icon{color:#dceee8!important}
+.side-foot{border-color:rgba(255,255,255,.15)!important;color:#c4ded7!important}
+/* topo */
+.top{border-bottom:1px solid #dfe2da!important}
+.crumb{color:#71847e!important}.crumb strong{color:#203d37!important}
+.icon{background:#fbfaf5!important;color:#203d37!important;border-color:#d8ddd4!important}
+/* títulos */
+.eyebrow{color:#66847c!important;font-weight:800!important}
+.page-head h1,.panel-title,.metric-value,.property-name,.showcase-info h1,.showcase-section h3,.modal h2{color:#203d37!important}
+.lead,.panel-kicker,.metric-label,.metric-meta,.property-address,.property-code,.showcase-address,.row-sub,.attachments-help,.selected-files{color:#71847e!important}
+/* botões */
+.button{background:#fbfaf5!important;color:#24443d!important;border-color:#ccd7d1!important}
+.button-primary{background:#2f6f61!important;color:#fff!important;border-color:#2f6f61!important}
+.button-brass{background:#e39b80!important;color:#253b36!important;border-color:#e39b80!important}
+.button-danger{background:#f4d8d2!important;color:#7b3c32!important;border-color:#e4b9b0!important}
+.button-quiet{background:transparent!important;color:#2f6f61!important}
+/* cartões */
+.metric,.panel,.property,.modal,.drawer,.presentation-body,.presentation-file,.property-showcase,.provider-service-card,.chat-hub-shell,.chat-hub-list,.chat-hub-main{background:#fbfaf5!important;color:#203d37!important;border-color:#d8ddd4!important;box-shadow:var(--shadow)!important}
+.metric{border-radius:18px!important}.panel{border-radius:18px!important}
+.metric-label{font-weight:700!important}.metric-value{font-size:31px!important}
+/* destaques */
+.hero{background:#2f6f61!important;color:#fffdf8!important}
+.hero .address{color:#c9e0d8!important}
+.hero:after{border-color:#efad9255!important;box-shadow:0 0 0 32px #efad9215,0 0 0 64px #efad9208!important}
+/* propriedades */
+.cover,.showcase-photo{background:linear-gradient(135deg,#2f6f61,#6f8f83)!important}
+.cover.olive{background:linear-gradient(135deg,#356e61,#9aa88f)!important}
+.cover.blue{background:linear-gradient(135deg,#31586a,#8ba6a0)!important}
+.cover.brass{background:linear-gradient(135deg,#765b4d,#dca07f)!important}
+.money,.showcase-price{color:#a9614e!important}
+/* campos: NÃO usar branco */
+input,select,textarea,
+.form-field input,.form-field select,.form-field textarea,
+.login-field input,.portal-login-form input,.searchbar input,
+.toolbar-search,.global-search input,.chat19-compose textarea,.chat-hub-compose textarea,
+.modal input,.modal select,.modal textarea,.drawer input,.drawer select,.drawer textarea,
+.attachments-block input[type=file],.selected-file-room{
+  background:#e8eeea!important;color:#203d37!important;-webkit-text-fill-color:#203d37!important;
+  border:1px solid #c5d3cc!important;box-shadow:inset 0 1px 2px rgba(32,61,55,.05)!important;
+}
+input::placeholder,textarea::placeholder,.global-search input::placeholder,.searchbar input::placeholder,.toolbar-search::placeholder{color:#7a8d87!important;-webkit-text-fill-color:#7a8d87!important;opacity:1!important}
+select option{background:#e8eeea!important;color:#203d37!important}
+input:focus,select:focus,textarea:focus{background:#e1ebe6!important;color:#203d37!important;border-color:#4e8b7b!important;outline:none!important;box-shadow:0 0 0 3px rgba(78,139,123,.13)!important}
+input:disabled,select:disabled,textarea:disabled{background:#dfe6e2!important;color:#82918d!important;-webkit-text-fill-color:#82918d!important}
+/* tabelas */
+.table,.table-wrap{background:#fbfaf5!important;color:#203d37!important;border-color:#d8ddd4!important}
+.table th{background:#edf1eb!important;color:#617a72!important;border-color:#d8ddd4!important}
+.table td{background:#fbfaf5!important;color:#29443e!important;border-color:#e0e4de!important}
+.table tr:nth-child(even) td{background:#f5f5ee!important}
+.table tr:hover td{background:#eaf1ed!important}
+/* estados */
+.badge,.chip,.tag{background:#e7eeea!important;color:#41645a!important;border-color:#c9d9d2!important}
+.badge.green{background:#d9ebe4!important;color:#2d6b59!important}
+.badge.red{background:#f4d8d2!important;color:#914b3e!important}
+.badge.gold{background:#f5e4cf!important;color:#8a5d2c!important}
+.notice{background:#f6e8d9!important;color:#7a5738!important;border-color:#e4c5a7!important}
+.empty{background:#e8eeea!important;color:#71847e!important;border-color:#d3ddd7!important}
+.empty strong{color:#203d37!important}
+.summary,.presentation-item,.person-contact-actions,.photo-room{background:#e8eeea!important;color:#203d37!important;border-color:#d3ddd7!important}
+/* anexos */
+.attachments-block{background:#e8eeea!important;border-color:#c7d6cf!important}
+.attachment-item,.presentation-file{background:#fbfaf5!important;color:#203d37!important;border-color:#d8ddd4!important}
+.attachment-preview,.presentation-file-icon{background:#dce7e2!important;color:#41645a!important}
+/* modal */
+.modal-bg{background:rgba(24,54,47,.72)!important;backdrop-filter:blur(6px)!important}
+.modal,.dormus-theme-modal{background:#fbfaf5!important;color:#203d37!important;border-color:#d8ddd4!important}
+.dormus-theme-card{background:#e8eeea!important;color:#203d37!important;border-color:#ccd8d2!important}
+.dormus-theme-card:hover,.dormus-theme-card.active{background:#dceae4!important;border-color:#4e8b7b!important}
+.dormus-theme-card strong{color:#203d37!important}.dormus-theme-card small{color:#71847e!important}
+/* Portal do prestador */
+body.provider-mode,body.provider-mode .app,body.provider-mode .main{background:#f3f0e7!important;color:#203d37!important}
+body.provider-mode .provider-portal-kpis .metric,
+body.provider-mode #provider-maintenance-view .panel,
+body.provider-mode .provider-service-card,
+body.provider-mode .chat-hub-shell,
+body.provider-mode .chat-hub-list,
+body.provider-mode .chat-hub-main{background:#fbfaf5!important;border-color:#d8ddd4!important;color:#203d37!important}
+body.provider-mode .provider-service-location,
+body.provider-mode .provider-service-meta>div,
+body.provider-mode .provider-admin-banner{background:#e8eeea!important;border-color:#cbd8d2!important;color:#29443e!important}
+body.provider-mode .provider-service-card.is-urgent{border-color:#d86d68!important}
+body.provider-mode .provider-service-actions .button{min-height:46px!important}
+body.provider-mode .provider-chat-button19{background:#2f6f61!important;border-color:#2f6f61!important;color:#fff!important}
+/* chat */
+.chat19-list,.chat-hub-list,.chat-hub-main,.chat-hub-messages{background:#f5f4ee!important;color:#203d37!important}
+.chat19-message,.chat-hub-message{background:#e8eeea!important;border-color:#d1ddd6!important;color:#203d37!important}
+.chat19-message.mine,.chat-hub-message.mine{background:#d9ebe4!important;border-color:#9dc8ba!important;color:#21463d!important}
+.chat19-compose,.chat-hub-compose{background:#fbfaf5!important;border-color:#d8ddd4!important}
+/* rodapé */
+.side-foot strong{color:#fff!important}
+/* Mobile — visual semelhante à referência, sem esconder controles */
+@media(max-width:760px){
+  .app{display:block!important}.side{width:100%!important;min-height:auto!important;padding:12px 12px 8px!important}
+  .brand{padding:2px 6px 12px!important;border-bottom:0!important}.brand strong{font-size:21px!important}
+  .brand small{font-size:8px!important}
+  .nav-title{display:none!important}.nav{display:flex!important;overflow:auto!important;margin:0!important;padding:2px 0 4px!important;gap:6px!important}
+  .nav button{white-space:nowrap!important;flex:0 0 auto!important;padding:9px 12px!important}
+  .side-foot{display:none!important}.main{width:100%!important;padding:0 14px 100px!important}
+  .top{height:58px!important;margin:0 -14px!important;padding:0 14px!important;background:#f3f0e7!important}
+  .view{padding-top:18px!important}.page-head h1{font-size:32px!important;line-height:1.02!important}
+  .metrics{grid-template-columns:1fr 1fr!important;gap:10px!important}.metric{min-height:105px!important;padding:15px!important}
+  .metric-value{font-size:27px!important}.property-grid,.two,.summary-grid,.presentation-grid{grid-template-columns:1fr!important}
+  .form-grid{grid-template-columns:1fr!important}input,select,textarea{min-height:46px!important;font-size:16px!important}
+  .button{min-height:44px!important}.panel{padding:17px!important}.panel-head{align-items:flex-start!important}
+  .provider-service-card{border-radius:18px!important}.provider-service-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important}
+  .chat-hub-shell{min-height:58vh!important}.chat-hub-list{max-height:220px!important}
+  .dormus-theme-modal{width:calc(100vw - 20px)!important;max-height:88vh!important;overflow:auto!important}.dormus-theme-grid{grid-template-columns:1fr 1fr!important}
+}
+@media(min-width:761px){.main{padding-left:48px!important;padding-right:48px!important}.view{max-width:1180px!important;margin:0 auto!important}}
+@media print{
+  body{background:#fff!important;color:#222!important}.side,.top{display:none!important}.main{padding:0!important}.view{display:block!important}
+  .receipt-card,.d6-print-sheet,.contract-print-sheet,.receipt-print-sheet,.inspection-print-sheet,.end-print-sheet{background:#fff!important;color:#222!important}
+}
+</style>
+
 </head>
 <body>
 
@@ -2579,7 +2724,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sa
     if(!w){alert('Permita pop-ups para gerar o documento.');return}
     w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+E(title)+'</title><style>body{font:14px Arial;color:#20372d;padding:40px;line-height:1.6}h1{font:28px Georgia}h2{font:21px Georgia;border-bottom:1px solid #ddd;padding-bottom:8px}h3{margin-top:25px;color:#496b59}li{margin:7px 0}@media print{button{display:none}}</style></head><body>'+rows.join('')+'<p style="margin-top:50px;color:#777">Gerado pelo DORMUS em '+new Date().toLocaleString('pt-BR')+'</p><button onclick="print()">Imprimir / Salvar PDF</button>
 <style id="dormus-841-no-white">
-/* DORMUS 8.41 — remoção total dos fundos claros no uso normal */
+/* DORMUS 8.42 — remoção total dos fundos claros no uso normal */
 :root{
  --841-bg:#050a12!important;
  --841-panel:#0b1420!important;
@@ -3102,7 +3247,7 @@ body.provider-mode .provider-chat-button19{background:#17295b!important;border-c
 </style>
 
 <style id="dormus-841-no-white">
-/* DORMUS 8.41 — remoção total dos fundos claros no uso normal */
+/* DORMUS 8.42 — remoção total dos fundos claros no uso normal */
 :root{
  --841-bg:#050a12!important;
  --841-panel:#0b1420!important;
