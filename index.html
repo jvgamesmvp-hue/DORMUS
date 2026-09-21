@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.39</title>
+  <title>Dormus | Gestão imobiliária · 8.40</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -2577,7 +2577,84 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sa
     }
     const w=window.open('','_blank','width=900,height=700');
     if(!w){alert('Permita pop-ups para gerar o documento.');return}
-    w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+E(title)+'</title><style>body{font:14px Arial;color:#20372d;padding:40px;line-height:1.6}h1{font:28px Georgia}h2{font:21px Georgia;border-bottom:1px solid #ddd;padding-bottom:8px}h3{margin-top:25px;color:#496b59}li{margin:7px 0}@media print{button{display:none}}</style></head><body>'+rows.join('')+'<p style="margin-top:50px;color:#777">Gerado pelo DORMUS em '+new Date().toLocaleString('pt-BR')+'</p><button onclick="print()">Imprimir / Salvar PDF</button></body></html>');
+    w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+E(title)+'</title><style>body{font:14px Arial;color:#20372d;padding:40px;line-height:1.6}h1{font:28px Georgia}h2{font:21px Georgia;border-bottom:1px solid #ddd;padding-bottom:8px}h3{margin-top:25px;color:#496b59}li{margin:7px 0}@media print{button{display:none}}</style></head><body>'+rows.join('')+'<p style="margin-top:50px;color:#777">Gerado pelo DORMUS em '+new Date().toLocaleString('pt-BR')+'</p><button onclick="print()">Imprimir / Salvar PDF</button>
+<style id="dormus-841-no-white">
+/* DORMUS 8.41 — remoção total dos fundos claros no uso normal */
+:root{
+ --841-bg:#050a12!important;
+ --841-panel:#0b1420!important;
+ --841-panel2:#0f1b2a!important;
+ --841-panel3:#132235!important;
+ --841-line:#263b53!important;
+ --841-text:#f2f6fb!important;
+ --841-muted:#9cafc3!important;
+}
+html,body,.app,.main,.view{background:var(--841-bg)!important;color:var(--841-text)!important}
+/* blocos que ainda podiam herdar branco/bege */
+.panel,.metric,.property,.card,.card-body,.list,.list-item,.summary,.row,.modal,.drawer,
+.presentation-body,.presentation-item,.presentation-file,.property-showcase,.showcase-info,
+.quick-finance>div,.quick-actions button,.smart-alert,.p360-stat,.p360-item,
+.provider-service-card,.provider-service-location,.provider-service-meta>div,
+.provider-admin-banner,.received-quote-box,.quote-empty19,.maint-quote19,.maint-ops19,
+.provider-detail-section,.provider-detail-grid>div,.access-help,.username-current,
+.dormus-theme-card,.attachments-block,.attachment-item,.empty,.photo-room,.photo-gallery,
+.documents-list,.person-contact-actions,.selected-file-row,.image-viewer,
+.searchbar,.toolbar,.toolbar-search,.filters,.filter-bar{background:var(--841-panel)!important;color:var(--841-text)!important;border-color:var(--841-line)!important}
+/* componentes específicos que normalmente usam creme/branco */
+.presentation-item,.property-showcase,.showcase-info,.attachment-preview,.presentation-file-icon,
+.photo-room,.person-contact-actions,.empty{background:var(--841-panel2)!important;color:var(--841-text)!important}
+.cover,.showcase-photo{background:linear-gradient(135deg,#102b42,#263b58)!important}
+/* tabelas */
+.table,.table-wrap{background:var(--841-panel)!important;color:var(--841-text)!important;border-color:var(--841-line)!important}
+.table th{background:#09121e!important;color:#a9bdd1!important;border-color:var(--841-line)!important}
+.table td{background:#0d1825!important;color:#e2eaf3!important;border-color:#203349!important}
+.table tr:nth-child(even) td{background:#0f1c2a!important}
+.table tr:hover td{background:#14263a!important}
+/* campos: nenhum branco */
+input,select,textarea,button,
+.form-field input,.form-field select,.form-field textarea,
+.login-field input,.portal-login-form input,.searchbar input,
+.toolbar-search,.global-search input,.chat19-compose textarea,.chat-hub-compose textarea,
+.modal input,.modal select,.modal textarea,.drawer input,.drawer select,.drawer textarea{
+ background:#09131f!important;color:#f4f8fc!important;-webkit-text-fill-color:#f4f8fc!important;
+ border-color:#304861!important;box-shadow:inset 0 1px 0 #ffffff08!important;
+}
+input::placeholder,textarea::placeholder,.global-search input::placeholder,.searchbar input::placeholder,.toolbar-search::placeholder{color:#8297ad!important;-webkit-text-fill-color:#8297ad!important}
+select option{background:#0b1623!important;color:#f4f8fc!important}
+input:focus,select:focus,textarea:focus{background:#0d1c2d!important;border-color:#5d8fff!important;color:#fff!important}
+/* elementos com estilos inline claros: substitui apenas no modo normal */
+body:not(.print-mode) [style*="background:#fff"],
+body:not(.print-mode) [style*="background:#fffdf8"],
+body:not(.print-mode) [style*="background:#faf"],
+body:not(.print-mode) [style*="background:white"],
+body:not(.print-mode) [style*="background: white"],
+body:not(.print-mode) [style*="background:#f"]{
+ background:var(--841-panel)!important;color:var(--841-text)!important;border-color:var(--841-line)!important;
+}
+/* status/badges legíveis */
+.badge,.chip,.tag{background:#17283a!important;color:#dce8f4!important;border-color:#304861!important}
+.badge.green{background:#10352e!important;color:#6ee7c2!important}
+.badge.red{background:#3d1825!important;color:#ff9db5!important}
+.badge.gold{background:#3b2d0f!important;color:#ffd76a!important}
+/* cabeçalho e áreas de apresentação */
+.presentation-head{background:linear-gradient(135deg,#0a1422,#101f31)!important;color:#f4f8fc!important}
+.presentation-head p{color:#9eb0c3!important}
+/* chats */
+.chat19-list,.chat-hub-list,.chat-hub-main,.chat-hub-messages,.chat19-compose,.chat-hub-compose{background:#07111c!important;color:#edf4fb!important;border-color:#263b53!important}
+.chat19-message,.chat-hub-message{background:#102033!important;color:#e9f1f8!important;border-color:#2a4058!important}
+.chat19-message.mine,.chat-hub-message.mine{background:#12372f!important;border-color:#256b5b!important}
+/* rodapé/mobile */
+@media(max-width:760px){
+ .panel,.metric,.property,.provider-service-card,.chat-hub-shell{box-shadow:0 10px 30px #0008!important}
+ .main{padding-bottom:96px!important}
+}
+/* documentos impressos continuam brancos de propósito */
+@media print{
+ .d6-print-sheet,.contract-print-sheet,.receipt-print-sheet,.inspection-print-sheet,.end-print-sheet{background:#fff!important;color:#222!important}
+}
+</style>
+
+</body></html>');
     w.document.close();
   };
   function enhanceAssistant(){
@@ -2593,13 +2670,13 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sa
 
 
 <style id="dormus-839-palettes-css">
-/* DORMUS 8.39 — Paletas visuais disponíveis nos dois portais */
-:root{--d-theme-primary:#0F172A;--d-theme-secondary:#334155;--d-theme-accent:#C9A227;--d-theme-paper:#F8FAFC;--d-theme-text:#F8FAFC;--d-theme-muted:#CBD5E1;--d-theme-panel:#111c30;--d-theme-panel2:#17243a;--d-theme-line:#3a4b62}
-html[data-dormus-theme="p1"]{--d-theme-primary:#0F172A;--d-theme-secondary:#334155;--d-theme-accent:#C9A227;--d-theme-paper:#F8FAFC;--d-theme-text:#F8FAFC;--d-theme-muted:#CBD5E1;--d-theme-panel:#111c30;--d-theme-panel2:#17243a;--d-theme-line:#3a4b62}
-html[data-dormus-theme="p2"]{--d-theme-primary:#123C3A;--d-theme-secondary:#2F6F68;--d-theme-accent:#D6A756;--d-theme-paper:#F4F7F5;--d-theme-text:#F4F7F5;--d-theme-muted:#C5D8D2;--d-theme-panel:#153b39;--d-theme-panel2:#1b4b47;--d-theme-line:#3c7770}
-html[data-dormus-theme="p3"]{--d-theme-primary:#123B5D;--d-theme-secondary:#256D9C;--d-theme-accent:#E8A33D;--d-theme-paper:#F5F7FA;--d-theme-text:#F5F7FA;--d-theme-muted:#C3D4E4;--d-theme-panel:#153b5b;--d-theme-panel2:#1c4a70;--d-theme-line:#3f79a3}
-html[data-dormus-theme="p4"]{--d-theme-primary:#18381B;--d-theme-secondary:#B08D57;--d-theme-accent:#FAFAF9;--d-theme-paper:#FAFAF9;--d-theme-text:#FAFAF9;--d-theme-muted:#D8D2C6;--d-theme-panel:#1d4020;--d-theme-panel2:#24502a;--d-theme-line:#557052}
-html[data-dormus-theme="p5"]{--d-theme-primary:#171717;--d-theme-secondary:#F97316;--d-theme-accent:#FB923C;--d-theme-paper:#F5F5F5;--d-theme-text:#F5F5F5;--d-theme-muted:#D6D3D1;--d-theme-panel:#22201f;--d-theme-panel2:#2d2927;--d-theme-line:#554b45}
+/* DORMUS 8.40 — Paletas visuais disponíveis nos dois portais */
+:root{--d-theme-primary:#0b1220;--d-theme-secondary:#24324a;--d-theme-accent:#d6a84f;--d-theme-paper:#070d18;--d-theme-text:#f4f7fb;--d-theme-muted:#9aa9bd;--d-theme-panel:#0d1726;--d-theme-panel2:#121f31;--d-theme-line:#26364d}
+html[data-dormus-theme="p1"]{--d-theme-primary:#0b1220;--d-theme-secondary:#24324a;--d-theme-accent:#d6a84f;--d-theme-paper:#070d18;--d-theme-text:#f4f7fb;--d-theme-muted:#9aa9bd;--d-theme-panel:#0d1726;--d-theme-panel2:#121f31;--d-theme-line:#26364d}
+html[data-dormus-theme="p2"]{--d-theme-primary:#082a2a;--d-theme-secondary:#0f5b57;--d-theme-accent:#d6b06a;--d-theme-paper:#061919;--d-theme-text:#eef9f7;--d-theme-muted:#98b8b3;--d-theme-panel:#0b2425;--d-theme-panel2:#103334;--d-theme-line:#245456}
+html[data-dormus-theme="p3"]{--d-theme-primary:#071f35;--d-theme-secondary:#12548a;--d-theme-accent:#e5a23b;--d-theme-paper:#06121f;--d-theme-text:#f2f7fc;--d-theme-muted:#9bb2c9;--d-theme-panel:#0a1b2c;--d-theme-panel2:#0e2941;--d-theme-line:#245176}
+html[data-dormus-theme="p4"]{--d-theme-primary:#111815;--d-theme-secondary:#29402f;--d-theme-accent:#c6a46b;--d-theme-paper:#0a0f0c;--d-theme-text:#f5f3ee;--d-theme-muted:#aaa99f;--d-theme-panel:#111a15;--d-theme-panel2:#19251d;--d-theme-line:#35463a}
+html[data-dormus-theme="p5"]{--d-theme-primary:#101214;--d-theme-secondary:#2b3037;--d-theme-accent:#ff7a1a;--d-theme-paper:#090a0c;--d-theme-text:#f7f7f5;--d-theme-muted:#a5a8ad;--d-theme-panel:#111316;--d-theme-panel2:#191c20;--d-theme-line:#343940}
 /* Imobiliária */
 html[data-dormus-theme] body:not(.provider-mode){background:var(--d-theme-paper)!important;color:#172033!important}
 html[data-dormus-theme] body:not(.provider-mode) .side{background:linear-gradient(180deg,var(--d-theme-primary),color-mix(in srgb,var(--d-theme-primary) 82%,#000))!important}
@@ -2633,11 +2710,11 @@ html[data-dormus-theme] body.provider-mode .provider-chat-button19{background:co
 <script id="dormus-839-theme-user-settings">
 (function(){
   const palettes={
-    p1:{name:'Executivo Premium',desc:'Tradição, segurança e credibilidade.',colors:['#0F172A','#334155','#C9A227','#F8FAFC']},
-    p2:{name:'Moderno Imobiliário',desc:'Equilíbrio entre modernidade e estabilidade.',colors:['#123C3A','#2F6F68','#D6A756','#F4F7F5']},
-    p3:{name:'Tecnologia & Confiança',desc:'Visual limpo, moderno e profissional.',colors:['#123B5D','#256D9C','#E8A33D','#F5F7FA']},
-    p4:{name:'Luxo Minimalista',desc:'Simplicidade, sobriedade e alto padrão.',colors:['#18381B','#B08D57','#FAFAF9','#FAFAF9']},
-    p5:{name:'DORMUS Moderno',desc:'Energia, tecnologia e dinamismo.',colors:['#171717','#F97316','#FB923C','#F5F5F5']}
+    p1:{name:'Executivo Premium',desc:'Tradição, segurança e credibilidade com visual executivo escuro.',colors:['#0b1220', '#24324a', '#d6a84f', '#070d18']},
+    p2:{name:'Moderno Imobiliário',desc:'Verde petróleo, elegante e contemporâneo.',colors:['#082a2a', '#0f5b57', '#d6b06a', '#061919']},
+    p3:{name:'Tecnologia & Confiança',desc:'Azul profundo, tecnologia e alta confiabilidade.',colors:['#071f35', '#12548a', '#e5a23b', '#06121f']},
+    p4:{name:'Luxo Minimalista',desc:'Sobriedade, alto padrão e acabamento sofisticado.',colors:['#111815', '#29402f', '#c6a46b', '#0a0f0c']},
+    p5:{name:'DORMUS Moderno',desc:'Grafite escuro com laranja para dinamismo e destaque.',colors:['#101214', '#2b3037', '#ff7a1a', '#090a0c']}
   };
   function applyTheme(key){if(!palettes[key])key='p1';document.documentElement.setAttribute('data-dormus-theme',key);localStorage.setItem('dormus-theme',key);document.querySelectorAll('.dormus-theme-card').forEach(x=>x.classList.toggle('active',x.dataset.theme===key));}
   window.applyDormusTheme=applyTheme;
@@ -2674,7 +2751,7 @@ html[data-dormus-theme] body.provider-mode .provider-chat-button19{background:co
       const data=await res.json().catch(()=>({}));
       if(!res.ok||!data.ok)throw new Error(data.error||'Não foi possível atualizar o usuário.');
       document.getElementById('dormus-username-modal-root').innerHTML='';dormusToast('Nome de usuário atualizado. Use o novo nome no próximo login.','success');
-    }catch(e){console.error('DORMUS 8.39 username',e);dormusToast(e.message||'Não foi possível salvar o usuário.','error')}
+    }catch(e){console.error('DORMUS 8.40 username',e);dormusToast(e.message||'Não foi possível salvar o usuário.','error')}
   };
   const saved=localStorage.getItem('dormus-theme')||'p1';applyTheme(saved);
   document.addEventListener('click',()=>{
@@ -2684,7 +2761,7 @@ html[data-dormus-theme] body.provider-mode .provider-chat-button19{background:co
 </script>
 
 <style id="dormus-838-provider-pro-css">
-/* DORMUS 8.39 — Portal do Prestador: visual profissional, alto contraste e mobile-first */
+/* DORMUS 8.40 — Portal do Prestador: visual profissional, alto contraste e mobile-first */
 body.provider-mode{
   --provider-bg:#07111f!important;--provider-panel:#0d1b2f!important;--provider-panel-2:#10243c!important;
   --provider-line:#203b5b!important;--provider-text:#f4f8ff!important;--provider-muted:#91a8c5!important;
@@ -2871,7 +2948,7 @@ body.provider-mode .chat-thread-item small{color:#8199b7!important}
   function wrap(name){
     const fn=window[name]; if(typeof fn!=='function'||fn['__838'])return;
     const w=async function(){
-      try{return await fn.apply(this,arguments)}catch(e){console.error('DORMUS 8.39',name,e);toast('Não foi possível concluir a ação. Verifique sua conexão e tente novamente.','error');}
+      try{return await fn.apply(this,arguments)}catch(e){console.error('DORMUS 8.40',name,e);toast('Não foi possível concluir a ação. Verifique sua conexão e tente novamente.','error');}
     };w['__838']=true;window[name]=w;
   }
   ['providerAcceptService','providerStartService','providerCompleteService','providerQuoteService','submitProviderQuote','providerServiceDetails','providerServiceDetails18'].forEach(wrap);
@@ -2886,5 +2963,218 @@ body.provider-mode .chat-thread-item small{color:#8199b7!important}
 })();
 </script>
 
+
+<style id="dormus-840-dark-ui">
+/* DORMUS 8.40 — tema escuro profissional e contraste de campos */
+:root{
+  color-scheme:dark!important;
+  --ui-bg:#070b12!important;
+  --ui-bg-2:#0a1019!important;
+  --ui-panel:#0d1521!important;
+  --ui-panel-2:#111c2a!important;
+  --ui-input:#08111c!important;
+  --ui-line:#26384d!important;
+  --ui-line-strong:#38506a!important;
+  --ui-text:#f5f8fc!important;
+  --ui-text-2:#d6e0ec!important;
+  --ui-muted:#8fa1b7!important;
+  --ui-accent:#d8a94e!important;
+  --ui-blue:#4f8cff!important;
+  --ui-green:#23d6a3!important;
+}
+html,body{background:var(--ui-bg)!important;color:var(--ui-text)!important}
+body,.app,.main,.view{background:var(--ui-bg)!important;color:var(--ui-text)!important}
+/* Imobiliária e prestador: todos os blocos principais */
+body:not(.provider-mode) .main,
+body:not(.provider-mode) .top,
+body:not(.provider-mode) .panel,
+body:not(.provider-mode) .metric,
+body:not(.provider-mode) .property,
+body:not(.provider-mode) .dash-stat,
+body:not(.provider-mode) .chart-panel,
+body:not(.provider-mode) .upcoming-panel,
+body:not(.provider-mode) .utility-card,
+body:not(.provider-mode) .assistant-panel,
+body:not(.provider-mode) .smart-card,
+body:not(.provider-mode) .p360-box,
+body:not(.provider-mode) .doc-drawer,
+body:not(.provider-mode) .modal,
+body:not(.provider-mode) .login-card,
+body:not(.provider-mode) .login-portal-card{background:var(--ui-panel)!important;color:var(--ui-text)!important;border-color:var(--ui-line)!important}
+body:not(.provider-mode) .side{background:linear-gradient(180deg,#091321,#050910)!important;border-color:var(--ui-line)!important}
+body:not(.provider-mode) .top{box-shadow:0 10px 30px #0005!important}
+/* Campos — nunca mais branco */
+input,select,textarea,
+.form-field input,.form-field select,.form-field textarea,
+.login-field input,.portal-login-form input,
+.searchbar input,.toolbar-search,.global-search input,
+.chat19-compose textarea,.chat-hub-compose textarea,
+.dormus-theme-modal input,.dormus-theme-modal select,
+.modal input,.modal select,.modal textarea,
+.drawer input,.drawer select,.drawer textarea{
+  background:var(--ui-input)!important;
+  color:var(--ui-text)!important;
+  -webkit-text-fill-color:var(--ui-text)!important;
+  border:1px solid var(--ui-line-strong)!important;
+  border-radius:11px!important;
+  box-shadow:inset 0 1px 0 #ffffff08!important;
+  caret-color:#ffffff!important;
+}
+input::placeholder,textarea::placeholder,.global-search input::placeholder,.searchbar input::placeholder,.toolbar-search::placeholder{
+  color:#71849b!important;opacity:1!important;-webkit-text-fill-color:#71849b!important
+}
+input:focus,select:focus,textarea:focus{
+  background:#0a1624!important;
+  border-color:#5c8fff!important;
+  box-shadow:0 0 0 3px #4f8cff20,inset 0 1px 0 #ffffff08!important;
+  outline:none!important;
+}
+select option{background:#0b1420!important;color:#f5f8fc!important}
+input[type="date"],input[type="time"],input[type="number"]{color-scheme:dark!important}
+input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1) brightness(1.2);opacity:.8}
+/* Labels e textos */
+.form-field label,.login-field label,.portal-login-form label{color:#aebed1!important}
+.panel-title,.metric-value,.property-name,.dash-stat-value,.modal h2,.page-head h1{color:#f5f8fc!important}
+.panel-kicker,.metric-label,.metric-meta,.property-address,.dash-stat-label,.dash-stat-hint,.lead,.username-help{color:#8fa1b7!important}
+/* Botões */
+.button{background:#111d2b!important;color:#e7eef7!important;border-color:#30445c!important}
+.button:hover{background:#162538!important;border-color:#4a6380!important;color:#fff!important}
+.button-primary{background:linear-gradient(135deg,#3e73e8,#6856df)!important;border-color:#668cff!important;color:#fff!important}
+.button-danger{background:#461b2a!important;border-color:#7f3b51!important;color:#ffb1c3!important}
+.button-brass{background:#30250f!important;border-color:#755a20!important;color:#ffd36f!important}
+.button-quiet{color:#c4d1df!important}
+/* Cards/tabelas/listas que ainda tinham fundo claro */
+.table,.table-wrap,.list,.list-item,.summary,.quick-finance>div,.quick-actions button,
+.smart-alert,.p360-stat,.p360-item,.provider-service-location,.provider-service-meta>div,
+.received-quote-box,.quote-empty19,.maint-quote19,.maint-ops19,.provider-detail-section,
+.provider-detail-grid>div,.access-help,.username-current,.dormus-theme-card{
+  background:#0b1522!important;color:#dce6f2!important;border-color:var(--ui-line)!important
+}
+.table th{background:#0a111c!important;color:#8fa4bc!important;border-color:var(--ui-line)!important}
+.table td{background:#0b1522!important;color:#dce6f2!important;border-color:#1d2d41!important}
+.table tr:hover td{background:#101e2e!important}
+/* Modais */
+.modal-bg{background:#02060dcc!important;backdrop-filter:blur(7px)!important}
+.modal{box-shadow:0 30px 100px #000a!important}
+.modal .icon{background:#111d2b!important;color:#dce7f3!important;border-color:#334b64!important}
+/* Seletor de paletas */
+.dormus-theme-modal{background:#0b1420!important;color:#f5f8fc!important;border:1px solid #2b4057!important}
+.dormus-theme-modal p{color:#8fa1b7!important}
+.dormus-theme-card{background:#0d1826!important;border-color:#2b4057!important}
+.dormus-theme-card:hover,.dormus-theme-card.active{border-color:#5b86ff!important;background:#111f30!important}
+.dormus-theme-card strong{color:#f4f8fc!important}
+.dormus-theme-card small{color:#8fa1b7!important}
+.username-current{color:#dce6f2!important}.username-current strong{color:#fff!important}
+/* Portal do prestador */
+body.provider-mode{background:#060b12!important}
+body.provider-mode .app,body.provider-mode .main{background:#060b12!important}
+body.provider-mode .provider-portal-kpis .metric,
+body.provider-mode #provider-maintenance-view .panel,
+body.provider-mode .provider-service-card,
+body.provider-mode .chat-hub-shell,
+body.provider-mode .chat-hub-list,
+body.provider-mode .chat-hub-main{background:#0b1522!important;border-color:#263b53!important}
+body.provider-mode .provider-service-location,
+body.provider-mode .provider-service-meta>div,
+body.provider-mode .provider-admin-banner{background:#0e1a29!important;border-color:#2a415a!important}
+body.provider-mode .provider-service-card.is-urgent{border-color:#9d4259!important}
+body.provider-mode .provider-service-actions .button{min-height:46px!important}
+body.provider-mode .provider-chat-button19{background:#17295b!important;border-color:#4c65b2!important;color:#cbd5ff!important}
+/* Chat */
+.chat19-list,.chat-hub-list,.chat-hub-main,.chat-hub-messages{background:#08111c!important;color:#eaf2fa!important}
+.chat19-message,.chat-hub-message{background:#101c2b!important;border-color:#263b51!important;color:#e6eef7!important}
+.chat19-message.mine,.chat-hub-message.mine{background:#163a35!important;border-color:#236b5e!important}
+.chat19-compose,.chat-hub-compose{background:#0b1522!important;border-color:#263b53!important}
+/* Barra mobile do prestador */
+@media(max-width:760px){
+  body{font-size:14px!important}
+  .main{padding:0 12px 88px!important}
+  .top{margin:0 -12px!important;padding:0 14px!important}
+  .view{padding-top:16px!important}
+  .panel{border-radius:16px!important}
+  .form-grid{grid-template-columns:1fr!important}
+  input,select,textarea{min-height:46px!important;font-size:16px!important}
+  textarea{min-height:110px!important}
+  .button{min-height:44px!important}
+  .dormus-theme-modal{width:calc(100vw - 22px)!important;max-height:88vh!important;overflow:auto!important}
+  .dormus-theme-grid{grid-template-columns:1fr 1fr!important}
+}
+</style>
+
+<style id="dormus-841-no-white">
+/* DORMUS 8.41 — remoção total dos fundos claros no uso normal */
+:root{
+ --841-bg:#050a12!important;
+ --841-panel:#0b1420!important;
+ --841-panel2:#0f1b2a!important;
+ --841-panel3:#132235!important;
+ --841-line:#263b53!important;
+ --841-text:#f2f6fb!important;
+ --841-muted:#9cafc3!important;
+}
+html,body,.app,.main,.view{background:var(--841-bg)!important;color:var(--841-text)!important}
+/* blocos que ainda podiam herdar branco/bege */
+.panel,.metric,.property,.card,.card-body,.list,.list-item,.summary,.row,.modal,.drawer,
+.presentation-body,.presentation-item,.presentation-file,.property-showcase,.showcase-info,
+.quick-finance>div,.quick-actions button,.smart-alert,.p360-stat,.p360-item,
+.provider-service-card,.provider-service-location,.provider-service-meta>div,
+.provider-admin-banner,.received-quote-box,.quote-empty19,.maint-quote19,.maint-ops19,
+.provider-detail-section,.provider-detail-grid>div,.access-help,.username-current,
+.dormus-theme-card,.attachments-block,.attachment-item,.empty,.photo-room,.photo-gallery,
+.documents-list,.person-contact-actions,.selected-file-row,.image-viewer,
+.searchbar,.toolbar,.toolbar-search,.filters,.filter-bar{background:var(--841-panel)!important;color:var(--841-text)!important;border-color:var(--841-line)!important}
+/* componentes específicos que normalmente usam creme/branco */
+.presentation-item,.property-showcase,.showcase-info,.attachment-preview,.presentation-file-icon,
+.photo-room,.person-contact-actions,.empty{background:var(--841-panel2)!important;color:var(--841-text)!important}
+.cover,.showcase-photo{background:linear-gradient(135deg,#102b42,#263b58)!important}
+/* tabelas */
+.table,.table-wrap{background:var(--841-panel)!important;color:var(--841-text)!important;border-color:var(--841-line)!important}
+.table th{background:#09121e!important;color:#a9bdd1!important;border-color:var(--841-line)!important}
+.table td{background:#0d1825!important;color:#e2eaf3!important;border-color:#203349!important}
+.table tr:nth-child(even) td{background:#0f1c2a!important}
+.table tr:hover td{background:#14263a!important}
+/* campos: nenhum branco */
+input,select,textarea,button,
+.form-field input,.form-field select,.form-field textarea,
+.login-field input,.portal-login-form input,.searchbar input,
+.toolbar-search,.global-search input,.chat19-compose textarea,.chat-hub-compose textarea,
+.modal input,.modal select,.modal textarea,.drawer input,.drawer select,.drawer textarea{
+ background:#09131f!important;color:#f4f8fc!important;-webkit-text-fill-color:#f4f8fc!important;
+ border-color:#304861!important;box-shadow:inset 0 1px 0 #ffffff08!important;
+}
+input::placeholder,textarea::placeholder,.global-search input::placeholder,.searchbar input::placeholder,.toolbar-search::placeholder{color:#8297ad!important;-webkit-text-fill-color:#8297ad!important}
+select option{background:#0b1623!important;color:#f4f8fc!important}
+input:focus,select:focus,textarea:focus{background:#0d1c2d!important;border-color:#5d8fff!important;color:#fff!important}
+/* elementos com estilos inline claros: substitui apenas no modo normal */
+body:not(.print-mode) [style*="background:#fff"],
+body:not(.print-mode) [style*="background:#fffdf8"],
+body:not(.print-mode) [style*="background:#faf"],
+body:not(.print-mode) [style*="background:white"],
+body:not(.print-mode) [style*="background: white"],
+body:not(.print-mode) [style*="background:#f"]{
+ background:var(--841-panel)!important;color:var(--841-text)!important;border-color:var(--841-line)!important;
+}
+/* status/badges legíveis */
+.badge,.chip,.tag{background:#17283a!important;color:#dce8f4!important;border-color:#304861!important}
+.badge.green{background:#10352e!important;color:#6ee7c2!important}
+.badge.red{background:#3d1825!important;color:#ff9db5!important}
+.badge.gold{background:#3b2d0f!important;color:#ffd76a!important}
+/* cabeçalho e áreas de apresentação */
+.presentation-head{background:linear-gradient(135deg,#0a1422,#101f31)!important;color:#f4f8fc!important}
+.presentation-head p{color:#9eb0c3!important}
+/* chats */
+.chat19-list,.chat-hub-list,.chat-hub-main,.chat-hub-messages,.chat19-compose,.chat-hub-compose{background:#07111c!important;color:#edf4fb!important;border-color:#263b53!important}
+.chat19-message,.chat-hub-message{background:#102033!important;color:#e9f1f8!important;border-color:#2a4058!important}
+.chat19-message.mine,.chat-hub-message.mine{background:#12372f!important;border-color:#256b5b!important}
+/* rodapé/mobile */
+@media(max-width:760px){
+ .panel,.metric,.property,.provider-service-card,.chat-hub-shell{box-shadow:0 10px 30px #0008!important}
+ .main{padding-bottom:96px!important}
+}
+/* documentos impressos continuam brancos de propósito */
+@media print{
+ .d6-print-sheet,.contract-print-sheet,.receipt-print-sheet,.inspection-print-sheet,.end-print-sheet{background:#fff!important;color:#222!important}
+}
+</style>
+
 </body>
-</html>
