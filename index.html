@@ -1528,7 +1528,16 @@ initDormus();
         rentPrintAnchor.parentNode.insertBefore(view,rentPrintAnchor);
       }
       const monthNow=()=>new Date().toISOString().slice(0,7);
-      const rentNum=v=>Number(String(v??'').replace(',','.'))||0;
+      const rentNum=v=>{
+        if(v===null||v===undefined||v==='') return 0;
+        const s=String(v).trim().replace(/R\$\s?/g,'');
+        if(!s) return 0;
+        // Aceita tanto 990,70 quanto 990.70 e também milhares no padrão brasileiro.
+        if(s.includes(',') && s.includes('.')) return Number(s.replace(/\./g,'').replace(',','.'))||0;
+        if(s.includes(',')) return Number(s.replace(',','.'))||0;
+        return Number(s)||0;
+      };
+      const rentMoneyInput=v=>{const n=rentNum(v);return n>0?n.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):''};
       const rentMonthLabel=m=>{if(!m)return'Competência não informada';const [y,mo]=m.split('-');return new Date(Number(y),Number(mo)-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'})};
       const rentToday=()=>new Date().toISOString().slice(0,10);
       const rentMonthOfDate=d=>String(d||'').slice(0,7);
@@ -1581,14 +1590,17 @@ initDormus();
         if(await save()){showView('rents');alert(created.length?`${created.length} aluguel(is) gerado(s) para ${rentMonthLabel(month)}.`:'Nenhum novo aluguel foi gerado: os contratos já possuem lançamentos nessa competência.')}else{db.rentalCharges=db.rentalCharges.filter(r=>!created.some(c=>c.id===r.contractId&&r.referenceMonth===month))}
       };
       function rentPaymentButton(r){return`<button class="button button-small button-brass" onclick="openRentPayment('${esc(r.id)}')">${rentNum(r.paidAmount)>0?'Editar baixa':'Dar baixa'}</button>`}
-      window.openRentPayment=function(id){const r=db.rentalCharges.find(x=>x.id===id);if(!r)return;document.getElementById('modal-root').innerHTML=`<div class="modal-bg" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()"><div class="modal-head"><h2>Baixa do pagamento</h2><button class="icon" onclick="closeModal()">×</button></div><p class="lead">${esc(nameOf('properties',r.propertyId))} · ${esc(r.referenceMonth)} · total ${money(rentChargeTotal(r))}${rentLateDays(r)>0?` · ${rentLateDays(r)} dia(s) de atraso · multa automática ${money(rentAutomaticFine(r))}`:''}</p><div class="form-grid">${rentField('Valor recebido','rent-paid-amount',r.paidAmount,'number','min="0" step="0.01"')}${rentField('Data do pagamento','rent-payment-date',r.paymentDate||rentToday(),'date')}${rentSelect('Forma de pagamento','rent-payment-method',['PIX','Transferência','Boleto','Dinheiro','Cartão','Outro'],r.paymentMethod||'PIX')}${rentField('Comprovante / referência','rent-proof',r.proof)}${rentSelect('Situação','rent-status',['A vencer','Pago','Parcial','Em atraso','Inadimplente','Cancelado'],r.statusOverride||rentStatus(r))}${textarea('Observações da baixa','rent-notes',r.notes)}</div><div class="modal-actions"><button class="button button-quiet" onclick="closeModal()">Cancelar</button><button class="button button-primary" onclick="saveRentPayment('${esc(id)}')">Salvar baixa</button></div></div></div>`};
+      window.openRentPayment=function(id){const r=db.rentalCharges.find(x=>x.id===id);if(!r)return;document.getElementById('modal-root').innerHTML=`<div class="modal-bg" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()"><div class="modal-head"><h2>Baixa do pagamento</h2><button class="icon" onclick="closeModal()">×</button></div><p class="lead">${esc(nameOf('properties',r.propertyId))} · ${esc(r.referenceMonth)} · total ${money(rentChargeTotal(r))}${rentLateDays(r)>0?` · ${rentLateDays(r)} dia(s) de atraso · multa automática ${money(rentAutomaticFine(r))}`:''}</p><div class="form-grid">${rentField('Valor recebido','rent-paid-amount',rentMoneyInput(r.paidAmount),'text','inputmode="decimal" autocomplete="off" placeholder="0,00"')}${rentField('Data do pagamento','rent-payment-date',r.paymentDate||rentToday(),'date')}${rentSelect('Forma de pagamento','rent-payment-method',['PIX','Transferência','Boleto','Dinheiro','Cartão','Outro'],r.paymentMethod||'PIX')}${rentField('Comprovante / referência','rent-proof',r.proof)}${rentSelect('Situação','rent-status',['A vencer','Pago','Parcial','Em atraso','Inadimplente','Cancelado'],r.statusOverride||rentStatus(r))}${textarea('Observações da baixa','rent-notes',r.notes)}</div><div class="modal-actions"><button class="button button-quiet" onclick="closeModal()">Cancelar</button><button class="button button-primary" onclick="saveRentPayment('${esc(id)}')">Salvar baixa</button></div></div></div>`};
       window.saveRentPayment=async function(id){
   const r=db.rentalCharges.find(x=>x.id===id);
   if(!r){alert('Lançamento de aluguel não encontrado.');return false;}
   const before=JSON.stringify(r);
   try{
-    const rawAmount=String(val('rent-paid-amount')||'').replace(/\./g,'').replace(',','.');
-    const amount=Number(rawAmount||0);
+    const rawAmount=String(val('rent-paid-amount')||'').trim().replace(/R\$\s?/g,'');
+    let normalizedAmount=rawAmount;
+    if(normalizedAmount.includes(',') && normalizedAmount.includes('.')) normalizedAmount=normalizedAmount.replace(/\./g,'').replace(',','.');
+    else if(normalizedAmount.includes(',')) normalizedAmount=normalizedAmount.replace(',','.');
+    const amount=Number(normalizedAmount||0);
     if(!Number.isFinite(amount)||amount<0){alert('Informe um valor recebido válido.');return false;}
     r.paidAmount=amount;
     r.paymentDate=val('rent-payment-date')||rentToday();
