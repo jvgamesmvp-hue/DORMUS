@@ -2722,84 +2722,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sa
     }
     const w=window.open('','_blank','width=900,height=700');
     if(!w){alert('Permita pop-ups para gerar o documento.');return}
-    w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+E(title)+'</title><style>body{font:14px Arial;color:#20372d;padding:40px;line-height:1.6}h1{font:28px Georgia}h2{font:21px Georgia;border-bottom:1px solid #ddd;padding-bottom:8px}h3{margin-top:25px;color:#496b59}li{margin:7px 0}@media print{button{display:none}}</style></head><body>'+rows.join('')+'<p style="margin-top:50px;color:#777">Gerado pelo DORMUS em '+new Date().toLocaleString('pt-BR')+'</p><button onclick="print()">Imprimir / Salvar PDF</button>
-<style id="dormus-841-no-white">
-/* DORMUS 8.42 — remoção total dos fundos claros no uso normal */
-:root{
- --841-bg:#050a12!important;
- --841-panel:#0b1420!important;
- --841-panel2:#0f1b2a!important;
- --841-panel3:#132235!important;
- --841-line:#263b53!important;
- --841-text:#f2f6fb!important;
- --841-muted:#9cafc3!important;
-}
-html,body,.app,.main,.view{background:var(--841-bg)!important;color:var(--841-text)!important}
-/* blocos que ainda podiam herdar branco/bege */
-.panel,.metric,.property,.card,.card-body,.list,.list-item,.summary,.row,.modal,.drawer,
-.presentation-body,.presentation-item,.presentation-file,.property-showcase,.showcase-info,
-.quick-finance>div,.quick-actions button,.smart-alert,.p360-stat,.p360-item,
-.provider-service-card,.provider-service-location,.provider-service-meta>div,
-.provider-admin-banner,.received-quote-box,.quote-empty19,.maint-quote19,.maint-ops19,
-.provider-detail-section,.provider-detail-grid>div,.access-help,.username-current,
-.dormus-theme-card,.attachments-block,.attachment-item,.empty,.photo-room,.photo-gallery,
-.documents-list,.person-contact-actions,.selected-file-row,.image-viewer,
-.searchbar,.toolbar,.toolbar-search,.filters,.filter-bar{background:var(--841-panel)!important;color:var(--841-text)!important;border-color:var(--841-line)!important}
-/* componentes específicos que normalmente usam creme/branco */
-.presentation-item,.property-showcase,.showcase-info,.attachment-preview,.presentation-file-icon,
-.photo-room,.person-contact-actions,.empty{background:var(--841-panel2)!important;color:var(--841-text)!important}
-.cover,.showcase-photo{background:linear-gradient(135deg,#102b42,#263b58)!important}
-/* tabelas */
-.table,.table-wrap{background:var(--841-panel)!important;color:var(--841-text)!important;border-color:var(--841-line)!important}
-.table th{background:#09121e!important;color:#a9bdd1!important;border-color:var(--841-line)!important}
-.table td{background:#0d1825!important;color:#e2eaf3!important;border-color:#203349!important}
-.table tr:nth-child(even) td{background:#0f1c2a!important}
-.table tr:hover td{background:#14263a!important}
-/* campos: nenhum branco */
-input,select,textarea,button,
-.form-field input,.form-field select,.form-field textarea,
-.login-field input,.portal-login-form input,.searchbar input,
-.toolbar-search,.global-search input,.chat19-compose textarea,.chat-hub-compose textarea,
-.modal input,.modal select,.modal textarea,.drawer input,.drawer select,.drawer textarea{
- background:#09131f!important;color:#f4f8fc!important;-webkit-text-fill-color:#f4f8fc!important;
- border-color:#304861!important;box-shadow:inset 0 1px 0 #ffffff08!important;
-}
-input::placeholder,textarea::placeholder,.global-search input::placeholder,.searchbar input::placeholder,.toolbar-search::placeholder{color:#8297ad!important;-webkit-text-fill-color:#8297ad!important}
-select option{background:#0b1623!important;color:#f4f8fc!important}
-input:focus,select:focus,textarea:focus{background:#0d1c2d!important;border-color:#5d8fff!important;color:#fff!important}
-/* elementos com estilos inline claros: substitui apenas no modo normal */
-body:not(.print-mode) [style*="background:#fff"],
-body:not(.print-mode) [style*="background:#fffdf8"],
-body:not(.print-mode) [style*="background:#faf"],
-body:not(.print-mode) [style*="background:white"],
-body:not(.print-mode) [style*="background: white"],
-body:not(.print-mode) [style*="background:#f"]{
- background:var(--841-panel)!important;color:var(--841-text)!important;border-color:var(--841-line)!important;
-}
-/* status/badges legíveis */
-.badge,.chip,.tag{background:#17283a!important;color:#dce8f4!important;border-color:#304861!important}
-.badge.green{background:#10352e!important;color:#6ee7c2!important}
-.badge.red{background:#3d1825!important;color:#ff9db5!important}
-.badge.gold{background:#3b2d0f!important;color:#ffd76a!important}
-/* cabeçalho e áreas de apresentação */
-.presentation-head{background:linear-gradient(135deg,#0a1422,#101f31)!important;color:#f4f8fc!important}
-.presentation-head p{color:#9eb0c3!important}
-/* chats */
-.chat19-list,.chat-hub-list,.chat-hub-main,.chat-hub-messages,.chat19-compose,.chat-hub-compose{background:#07111c!important;color:#edf4fb!important;border-color:#263b53!important}
-.chat19-message,.chat-hub-message{background:#102033!important;color:#e9f1f8!important;border-color:#2a4058!important}
-.chat19-message.mine,.chat-hub-message.mine{background:#12372f!important;border-color:#256b5b!important}
-/* rodapé/mobile */
-@media(max-width:760px){
- .panel,.metric,.property,.provider-service-card,.chat-hub-shell{box-shadow:0 10px 30px #0008!important}
- .main{padding-bottom:96px!important}
-}
-/* documentos impressos continuam brancos de propósito */
-@media print{
- .d6-print-sheet,.contract-print-sheet,.receipt-print-sheet,.inspection-print-sheet,.end-print-sheet{background:#fff!important;color:#222!important}
-}
-</style>
-
-</body></html>');
+    w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+E(title)+'</title><style>body{font:14px Arial;color:#20372d;padding:40px;line-height:1.6}h1{font:28px Georgia}h2{font:21px Georgia;border-bottom:1px solid #ddd;padding-bottom:8px}h3{margin-top:25px;color:#496b59}li{margin:7px 0}@media print{button{display:none}}</style></head><body>'+rows.join('')+'<p style="margin-top:50px;color:#777">Gerado pelo DORMUS em '+new Date().toLocaleString('pt-BR')+'</p><button onclick="print()">Imprimir / Salvar PDF</button></body></html>');
     w.document.close();
   };
   function enhanceAssistant(){
@@ -3319,6 +3242,54 @@ body:not(.print-mode) [style*="background:#f"]{
 /* documentos impressos continuam brancos de propósito */
 @media print{
  .d6-print-sheet,.contract-print-sheet,.receipt-print-sheet,.inspection-print-sheet,.end-print-sheet{background:#fff!important;color:#222!important}
+}
+</style>
+
+
+<style id="dormus-843-ref-palette">
+/* DORMUS 8.43 — identidade visual inspirada na referência enviada */
+:root{
+ --ref-teal:#2f6a59!important;
+ --ref-teal-2:#3e7565!important;
+ --ref-teal-3:#427b6b!important;
+ --ref-cream:#f7f4ee!important;
+ --ref-card:#fbfaf6!important;
+ --ref-text:#203a34!important;
+ --ref-muted:#6f817b!important;
+ --ref-line:#dedbd2!important;
+ --ref-coral:#e6a589!important;
+ --ref-coral-2:#f0b39a!important;
+}
+html,body,.app{background:var(--ref-cream)!important;color:var(--ref-text)!important}
+.side{background:var(--ref-teal)!important;color:#f4f5ef!important;border-right:0!important}
+.brand strong,.brand small{color:#fffaf3!important}
+.brand small{opacity:.78!important}
+.nav-title{color:#b8d0c6!important}
+.nav button{color:#edf5f0!important}
+.nav button:hover,.nav button.active{background:var(--ref-teal-2)!important;border-color:transparent!important;color:#fff!important}
+.nav-icon{color:var(--ref-coral-2)!important}
+.side-foot{border-color:#ffffff22!important;color:#c7d9d1!important}
+.main{background:var(--ref-cream)!important}
+.top{border-color:var(--ref-line)!important}
+.crumb{color:var(--ref-muted)!important}.crumb strong{color:var(--ref-text)!important}
+.panel,.metric,.property,.card,.card-body,.list,.list-item,.summary,.row,.modal,.drawer,.presentation-body,.presentation-item,.presentation-file,.property-showcase,.showcase-info,.quick-finance>div,.smart-alert,.p360-stat,.p360-item,.provider-service-card,.provider-service-location,.provider-service-meta>div,.provider-admin-banner,.received-quote-box,.quote-empty19,.maint-quote19,.maint-ops19,.provider-detail-section,.provider-detail-grid>div,.access-help,.username-current,.dormus-theme-card,.attachments-block,.attachment-item,.empty,.photo-room,.photo-gallery,.documents-list,.person-contact-actions,.selected-file-row,.image-viewer,.searchbar,.toolbar,.toolbar-search,.filters,.filter-bar{background:var(--ref-card)!important;color:var(--ref-text)!important;border-color:var(--ref-line)!important}
+/* campos: creme suave, nunca branco puro */
+input,select,textarea,.form-field input,.form-field select,.form-field textarea,.login-field input,.portal-login-form input,.searchbar input,.toolbar-search,.global-search input,.chat19-compose textarea,.chat-hub-compose textarea,.modal input,.modal select,.modal textarea,.drawer input,.drawer select,.drawer textarea{background:#eef0ea!important;color:var(--ref-text)!important;-webkit-text-fill-color:var(--ref-text)!important;border:1px solid #cbd4cd!important;box-shadow:none!important}
+input::placeholder,textarea::placeholder,.global-search input::placeholder,.searchbar input::placeholder{color:#71827b!important;opacity:1!important}
+input:focus,select:focus,textarea:focus{background:#e7ece6!important;border-color:var(--ref-teal-3)!important;box-shadow:0 0 0 3px #2f6a5920!important}
+button.button,.button,.primary,.btn-primary{background:var(--ref-teal)!important;color:#fff!important;border-color:var(--ref-teal)!important}
+button.button:hover,.button:hover,.primary:hover,.btn-primary:hover{background:var(--ref-teal-2)!important}
+button.button-small,button.button-quiet{border-color:var(--ref-line)!important}
+.badge,.status,.chip{border-color:var(--ref-line)!important}
+.metric:first-child,.quick-actions .primary,.hero-card{background:var(--ref-teal)!important;color:#fff!important}
+/* coral apenas como destaque */
+.brand-mark,.accent,.highlight{border-color:var(--ref-coral)!important;color:var(--ref-coral)!important}
+/* mobile */
+@media(max-width:760px){
+ body,.app,.main{background:var(--ref-cream)!important}
+ .side{background:var(--ref-teal)!important}
+ .panel,.metric,.property,.card,.provider-service-card,.chat-hub-shell{box-shadow:0 8px 24px #203a3412!important}
+ input,select,textarea{font-size:16px!important;min-height:46px!important}
 }
 </style>
 
