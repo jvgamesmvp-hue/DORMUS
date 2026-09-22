@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.26</title>
+  <title>Dormus | Gestão imobiliária · 8.27</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -3044,9 +3044,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sa
     }
     const w=window.open('','_blank','width=900,height=700');
     if(!w){alert('Permita pop-ups para gerar o documento.');return}
-    w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+E(title)+'</title><style>body{font:14px Arial;color:#20372d;padding:40px;line-height:1.6}h1{font:28px Georgia}h2{font:21px Georgia;border-bottom:1px solid #ddd;padding-bottom:8px}h3{margin-top:25px;color:#496b59}li{margin:7px 0}@media print{button{display:none}}</style></head><body>'+rows.join('')+'<p style="margin-top:50px;color:#777">Gerado pelo DORMUS em '+new Date().toLocaleString('pt-BR')+'</p><button onclick="print()">Imprimir / Salvar PDF</button>
-
-</body></html>');
+    w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+E(title)+'</title><style>body{font:14px Arial;color:#20372d;padding:40px;line-height:1.6}h1{font:28px Georgia}h2{font:21px Georgia;border-bottom:1px solid #ddd;padding-bottom:8px}h3{margin-top:25px;color:#496b59}li{margin:7px 0}@media print{button{display:none}}</style></head><body>'+rows.join('')+'<p style="margin-top:50px;color:#777">Gerado pelo DORMUS em '+new Date().toLocaleString('pt-BR')+'</p><button onclick="print()">Imprimir / Salvar PDF</button>\n</body></html>');
     w.document.close();
   };
   function enhanceAssistant(){
@@ -6470,138 +6468,7 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   </footer>
 </article>
 
-<script id="dormus-repasse-separated-866">
-(function(){
-  function ensureStandaloneRepasse(){
-    var main=document.querySelector('.main');
-    if(!main)return;
-    var view=document.getElementById('repasse');
-    if(!view){
-      view=document.createElement('section');
-      view.id='repasse';
-      view.className='view';
-      view.innerHTML='<div class="page-head"><div><div class="eyebrow">Gestão financeira</div><h1>Repasse ao proprietário</h1><p class="lead">Controle os valores recebidos, a administração, os descontos e o valor a repassar aos proprietários.</p></div><button class="button button-primary" onclick="window.generateOwnerTransfers()">↻ Atualizar repasses</button></div><div id="repasse-panel-host"></div>';
-      var rents=document.getElementById('rents');
-      if(rents && rents.parentNode) rents.parentNode.insertBefore(view,rents.nextSibling);
-      else main.appendChild(view);
-    }
-    return view;
-  }
 
-  function moveRepassePanel(){
-    var view=ensureStandaloneRepasse();
-    var old=document.getElementById('repasse-panel');
-    var target=document.getElementById('repasse-standalone-panel');
-    if(old && target && old.parentNode!==target){
-      var content=document.getElementById('repasse-content');
-      var standalone=document.getElementById('repasse-content-standalone');
-      if(content && standalone){
-        standalone.innerHTML=content.innerHTML;
-      }
-      old.remove();
-    }
-    return view;
-  }
-
-  function renderStandaloneRepasse(){
-    var view=ensureStandaloneRepasse();
-    var target=document.getElementById('repasse-content-standalone');
-    if(!target)return;
-    var old=document.getElementById('repasse-content');
-    if(old && old.innerHTML) target.innerHTML=old.innerHTML;
-    else if(typeof window.renderOwnerTransfers==='function'){
-      var original=window.renderOwnerTransfers;
-      try{
-        var temp=document.getElementById('repasse-content');
-        if(temp){
-          original();
-          target.innerHTML=temp.innerHTML;
-        }
-      }catch(e){console.warn('Repasse separado:',e)}
-    }
-  }
-
-  var oldShow=window.showView;
-  window.showView=function(id){
-    if(id==='repasse'){
-      ensureStandaloneRepasse();
-      if(typeof oldShow==='function') oldShow.call(this,'repasse');
-      else {
-        document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('active',v.id==='repasse')});
-        document.querySelectorAll('[data-view]').forEach(function(b){b.classList.toggle('active',b.dataset.view==='repasse')});
-      }
-      renderStandaloneRepasse();
-      var crumb=document.getElementById('crumb');
-      if(crumb)crumb.textContent='Repasse ao proprietário';
-      window.scrollTo(0,0);
-      return;
-    }
-    return oldShow.apply(this,arguments);
-  };
-
-  window.openRepasseView=function(){
-    ensureStandaloneRepasse();
-    window.showView('repasse');
-    var btn=document.getElementById('nav-repasse-owner');
-    document.querySelectorAll('[data-view]').forEach(function(b){b.classList.toggle('active',b===btn)});
-  };
-
-  function convertNav(){
-    var btn=document.getElementById('nav-repasse-owner');
-    if(!btn)return;
-    btn.setAttribute('data-view','repasse');
-    btn.removeAttribute('onclick');
-  }
-
-  var oldRenderRents=window.renderRents;
-  window.renderRents=function(){
-    var result;
-    if(typeof oldRenderRents==='function')result=oldRenderRents.apply(this,arguments);
-    ensureStandaloneRepasse();
-    moveRepassePanel();
-    renderStandaloneRepasse();
-    return result;
-  };
-
-  var css=document.createElement('style');
-  css.id='dormus-repasse-separated-866-style';
-  css.textContent=`
-    #repasse.repasse-standalone .repasse-panel,
-    #repasse-standalone-panel{width:100%;max-width:100%;box-sizing:border-box}
-    #repasse-standalone-panel .table-wrap{width:100%;max-width:100%;overflow-x:hidden;overflow-y:visible}
-    #repasse-standalone-panel .repasse-table{width:100%;max-width:100%;min-width:0;table-layout:fixed;border-collapse:collapse}
-    #repasse-standalone-panel .repasse-table th,
-    #repasse-standalone-panel .repasse-table td{padding:7px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle}
-    #repasse-standalone-panel .repasse-table th:nth-child(1){width:23%}
-    #repasse-standalone-panel .repasse-table th:nth-child(2){width:9%}
-    #repasse-standalone-panel .repasse-table th:nth-child(3){width:11%}
-    #repasse-standalone-panel .repasse-table th:nth-child(4){width:10%}
-    #repasse-standalone-panel .repasse-table th:nth-child(5){width:13%}
-    #repasse-standalone-panel .repasse-table th:nth-child(6){width:11%}
-    #repasse-standalone-panel .repasse-table th:nth-child(7){width:10%}
-    #repasse-standalone-panel .repasse-table th:nth-child(8){width:13%}
-    #repasse-standalone-panel .repasse-table .row-sub{display:inline;margin-left:5px}
-    #repasse-standalone-panel .repasse-table .row-sub:before{content:'· '}
-    #repasse-standalone-panel .repasse-table .button{font-size:11px;padding:5px 7px;white-space:nowrap}
-    #repasse-standalone-panel .repasse-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}
-    @media(max-width:900px){
-      #repasse-standalone-panel .repasse-table th,
-      #repasse-standalone-panel .repasse-table td{font-size:10.5px;padding:6px 4px}
-      #repasse-standalone-panel .repasse-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
-    }
-  `;
-  document.head.appendChild(css);
-
-  function boot(){
-    convertNav();
-    ensureStandaloneRepasse();
-    moveRepassePanel();
-    renderStandaloneRepasse();
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);
-  else boot();
-})();
-</script>
 </body></html>`;
   }
 
