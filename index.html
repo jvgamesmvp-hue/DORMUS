@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.17</title>
+  <title>Dormus | Gestão imobiliária · 8.26</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -56,7 +56,7 @@
     .login-error{min-height:18px;margin-top:12px;color:#934b3e;font-size:11px;line-height:1.4}
     .login-note{margin-top:17px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:10px;line-height:1.45}
     .auth-user{display:flex;align-items:center;gap:8px;margin-left:auto}
-    .auth-email{max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:11px}
+    .auth-email{max-width:230px;font-weight:700;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:11px}
     .logout-button{border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);padding:7px 10px;font-size:11px;font-weight:700}
     @media(max-width:620px){.auth-email{display:none}.login-card{padding:24px}}
   </style>
@@ -548,12 +548,12 @@ section,article,.section,.content-card,.white-card{
           <h1 class="login-title">Acesso da equipe</h1>
           <p class="login-sub">Entre usando seu nome de usuário e sua senha.</p>
           <form onsubmit="handlePortalLogin(event,'imobiliaria')">
-            <div class="login-field"><label for="login-username">Nome de usuário</label><input id="login-username" type="text" autocomplete="username" required placeholder="Ex.: jvgamesmvp"></div>
+            <div class="login-field"><label for="login-username">Nome de usuário</label><input id="login-username" type="text" autocomplete="username" required placeholder="Ex.: joaovictor ou sandra"></div>
             <div class="login-field"><label for="login-password-imob">Senha</label><input id="login-password-imob" type="password" autocomplete="current-password" required></div>
             <button id="login-button-imob" class="login-button" type="submit">Entrar na imobiliária</button>
             <div id="login-error-imob" class="login-error" role="alert"></div>
           </form>
-          <div class="login-note">A senha continua protegida pelo Supabase Auth. O nome de usuário é apenas o identificador de acesso da equipe.</div>
+          <div class="login-note">A senha é validada pelo Supabase Auth. Use o nome de usuário cadastrado no DORMUS, por exemplo: joaovictor ou sandra.</div>
         </div>
         <div id="portal-login-prestador" class="portal-login-form" hidden>
           <button class="login-back" type="button" onclick="showPortalChooser()">← Voltar</button>
@@ -1037,25 +1037,46 @@ async function handlePortalLogin(event,kind){
   if(button){button.disabled=true;button.textContent='Entrando...';}
   try{
     let email='';
+    let loginProfile=null;
     if(kind==='imobiliaria'){
       const username=document.getElementById('login-username')?.value.trim().toLowerCase();
       const password=document.getElementById('login-password-imob')?.value||'';
       if(!username||!password)throw new Error('Preencha usuário e senha.');
-      const res=await fetch(SUPABASE_URL+'/functions/v1/dormus-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})});
+      let res;
+      try{
+        res=await fetch(SUPABASE_URL+'/functions/v1/dormus-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})});
+      }catch(fetchError){
+        throw new Error('Não foi possível consultar o usuário agora. Verifique sua conexão e tente novamente.');
+      }
       const info=await res.json().catch(()=>({}));
-      if(!res.ok||!info?.email)throw new Error('Usuário ou senha inválidos.');
-      email=info.email;
-      const {error}=await supabaseClient.auth.signInWithPassword({email,password});
-      if(error)throw error;
+      if(!res.ok||!info?.email){
+        const notFound=Number(res.status)===404||String(info?.error||'').toLowerCase().includes('usuário');
+        throw new Error(notFound?'Usuário não encontrado. Confira o nome de usuário.':'Não foi possível localizar este acesso.');
+      }
+      email=String(info.email).trim().toLowerCase();
+      loginProfile={email,nome:info.nome||username,perfil:info.perfil||'funcionario',username};
+      const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+      if(error){
+        if(error.message?.toLowerCase().includes('email not confirmed')) throw new Error('Este usuário ainda não teve o e-mail confirmado no Supabase.');
+        if(error.message?.toLowerCase().includes('invalid login credentials')) throw new Error('Senha inválida para este usuário.');
+        throw error;
+      }
+      window.DormusLoginProfile=loginProfile;
+      try{sessionStorage.setItem('dormus_login_profile',JSON.stringify(loginProfile));}catch(e){}
+      if(data?.user) window.DormusCurrentUser=data.user;
     }else{
       email=document.getElementById('login-email')?.value.trim();
       const password=document.getElementById('login-password')?.value||'';
       const {error}=await supabaseClient.auth.signInWithPassword({email,password});
-      if(error)throw error;
+      if(error){
+        if(error.message?.toLowerCase().includes('email not confirmed')) throw new Error('O e-mail deste acesso ainda não foi confirmado.');
+        if(error.message?.toLowerCase().includes('invalid login credentials')) throw new Error('E-mail ou senha inválidos.');
+        throw error;
+      }
     }
   }catch(error){
     console.error('Erro no login:',error);
-    if(errorEl)errorEl.textContent='Não foi possível entrar. Confira os dados e tente novamente.';
+    if(errorEl)errorEl.textContent=error?.message||'Não foi possível entrar. Confira os dados e tente novamente.';
     if(button){button.disabled=false;button.textContent=kind==='imobiliaria'?'Entrar na imobiliária':'Entrar como prestador';}
   }
 }
@@ -1067,6 +1088,9 @@ async function logoutDormus(){
     alert('Não foi possível sair agora. Tente novamente.');
     return;
   }
+  window.DormusCurrentUser=null;
+  window.DormusLoginProfile=null;
+  try{sessionStorage.removeItem('dormus_login_profile');}catch(e){}
   db=JSON.parse(JSON.stringify(blank));
   window.DormusDB=db;
   showLogin();
@@ -1141,9 +1165,17 @@ async function initDormus(){
 async function enterDormus(session){
   if(!session)return;
   window.DormusCurrentUser=session.user;
+  let profile=window.DormusLoginProfile||null;
+  if(!profile){
+    try{profile=JSON.parse(sessionStorage.getItem('dormus_login_profile')||'null');}catch(e){profile=null;}
+  }
   hideLogin();
   const emailEl=document.getElementById('auth-email');
-  if(emailEl)emailEl.textContent=session.user?.email||'Usuário';
+  if(emailEl){
+    const displayName=profile?.nome||session.user?.user_metadata?.nome||session.user?.user_metadata?.name||session.user?.email||'Usuário';
+    emailEl.textContent=displayName;
+    emailEl.title=profile?.email||session.user?.email||'';
+  }
   try{
     await loadDbFromSupabase();
   }catch(error){
@@ -3013,122 +3045,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sa
     const w=window.open('','_blank','width=900,height=700');
     if(!w){alert('Permita pop-ups para gerar o documento.');return}
     w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+E(title)+'</title><style>body{font:14px Arial;color:#20372d;padding:40px;line-height:1.6}h1{font:28px Georgia}h2{font:21px Georgia;border-bottom:1px solid #ddd;padding-bottom:8px}h3{margin-top:25px;color:#496b59}li{margin:7px 0}@media print{button{display:none}}</style></head><body>'+rows.join('')+'<p style="margin-top:50px;color:#777">Gerado pelo DORMUS em '+new Date().toLocaleString('pt-BR')+'</p><button onclick="print()">Imprimir / Salvar PDF</button>
-<script id="dormus-repasse-separated-866">
-(function(){
-  function ensureStandaloneRepasse(){
-    var main=document.querySelector('.main');
-    if(!main)return;
-    var view=document.getElementById('repasse');
-    if(!view){
-      view=document.createElement('section');
-      view.id='repasse';
-      view.className='view';
-      view.innerHTML='<div class="page-head"><div><div class="eyebrow">Gestão financeira</div><h1>Repasse ao proprietário</h1><p class="lead">Controle os valores recebidos, a administração, os descontos e o valor a repassar aos proprietários.</p></div><button class="button button-primary" onclick="window.generateOwnerTransfers()">↻ Atualizar repasses</button></div><div id="repasse-panel-host"></div>';
-      var rents=document.getElementById('rents');
-      if(rents && rents.parentNode) rents.parentNode.insertBefore(view,rents.nextSibling);
-      else main.appendChild(view);
-    }
-    return view;
-  }
 
-  function moveRepassePanel(){
-    var view=ensureStandaloneRepasse();
-    var old=document.getElementById('repasse-panel');
-    var host=document.getElementById('repasse-panel-host');
-    if(old && host && old.parentNode!==host){
-      host.appendChild(old);
-    }
-    return view;
-  }
-
-  function renderStandaloneRepasse(){
-    ensureStandaloneRepasse();
-    moveRepassePanel();
-    var panel=document.getElementById('repasse-panel');
-    if(panel)panel.classList.add('repasse-standalone-panel');
-  }
-
-  var oldShow=window.showView;
-  window.showView=function(id){
-    if(id==='repasse'){
-      ensureStandaloneRepasse();
-      if(typeof oldShow==='function') oldShow.call(this,'repasse');
-      else {
-        document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('active',v.id==='repasse')});
-        document.querySelectorAll('[data-view]').forEach(function(b){b.classList.toggle('active',b.dataset.view==='repasse')});
-      }
-      renderStandaloneRepasse();
-      var crumb=document.getElementById('crumb');
-      if(crumb)crumb.textContent='Repasse ao proprietário';
-      window.scrollTo(0,0);
-      return;
-    }
-    return oldShow.apply(this,arguments);
-  };
-
-  window.openRepasseView=function(){
-    ensureStandaloneRepasse();
-    window.showView('repasse');
-    var btn=document.getElementById('nav-repasse-owner');
-    document.querySelectorAll('[data-view]').forEach(function(b){b.classList.toggle('active',b===btn)});
-  };
-
-  function convertNav(){
-    var btn=document.getElementById('nav-repasse-owner');
-    if(!btn)return;
-    btn.setAttribute('data-view','repasse');
-    btn.removeAttribute('onclick');
-  }
-
-  var oldRenderRents=window.renderRents;
-  window.renderRents=function(){
-    var result;
-    if(typeof oldRenderRents==='function')result=oldRenderRents.apply(this,arguments);
-    ensureStandaloneRepasse();
-    moveRepassePanel();
-    renderStandaloneRepasse();
-    return result;
-  };
-
-  var css=document.createElement('style');
-  css.id='dormus-repasse-separated-866-style';
-  css.textContent=`
-    #repasse.repasse-standalone .repasse-panel,
-    #repasse-standalone-panel{width:100%;max-width:100%;box-sizing:border-box}
-    #repasse-standalone-panel .table-wrap{width:100%;max-width:100%;overflow-x:hidden;overflow-y:visible}
-    #repasse-standalone-panel .repasse-table{width:100%;max-width:100%;min-width:0;table-layout:fixed;border-collapse:collapse}
-    #repasse-standalone-panel .repasse-table th,
-    #repasse-standalone-panel .repasse-table td{padding:7px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle}
-    #repasse-standalone-panel .repasse-table th:nth-child(1){width:23%}
-    #repasse-standalone-panel .repasse-table th:nth-child(2){width:9%}
-    #repasse-standalone-panel .repasse-table th:nth-child(3){width:11%}
-    #repasse-standalone-panel .repasse-table th:nth-child(4){width:10%}
-    #repasse-standalone-panel .repasse-table th:nth-child(5){width:13%}
-    #repasse-standalone-panel .repasse-table th:nth-child(6){width:11%}
-    #repasse-standalone-panel .repasse-table th:nth-child(7){width:10%}
-    #repasse-standalone-panel .repasse-table th:nth-child(8){width:13%}
-    #repasse-standalone-panel .repasse-table .row-sub{display:inline;margin-left:5px}
-    #repasse-standalone-panel .repasse-table .row-sub:before{content:'· '}
-    #repasse-standalone-panel .repasse-table .button{font-size:11px;padding:5px 7px;white-space:nowrap}
-    #repasse-standalone-panel .repasse-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}
-    @media(max-width:900px){
-      #repasse-standalone-panel .repasse-table th,
-      #repasse-standalone-panel .repasse-table td{font-size:10.5px;padding:6px 4px}
-      #repasse-standalone-panel .repasse-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
-    }
-  `;
-  document.head.appendChild(css);
-
-  function boot(){
-    convertNav();
-    ensureStandaloneRepasse();
-    moveRepassePanel();
-    renderStandaloneRepasse();
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);
-  else boot();
-})();
-</script>
 </body></html>');
     w.document.close();
   };
