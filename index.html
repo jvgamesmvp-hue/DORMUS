@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.9</title>
+  <title>Dormus | Gestão imobiliária · 8.10</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -6378,13 +6378,12 @@ input::placeholder,textarea::placeholder {
         <td class="amount">${amount(item.gross)}</td><td class="amount"></td><td class="balance">${amount(balance)}</td>
       </tr>`;
     }).join('');
-    const feeRows=d.items.map(item=>{
-      balance-=item.fee;
-      return `<tr class="ledger-row">
-        <td class="date"></td><td class="description">Taxa de administração</td>
-        <td class="amount"></td><td class="amount">${amount(item.fee)}</td><td class="balance">${amount(balance)}</td>
-      </tr>`;
-    }).join('');
+    const totalFee=d.items.reduce((sum,item)=>sum+item.fee,0);
+    balance-=totalFee;
+    const feeRows=`<tr class="ledger-row">
+      <td class="date"></td><td class="description">Taxa de administração</td>
+      <td class="amount"></td><td class="amount">${amount(totalFee)}</td><td class="balance">${amount(balance)}</td>
+    </tr>`;
     return `<!doctype html>
 <html lang="pt-BR">
 <head>
