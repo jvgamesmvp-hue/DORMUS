@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.11</title>
+  <title>Dormus | Gestão imobiliária · 8.12</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -6013,6 +6013,552 @@ input::placeholder,textarea::placeholder {
   /* As regras específicas abaixo prevalecem; esta seção serve apenas como marcador de compatibilidade. */
 }
 </style>
+
+<style id="dormus-owner-transfer-statement-print-style">
+  .owner-transfer-print-sheet {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    border: 2px solid #3d3d3d;
+    background: #fff;
+    color: #222;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+  .owner-transfer-print-sheet * { box-sizing: border-box; }
+  .owner-transfer-print-title {
+    padding: 10px 14px 8px;
+    border-bottom: 2px solid #3d3d3d;
+    text-align: center;
+    font-size: 25px;
+    font-weight: 800;
+  }
+  .owner-transfer-print-owner {
+    padding: 8px 12px;
+    border-bottom: 2px solid #3d3d3d;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .owner-transfer-print-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    font-size: 14px;
+  }
+  .owner-transfer-print-table th,
+  .owner-transfer-print-table td {
+    border-right: 1px solid #4a4a4a;
+    border-bottom: 1px solid #4a4a4a;
+    min-height: 27px;
+    padding: 5px 8px;
+    vertical-align: middle;
+  }
+  .owner-transfer-print-table th:last-child,
+  .owner-transfer-print-table td:last-child { border-right: 0; }
+  .owner-transfer-print-table th {
+    background: #f3f3f3;
+    font-size: 15px;
+    text-align: center;
+  }
+  .owner-transfer-print-table .date { width: 14%; text-align: center; }
+  .owner-transfer-print-table .description { width: 43%; }
+  .owner-transfer-print-table .amount { width: 14.33%; text-align: right; white-space: nowrap; }
+  .owner-transfer-print-table .balance { width: 14.33%; text-align: right; white-space: nowrap; }
+  .owner-transfer-print-table .ledger-row { height: 28px; }
+  .owner-transfer-print-table .total-row td {
+    border-top: 2px solid #333;
+    font-weight: 800;
+    letter-spacing: .7px;
+    min-height: 34px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+  .owner-transfer-print-table .total-label {
+    text-align: left;
+    letter-spacing: 5px;
+  }
+  .owner-transfer-print-property {
+    color: #555;
+    font-size: 12px;
+    font-weight: 400;
+    margin-top: 2px;
+  }
+  .owner-transfer-print-footer {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    min-height: 108px;
+  }
+  .owner-transfer-print-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    background: #4b4b4b;
+    color: #fff;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .owner-transfer-print-brand strong {
+    display: block;
+    font-family: Georgia, serif;
+    font-size: 19px;
+    font-weight: 400;
+  }
+  .owner-transfer-print-footer-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 8px 12px 5px;
+    text-align: center;
+    font-size: 12px;
+  }
+  .owner-transfer-print-city-date { font-size: 13px; }
+  .owner-transfer-print-signatures {
+    display: flex;
+    justify-content: space-around;
+    gap: 35px;
+    margin: 12px auto 4px;
+    width: min(560px, 100%);
+  }
+  .owner-transfer-print-signature {
+    border-top: 1px solid #333;
+    min-width: 190px;
+    padding-top: 4px;
+    font-weight: 700;
+  }
+  .owner-transfer-print-contact {
+    border-top: 1px solid #555;
+    padding-top: 4px;
+    font-size: 10px;
+    line-height: 1.35;
+  }
+  .owner-transfer-print-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin: 10px 0;
+  }
+  .owner-transfer-print-summary-item {
+    border: 1px solid #4a4a4a;
+    padding: 7px 10px;
+    text-align: center;
+  }
+  .owner-transfer-print-summary-item span {
+    display: block;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  .owner-transfer-print-summary-item strong {
+    display: block;
+    font-size: 16px;
+    margin-top: 3px;
+  }
+  .owner-transfer-print-table .section-row td {
+    background: #f3f3f3;
+    border-top: 2px solid #333;
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .owner-transfer-choice-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: grid;
+    place-items: center;
+    padding: 16px;
+    background: #17281dcc;
+  }
+  .owner-transfer-choice-modal {
+    width: min(680px, 100%);
+    max-height: 92vh;
+    overflow: auto;
+    background: #fffdf8;
+    color: #20372d;
+    border: 1px solid #ddd8ca;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 24px 80px #0005;
+  }
+  .owner-transfer-choice-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .owner-transfer-choice-head h2 {
+    margin: 0;
+    font: 24px Georgia, serif;
+  }
+  .owner-transfer-choice-help {
+    margin: 0 0 15px;
+    color: #778278;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+  .owner-transfer-choice-list {
+    display: grid;
+    gap: 8px;
+  }
+  .owner-transfer-choice-item {
+    display: grid;
+    grid-template-columns: 22px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 12px;
+    border: 1px solid #ddd8ca;
+    border-radius: 9px;
+    background: #fffdf8;
+  }
+  .owner-transfer-choice-item:has(input:checked) {
+    border-color: #c48e3c;
+    background: #f7edcf;
+  }
+  .owner-transfer-choice-item input {
+    width: 18px;
+    height: 18px;
+    accent-color: #20372d;
+  }
+  .owner-transfer-choice-property {
+    font-weight: 700;
+  }
+  .owner-transfer-choice-detail {
+    color: #778278;
+    font-size: 11px;
+    margin-top: 3px;
+  }
+  .owner-transfer-choice-status {
+    color: #416a4a;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+  .owner-transfer-choice-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 18px;
+  }
+  @media print {
+    @page { size: A4 portrait; margin: 12mm; }
+    body { background: #fff !important; }
+    .owner-transfer-print-sheet { max-width: none; }
+  }
+  @media (max-width: 620px) {
+    .owner-transfer-print-title { font-size: 18px; }
+    .owner-transfer-print-owner { font-size: 14px; }
+    .owner-transfer-print-table { font-size: 11px; }
+    .owner-transfer-print-table th { font-size: 11px; }
+    .owner-transfer-print-table th,
+    .owner-transfer-print-table td { padding: 4px; }
+    .owner-transfer-print-footer { grid-template-columns: 82px 1fr; }
+    .owner-transfer-print-brand strong { font-size: 14px; }
+    .owner-transfer-print-signatures { gap: 10px; }
+    .owner-transfer-print-signature { min-width: 0; flex: 1; font-size: 10px; }
+    .owner-transfer-print-summary { gap: 4px; }
+    .owner-transfer-print-summary-item { padding: 5px; }
+    .owner-transfer-print-summary-item strong { font-size: 13px; }
+  }
+</style>
+<script id="dormus-owner-transfer-statement-print">
+(function(){
+  if(window.__dormusOwnerTransferStatementPrint)return;
+  window.__dormusOwnerTransferStatementPrint=true;
+
+  const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,char=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+  }[char]));
+  const amount=value=>'R$ '+Number(value||0).toLocaleString('pt-BR',{
+    minimumFractionDigits:2,maximumFractionDigits:2
+  });
+  const datePt=value=>{
+    if(!value)return'';
+    const text=String(value).slice(0,10);
+    return text.includes('-')?text.split('-').reverse().join('/'):text;
+  };
+  const monthName=value=>{
+    if(!value)return'';
+    const parts=String(value).slice(0,7).split('-');
+    const date=new Date(Number(parts[0]),Number(parts[1])-1,1);
+    return date.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  };
+  const todayIso=()=>{
+    const current=new Date();
+    const pad=value=>String(value).padStart(2,'0');
+    return `${current.getFullYear()}-${pad(current.getMonth()+1)}-${pad(current.getDate())}`;
+  };
+
+  function transferItem(transfer){
+    const charge=(db.rentalCharges||[]).find(item=>item.id===transfer.chargeId)||{};
+    const contract=(db.contracts||[]).find(item=>item.id===transfer.contractId)||{};
+    const owner=(db.owners||[]).find(item=>item.id===transfer.ownerId||item.id===contract.ownerId)||{};
+    const tenant=(db.tenants||[]).find(item=>item.id===charge.tenantId||item.id===contract.tenantId)||{};
+    const property=(db.properties||[]).find(item=>item.id===transfer.propertyId||item.id===contract.propertyId||item.id===charge.propertyId)||{};
+    const gross=Number(transfer.gross??charge.paidAmount??0);
+    const fee=Number(transfer.fee??(gross*Number(contract.adminFee||10)/100));
+    const net=Number(transfer.net??(gross-fee));
+    const competence=transfer.referenceMonth||charge.referenceMonth||todayIso().slice(0,7);
+    const paymentDate=charge.paymentDate||charge.paidDate||transfer.date||todayIso();
+    const tenantFirstName=String(tenant.name||'').trim().split(/\s+/)[0]||'';
+    const address=[property.address,property.number,property.complement,property.neighborhood,property.city,property.state]
+      .filter(Boolean).join(', ');
+    return {transfer,charge,contract,owner,tenant,property,gross,fee,net,competence,paymentDate,tenantFirstName,address};
+  }
+
+  function statementData(transfer){
+    const groupId=transfer.statementGroupId;
+    const transfers=(db.ownerTransfers||[])
+      .filter(item=>groupId?item.statementGroupId===groupId:item.id===transfer.id)
+      .sort((a,b)=>String(a.chargeId||'').localeCompare(String(b.chargeId||'')));
+    const items=(transfers.length?transfers:[transfer]).map(transferItem);
+    const first=items[0]||transferItem(transfer);
+    const gross=items.reduce((sum,item)=>sum+item.gross,0);
+    const fee=items.reduce((sum,item)=>sum+item.fee,0);
+    const net=items.reduce((sum,item)=>sum+item.net,0);
+    const issueDate=todayIso();
+    const company=db.company||db.settings||{};
+    const city=first.property.city||company.city||'Conselheiro Pena';
+    const state=first.property.state||company.state||'MG';
+    return {
+      transfer,transfers,items,owner:first.owner,gross,fee,net,
+      competence:first.competence,paymentDate:first.paymentDate,issueDate,address:first.address,
+      city,state,
+      agencyName:company.name||'Horne Dutra Imóveis',
+      agencyAddress:company.address||'Rua Antonio Aprigio, 611 - Centro - Conselheiro Pena/MG',
+      agencyPhone:company.phone||'Tel. (33) 3499-1715 · (33) 9 8899-7281',
+      agencyEmail:company.email||'horne dutra@yahoo.com.br'
+    };
+  }
+
+  function statementHtml(data){
+    const d=data;
+    const title='Prestação de Contas '+monthName(d.competence);
+    const issueDateLabel=datePt(d.issueDate)||datePt(todayIso());
+    const ownerName=d.owner.name||'Proprietário não informado';
+    let balance=0;
+    const rentRows=d.items.map(item=>{
+      const tenantLabel=item.tenantFirstName?' · '+escapeHtml(item.tenantFirstName):'';
+      const propertyName=item.property.name||item.address||'Imóvel não informado';
+      balance+=item.gross;
+      return `<tr class="ledger-row">
+        <td class="date">${escapeHtml(datePt(item.paymentDate)||datePt(todayIso()))}</td>
+        <td class="description">Aluguel recebido${tenantLabel}<div class="owner-transfer-print-property">${escapeHtml(propertyName)}</div></td>
+        <td class="amount">${amount(item.gross)}</td><td class="amount"></td><td class="balance">${amount(balance)}</td>
+      </tr>`;
+    }).join('');
+    const totalFee=d.items.reduce((sum,item)=>sum+item.fee,0);
+    balance-=totalFee;
+    const feeRows=`<tr class="ledger-row">
+      <td class="date"></td><td class="description">Taxa de administração</td>
+      <td class="amount"></td><td class="amount">${amount(totalFee)}</td><td class="balance">${amount(balance)}</td>
+    </tr>`;
+    return `<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>${escapeHtml(title)} · ${escapeHtml(ownerName)}</title>
+<style>
+html,body{margin:0;padding:0;background:#fff}
+body{font-family:Arial,Helvetica,sans-serif;padding:12mm;color:#222}
+${document.getElementById('dormus-owner-transfer-statement-print-style')?.textContent||''}
+.print-actions{display:flex;justify-content:center;gap:8px;margin:0 auto 16px}
+.print-actions button{border:1px solid #30463b;border-radius:6px;padding:9px 14px;background:#30463b;color:#fff;font-weight:700;cursor:pointer}
+@media print{.print-actions{display:none!important}body{padding:0}}
+</style>
+</head>
+<body>
+<div class="print-actions"><button onclick="window.print()">Imprimir / salvar PDF</button><button onclick="window.close()">Fechar</button></div>
+<article class="owner-transfer-print-sheet">
+  <div class="owner-transfer-print-title">${escapeHtml(title)}</div>
+  <div class="owner-transfer-print-owner">Nome: ${escapeHtml(ownerName)}</div>
+  <div class="owner-transfer-print-summary">
+    <div class="owner-transfer-print-summary-item"><span>Aluguéis recebidos</span><strong>${amount(d.gross)}</strong></div>
+    <div class="owner-transfer-print-summary-item"><span>Repasse ao proprietário</span><strong>${amount(d.net)}</strong></div>
+  </div>
+  <table class="owner-transfer-print-table">
+    <thead><tr><th class="date">Data</th><th class="description">Descrição</th><th class="amount">Entrada</th><th class="amount">Saída</th><th class="balance">Saldo</th></tr></thead>
+    <tbody>
+      <tr class="section-row"><td colspan="5">Aluguéis recebidos</td></tr>
+      ${rentRows}
+      <tr class="section-row"><td colspan="5">Repasse ao proprietário</td></tr>
+      ${feeRows}
+      <tr class="ledger-row"><td></td><td></td><td></td><td></td><td class="balance">${amount(d.net)}</td></tr>
+      <tr class="ledger-row"><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr class="ledger-row"><td></td><td></td><td></td><td></td><td class="balance">${amount(d.net)}</td></tr>
+      <tr class="ledger-row"><td></td><td></td><td></td><td></td><td></td></tr>
+      <tr class="total-row"><td colspan="2" class="total-label">TOTAL GERAL</td><td class="amount">${amount(d.gross)}</td><td class="amount">${amount(d.fee)}</td><td class="balance">${amount(d.net)}</td></tr>
+    </tbody>
+  </table>
+  <footer class="owner-transfer-print-footer">
+    <div class="owner-transfer-print-brand"><div><strong>HD</strong>${escapeHtml(d.agencyName)}<br><small>GESTÃO IMOBILIÁRIA</small></div></div>
+    <div class="owner-transfer-print-footer-main">
+      <div class="owner-transfer-print-city-date">${escapeHtml(d.city)}, ${issueDateLabel}</div>
+      <div class="owner-transfer-print-signatures"><div class="owner-transfer-print-signature">Cliente</div><div class="owner-transfer-print-signature">${escapeHtml(d.agencyName)}</div></div>
+      <div class="owner-transfer-print-contact">${escapeHtml(d.agencyAddress)} · ${escapeHtml(d.agencyPhone)}<br>${escapeHtml(d.agencyEmail)}</div>
+    </div>
+  </footer>
+</article>
+</body></html>`;
+  }
+
+  function paidChargesForOwner(chargeId){
+    const anchor=(db.rentalCharges||[]).find(item=>item.id===chargeId);
+    if(!anchor)return[];
+    const anchorContract=(db.contracts||[]).find(item=>item.id===anchor.contractId)||{};
+    const ownerId=anchorContract.ownerId;
+    const month=anchor.referenceMonth||'';
+    return (db.rentalCharges||[])
+      .filter(charge=>(charge.referenceMonth||'')===month&&Number(charge.paidAmount||0)>0)
+      .map(charge=>{
+        const contract=(db.contracts||[]).find(item=>item.id===charge.contractId)||{};
+        const property=(db.properties||[]).find(item=>item.id===charge.propertyId||item.id===contract.propertyId)||{};
+        const tenant=(db.tenants||[]).find(item=>item.id===charge.tenantId||item.id===contract.tenantId)||{};
+        const transfer=(db.ownerTransfers||[]).find(item=>item.chargeId===charge.id);
+        return {charge,contract,property,tenant,transfer};
+      })
+      .filter(item=>item.contract.ownerId===ownerId)
+      .sort((a,b)=>String(a.property.name||'').localeCompare(String(b.property.name||'')));
+  }
+
+  function closeOwnerTransferChoice(){
+    document.getElementById('owner-transfer-choice-root')?.remove();
+  }
+
+  async function createOwnerTransferBatch(chargeIds){
+    const groupId='otg-'+(typeof uid==='function'?uid():`${Date.now()}-${Math.random().toString(36).slice(2,7)}`);
+    for(const chargeId of chargeIds){
+      let transfer=(db.ownerTransfers||[]).find(item=>item.chargeId===chargeId);
+      if(!transfer){
+        if(typeof oldMarkOwnerTransfer!=='function')throw new Error('A função de repasse não está disponível.');
+        await oldMarkOwnerTransfer(chargeId);
+        transfer=(db.ownerTransfers||[]).find(item=>item.chargeId===chargeId);
+      }else if(transfer.status!=='Repassado'){
+        transfer.status='Repassado';
+        transfer.date=todayIso();
+      }
+      if(transfer)transfer.statementGroupId=groupId;
+    }
+    const saver=typeof window.save==='function'?window.save:(typeof save==='function'?save:null);
+    if(saver){
+      const saved=await saver();
+      if(saved===false)throw new Error('Não foi possível salvar a prestação de contas.');
+    }
+    if(typeof window.renderOwnerTransfers==='function')window.renderOwnerTransfers();
+    return (db.ownerTransfers||[]).find(item=>item.statementGroupId===groupId);
+  }
+
+  function openOwnerTransferChoice(chargeId){
+    const options=paidChargesForOwner(chargeId);
+    if(!options.length){alert('Não foi possível localizar os aluguéis pagos deste proprietário.');return}
+    const anchor=options.find(item=>item.charge.id===chargeId)||options[0];
+    const ownerName=(db.owners||[]).find(item=>item.id===anchor.contract.ownerId)?.name||'Proprietário';
+    closeOwnerTransferChoice();
+    const root=document.createElement('div');
+    root.id='owner-transfer-choice-root';
+    root.className='owner-transfer-choice-backdrop';
+    root.innerHTML=`<div class="owner-transfer-choice-modal" role="dialog" aria-modal="true">
+      <div class="owner-transfer-choice-head"><h2>Aluguéis desta prestação</h2><button type="button" class="icon" data-choice-close aria-label="Fechar">×</button></div>
+      <p class="owner-transfer-choice-help">Proprietário: <strong>${escapeHtml(ownerName)}</strong><br>Marque os imóveis que devem aparecer juntos na mesma folha de prestação de contas.</p>
+      <div class="owner-transfer-choice-list">${options.map(item=>{
+        const propertyName=item.property.name||item.property.address||'Imóvel não informado';
+        const tenantName=item.tenant.name||'Locatário não informado';
+        const status=item.transfer?.status==='Repassado'?'Já repassado':item.transfer?'Pendente':'Ainda não preparado';
+        return `<label class="owner-transfer-choice-item">
+          <input type="checkbox" data-choice-charge="${escapeHtml(item.charge.id)}"${item.charge.id===anchor.charge.id?' checked':''}>
+          <span><span class="owner-transfer-choice-property">${escapeHtml(propertyName)}</span><span class="owner-transfer-choice-detail">${escapeHtml(tenantName)} · ${amount(item.charge.paidAmount)}</span></span>
+          <span class="owner-transfer-choice-status">${escapeHtml(status)}</span>
+        </label>`;
+      }).join('')}</div>
+      <div class="owner-transfer-choice-actions"><button type="button" class="button button-quiet" data-choice-close>Cancelar</button><button type="button" class="button button-primary" data-choice-confirm>Confirmar e emitir</button></div>
+    </div>`;
+    document.body.appendChild(root);
+    root.querySelectorAll('[data-choice-close]').forEach(button=>button.addEventListener('click',closeOwnerTransferChoice));
+    root.addEventListener('click',event=>{if(event.target===root)closeOwnerTransferChoice()});
+    root.querySelector('[data-choice-confirm]').addEventListener('click',async event=>{
+      const button=event.currentTarget;
+      const selected=[...root.querySelectorAll('[data-choice-charge]:checked')].map(input=>input.dataset.choiceCharge).filter(Boolean);
+      if(!selected.length){alert('Selecione pelo menos um imóvel.');return}
+      button.disabled=true;
+      button.textContent='Salvando...';
+      try{
+        const transfer=await createOwnerTransferBatch(selected);
+        closeOwnerTransferChoice();
+        if(transfer)setTimeout(()=>window.printOwnerTransferStatement(transfer.id),220);
+      }catch(error){
+        console.error(error);
+        button.disabled=false;
+        button.textContent='Confirmar e emitir';
+        alert(error.message||'Não foi possível preparar a prestação de contas.');
+      }
+    });
+  }
+
+  window.printOwnerTransferStatement=function(transferId){
+    const transfer=(db.ownerTransfers||[]).find(item=>item.id===transferId);
+    if(!transfer){alert('Não foi possível localizar os dados deste repasse.');return}
+    const popup=window.open('','_blank','width=1000,height=800');
+    if(!popup){alert('O navegador bloqueou a janela de impressão. Permita pop-ups para o Dormus e tente novamente.');return}
+    popup.document.open();
+    popup.document.write(statementHtml(statementData(transfer)));
+    popup.document.close();
+    popup.focus();
+    setTimeout(()=>popup.print(),350);
+  };
+
+  const oldMarkOwnerTransfer=window.markOwnerTransfer;
+  if(typeof oldMarkOwnerTransfer==='function'){
+    window.markOwnerTransfer=async function(chargeId){
+      openOwnerTransferChoice(chargeId);
+      return true;
+    };
+  }
+
+  const oldRenderOwnerTransfers=window.renderOwnerTransfers;
+  if(typeof oldRenderOwnerTransfers==='function'){
+    window.renderOwnerTransfers=function(){
+      const result=oldRenderOwnerTransfers.apply(this,arguments);
+      setTimeout(()=>{
+        const month=document.getElementById('rent-month-filter')?.value||new Date().toISOString().slice(0,7);
+        const paid=(db.rentalCharges||[]).filter(item=>(item.referenceMonth||'')===month&&Number(item.paidAmount||0)>0);
+        const rows=document.querySelectorAll('#repasse-content .repasse-table tbody tr');
+        rows.forEach((row,index)=>{
+          const transfer=(db.ownerTransfers||[]).find(item=>item.chargeId===paid[index]?.id);
+          if(!transfer)return;
+          const action=row.lastElementChild;
+          if(!action)return;
+          if(!row.querySelector('[data-owner-transfer-print]')){
+            const button=document.createElement('button');
+            button.type='button';
+            button.className='button button-small';
+            button.dataset.ownerTransferPrint='true';
+            button.textContent='Imprimir demonstrativo';
+            button.style.marginTop='0';
+            button.style.marginLeft='6px';
+            button.onclick=()=>window.printOwnerTransferStatement(transfer.id);
+            action.appendChild(button);
+          }
+          if(paidChargesForOwner(transfer.chargeId).length>1&&!row.querySelector('[data-owner-transfer-batch]')){
+            const batchButton=document.createElement('button');
+            batchButton.type='button';
+            batchButton.className='button button-small';
+            batchButton.dataset.ownerTransferBatch='true';
+            batchButton.textContent='Selecionar imóveis';
+            batchButton.style.marginTop='0';
+            batchButton.style.marginLeft='6px';
+            batchButton.onclick=()=>openOwnerTransferChoice(transfer.chargeId);
+            action.appendChild(batchButton);
+          }
+        });
+      },0);
+      return result;
+    };
+  }
+})();
+</script>
 </body>
 <script id="dormus-863-compras-repasse">
 (function(){
