@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.56</title>
+  <title>Dormus | Gestão imobiliária · 8.0</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -6200,25 +6200,32 @@ input::placeholder,textarea::placeholder {
     const date=new Date(Number(parts[0]),Number(parts[1])-1,1);
     return date.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
   };
-  const todayIso=()=>new Date().toISOString().slice(0,10);
+  const todayIso=()=>{
+    const current=new Date();
+    const pad=value=>String(value).padStart(2,'0');
+    return `${current.getFullYear()}-${pad(current.getMonth()+1)}-${pad(current.getDate())}`;
+  };
 
   function statementData(transfer){
     const charge=(db.rentalCharges||[]).find(item=>item.id===transfer.chargeId)||{};
     const contract=(db.contracts||[]).find(item=>item.id===transfer.contractId)||{};
     const owner=(db.owners||[]).find(item=>item.id===transfer.ownerId||item.id===contract.ownerId)||{};
+    const tenant=(db.tenants||[]).find(item=>item.id===charge.tenantId||item.id===contract.tenantId)||{};
     const property=(db.properties||[]).find(item=>item.id===transfer.propertyId||item.id===contract.propertyId)||{};
     const gross=Number(transfer.gross??charge.paidAmount??0);
     const fee=Number(transfer.fee??(gross*Number(contract.adminFee||10)/100));
     const net=Math.max(Number(transfer.net??(gross-fee)),0);
     const competence=transfer.referenceMonth||charge.referenceMonth||todayIso().slice(0,7);
     const paymentDate=charge.paymentDate||charge.paidDate||transfer.date||todayIso();
+    const issueDate=todayIso();
+    const tenantFirstName=String(tenant.name||'').trim().split(/\s+/)[0]||'';
     const address=[property.address,property.number,property.complement,property.neighborhood,property.city,property.state]
       .filter(Boolean).join(', ');
     const company=db.company||db.settings||{};
     const city=property.city||company.city||'Conselheiro Pena';
     const state=property.state||company.state||'MG';
     return {
-      transfer,charge,contract,owner,property,gross,fee,net,competence,paymentDate,address,
+      transfer,charge,contract,owner,tenant,tenantFirstName,property,gross,fee,net,competence,paymentDate,issueDate,address,
       city,state,
       agencyName:company.name||'Horne Dutra Imóveis',
       agencyAddress:company.address||'Rua Antonio Aprigio, 611 - Centro - Conselheiro Pena/MG',
@@ -6231,11 +6238,10 @@ input::placeholder,textarea::placeholder {
     const d=data;
     const title='Prestação de Contas '+monthName(d.competence);
     const dateLabel=datePt(d.paymentDate)||datePt(todayIso());
+    const issueDateLabel=datePt(d.issueDate)||datePt(todayIso());
     const ownerName=d.owner.name||'Proprietário não informado';
     const propertyName=d.property.name||d.address||'Imóvel não informado';
-    const adminRate=Number(d.contract.adminFee||(
-      d.gross?d.fee/d.gross*100:10
-    ));
+    const tenantLabel=d.tenantFirstName?' · '+escapeHtml(d.tenantFirstName):'';
     return `<!doctype html>
 <html lang="pt-BR">
 <head>
@@ -6261,11 +6267,11 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
     <tbody>
       <tr class="ledger-row">
         <td class="date">${escapeHtml(dateLabel)}</td>
-        <td class="description">Aluguel recebido<div class="owner-transfer-print-property">${escapeHtml(propertyName)}</div></td>
+        <td class="description">Aluguel recebido${tenantLabel}<div class="owner-transfer-print-property">${escapeHtml(propertyName)}</div></td>
         <td class="amount">${amount(d.gross)}</td><td class="amount"></td><td class="balance">${amount(d.gross)}</td>
       </tr>
       <tr class="ledger-row">
-        <td class="date"></td><td class="description">Taxa de administração (${adminRate.toLocaleString('pt-BR',{maximumFractionDigits:2})}%)</td>
+        <td class="date"></td><td class="description">Taxa de administração</td>
         <td class="amount"></td><td class="amount">${amount(d.fee)}</td><td class="balance">${amount(d.net)}</td>
       </tr>
       <tr class="ledger-row"><td></td><td></td><td></td><td></td><td class="balance">${amount(d.net)}</td></tr>
@@ -6278,7 +6284,7 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   <footer class="owner-transfer-print-footer">
     <div class="owner-transfer-print-brand"><div><strong>HD</strong>${escapeHtml(d.agencyName)}<br><small>GESTÃO IMOBILIÁRIA</small></div></div>
     <div class="owner-transfer-print-footer-main">
-      <div class="owner-transfer-print-city-date">${escapeHtml(d.city)}, ${dateLabel}</div>
+      <div class="owner-transfer-print-city-date">${escapeHtml(d.city)}, ${issueDateLabel}</div>
       <div class="owner-transfer-print-signatures"><div class="owner-transfer-print-signature">Cliente</div><div class="owner-transfer-print-signature">${escapeHtml(d.agencyName)}</div></div>
       <div class="owner-transfer-print-contact">${escapeHtml(d.agencyAddress)} · ${escapeHtml(d.agencyPhone)}<br>${escapeHtml(d.agencyEmail)}</div>
     </div>
