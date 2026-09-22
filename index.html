@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.27</title>
+  <title>Dormus | Gestão imobiliária · 8.30</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -581,7 +581,7 @@ section,article,.section,.content-card,.white-card{
         <button data-view="tenants"><span class="nav-icon">♙</span>Locatários</button>
         <button data-view="contracts"><span class="nav-icon">▤</span>Contratos</button>
         <button data-view="rents"><span class="nav-icon">▣</span>Financeiro</button>
-        <button id="nav-repasse-owner" type="button" onclick="openRepasseView()"><span class="nav-icon">↗</span>Repasse ao proprietário</button>
+        <button id="nav-repasse-owner" type="button" data-view="repasse" onclick="window.openRepasseView();return false"><span class="nav-icon">↗</span>Repasse ao proprietário</button>
         <button data-view="maintenance"><span class="nav-icon">⌁</span>Manutenção</button>
         <button data-view="chats"><span class="nav-icon">💬</span>Chats <span id="nav-chat-badge" class="nav-chat-badge" style="display:none">0</span></button>
         <button data-view="crm"><span class="nav-icon">⌁</span>CRM &amp; Vendas</button>
@@ -1920,7 +1920,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelec
   window.renderOwnerTransfers=function(){const el=document.getElementById('repasse-content');if(!el)return;const month=document.getElementById('rent-month-filter')?.value||((new Date()).toISOString().slice(0,7));const paid=(db.rentalCharges||[]).filter(r=>(r.referenceMonth||'')===month&&Number(r.paidAmount||0)>0);let rows=paid.map(r=>{const c=(db.contracts||[]).find(x=>x.id===r.contractId)||{},o=(db.owners||[]).find(x=>x.id===c.ownerId)||{},p=(db.properties||[]).find(x=>x.id===r.propertyId)||{},gross=Number(r.paidAmount||0),fee=gross*Number(c.adminFee||0)/100,deduction=ownerMaintenanceDeduction(r.propertyId,month),net=Math.max(gross-fee-deduction,0),tr=(db.ownerTransfers||[]).find(x=>x.chargeId===r.id);return{r,c,o,p,gross,fee,deduction,net,tr}});const total=rows.reduce((s,x)=>{s.gross+=x.gross;s.fee+=x.fee;s.deduction+=x.deduction;s.net+=x.net;return s},{gross:0,fee:0,deduction:0,net:0}),pending=rows.filter(x=>!x.tr).length;el.innerHTML=`<div class="repasse-summary"><div class="summary"><label>Recebido</label><strong>${money0(total.gross)}</strong></div><div class="summary"><label>Administração</label><strong class="contract360-orange">${money0(total.fee)}</strong></div><div class="summary"><label>Descontos de manutenção</label><strong class="contract360-orange">${money0(total.deduction)}</strong></div><div class="summary"><label>A repassar</label><strong class="contract360-green">${money0(total.net)}</strong></div><div class="summary"><label>Pendentes</label><strong>${pending}</strong></div></div><div class="table-wrap"><table class="table repasse-table"><thead><tr><th>Proprietário / imóvel</th><th>Competência</th><th>Recebido</th><th>Admin.</th><th>Desconto manutenção</th><th>Repasse</th><th>Status</th><th>Ação</th></tr></thead><tbody>${rows.length?rows.map(x=>`<tr><td><strong>${esc0(x.o.name||'—')}</strong><div class="row-sub">${esc0(x.p.name||'—')}</div></td><td>${esc0(month)}</td><td>${money0(x.gross)}</td><td>${money0(x.fee)}</td><td>${money0(x.deduction)}</td><td><strong>${money0(x.net)}</strong></td><td><span class="repasse-status ${x.tr?'pago':'pendente'}">${x.tr?'Repassado':'Pendente'}</span></td><td>${x.tr?fmt(x.tr.date):`<button class="button button-small button-primary" onclick="window.markOwnerTransfer('${esc0(x.r.id)}')">Marcar repasse</button>`}</td></tr>`).join(''):`<tr><td colspan="8" style="text-align:center;padding:25px;color:#8a9ab0">Nenhum aluguel pago nesta competência.</td></tr>`}</tbody></table></div>`};
   window.generateOwnerTransfers=async function(){const month=document.getElementById('rent-month-filter')?.value||new Date().toISOString().slice(0,7);const paid=(db.rentalCharges||[]).filter(r=>(r.referenceMonth||'')===month&&Number(r.paidAmount||0)>0);db.ownerTransfers=db.ownerTransfers||[];let created=0;paid.forEach(r=>{if(db.ownerTransfers.some(t=>t.chargeId===r.id))return;const c=(db.contracts||[]).find(x=>x.id===r.contractId)||{},gross=Number(r.paidAmount||0),fee=gross*Number(c.adminFee||0)/100,deduction=ownerMaintenanceDeduction(r.propertyId,month);db.ownerTransfers.push({id:uid(),chargeId:r.id,contractId:c.id,propertyId:r.propertyId,ownerId:c.ownerId,referenceMonth:month,gross,fee,deduction,net:Math.max(gross-fee-deduction,0),date:'',status:'Pendente'});created++});if(created&&await save()){renderOwnerTransfers();alert(`${created} repasse(s) preparado(s) para conferência.`)}else{renderOwnerTransfers();if(!created)alert('Não há novos pagamentos para preparar repasse nesta competência.')}};
 window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[]).find(x=>x.id===chargeId);if(!r)return;const c=(db.contracts||[]).find(x=>x.id===r.contractId)||{},gross=Number(r.paidAmount||0),fee=gross*Number(c.adminFee||0)/100,deduction=ownerMaintenanceDeduction(r.propertyId,r.referenceMonth||''),net=Math.max(gross-fee-deduction,0);const tr={id:uid(),chargeId:r.id,contractId:c.id,propertyId:r.propertyId,ownerId:c.ownerId,referenceMonth:r.referenceMonth||'',gross,fee,deduction,net,date:new Date().toISOString().slice(0,10),status:'Repassado'};db.ownerTransfers=db.ownerTransfers||[];db.ownerTransfers.push(tr);if(await save())renderOwnerTransfers();else db.ownerTransfers=db.ownerTransfers.filter(x=>x.id!==tr.id)};
-  const oldRenderRents=window.renderRents;window.renderRents=function(){if(typeof oldRenderRents==='function')oldRenderRents();ensureRepasseUI();renderOwnerTransfers()};
+  const oldRenderRents=window.renderRents;window.renderRents=function(){if(typeof oldRenderRents==='function')return oldRenderRents.apply(this,arguments)};
 
   // Diretório de prestadores na Manutenção.
   function ensureProvidersUI(){const sec=document.getElementById('maintenance');if(!sec||document.getElementById('provider-directory'))return;const list=document.createElement('section');list.className='panel';list.style.marginTop='16px';list.innerHTML=`<div class="panel-head"><div><div class="panel-title">Prestadores de serviços cadastrados</div><div class="panel-kicker">Selecione um prestador no chamado. Os dados abaixo também ficam disponíveis nos recibos.</div></div></div><div id="provider-directory" class="provider-directory">${providers.map(p=>`<div class="provider-card"><strong>${esc0(p.name)}</strong><span>CPF/CNPJ: ${esc0(p.document)}</span><span>Cadastro interno de prestador</span></div>`).join('')}</div>`;sec.appendChild(list)}
@@ -6627,138 +6627,47 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
 })();
 </script>
 
-<script id="dormus-repasse-separated-866">
+
+
+<script id="dormus-repasse-standalone-final">
 (function(){
-  function ensureStandaloneRepasse(){
+  function ensureRepasseView(){
     var main=document.querySelector('.main');
-    if(!main)return;
+    if(!main)return null;
     var view=document.getElementById('repasse');
     if(!view){
       view=document.createElement('section');
       view.id='repasse';
       view.className='view';
-      view.innerHTML='<div class="page-head"><div><div class="eyebrow">Gestão financeira</div><h1>Repasse ao proprietário</h1><p class="lead">Controle os valores recebidos, a administração, os descontos e o valor a repassar aos proprietários.</p></div><button class="button button-primary" onclick="window.generateOwnerTransfers()">↻ Atualizar repasses</button></div><div id="repasse-panel-host"></div>';
+      view.innerHTML='<div class="page-head"><div><div class="eyebrow">Gestão financeira</div><h1>Repasse ao proprietário</h1><p class="lead">Controle exclusivamente os repasses aos proprietários. Os aluguéis ficam no módulo Aluguéis.</p></div><button type="button" class="button button-primary" id="repasse-refresh-final">↻ Atualizar repasses</button></div><div id="repasse-standalone-panel" class="panel repasse-panel"><div class="panel-head"><div><div class="panel-title">Repasses aos proprietários</div><div class="panel-kicker">Somente valores de aluguéis já pagos.</div></div></div><div id="repasse-content"></div></div>';
       var rents=document.getElementById('rents');
-      if(rents && rents.parentNode) rents.parentNode.insertBefore(view,rents.nextSibling);
-      else main.appendChild(view);
+      if(rents && rents.parentNode) rents.parentNode.insertBefore(view,rents.nextSibling); else main.appendChild(view);
+    }
+    var refresh=document.getElementById('repasse-refresh-final');
+    if(refresh && !refresh.dataset.bound){
+      refresh.dataset.bound='1';
+      refresh.addEventListener('click',function(){ if(typeof window.generateOwnerTransfers==='function') window.generateOwnerTransfers(); });
     }
     return view;
   }
-
-  function moveRepassePanel(){
-    var view=ensureStandaloneRepasse();
-    var old=document.getElementById('repasse-panel');
-    var target=document.getElementById('repasse-standalone-panel');
-    if(old && target && old.parentNode!==target){
-      var content=document.getElementById('repasse-content');
-      var standalone=document.getElementById('repasse-content-standalone');
-      if(content && standalone){
-        standalone.innerHTML=content.innerHTML;
-      }
-      old.remove();
-    }
-    return view;
-  }
-
-  function renderStandaloneRepasse(){
-    var view=ensureStandaloneRepasse();
-    var target=document.getElementById('repasse-content-standalone');
-    if(!target)return;
-    var old=document.getElementById('repasse-content');
-    if(old && old.innerHTML) target.innerHTML=old.innerHTML;
-    else if(typeof window.renderOwnerTransfers==='function'){
-      var original=window.renderOwnerTransfers;
-      try{
-        var temp=document.getElementById('repasse-content');
-        if(temp){
-          original();
-          target.innerHTML=temp.innerHTML;
-        }
-      }catch(e){console.warn('Repasse separado:',e)}
-    }
-  }
-
-  var oldShow=window.showView;
-  window.showView=function(id){
-    if(id==='repasse'){
-      ensureStandaloneRepasse();
-      if(typeof oldShow==='function') oldShow.call(this,'repasse');
-      else {
-        document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('active',v.id==='repasse')});
-        document.querySelectorAll('[data-view]').forEach(function(b){b.classList.toggle('active',b.dataset.view==='repasse')});
-      }
-      renderStandaloneRepasse();
-      var crumb=document.getElementById('crumb');
-      if(crumb)crumb.textContent='Repasse ao proprietário';
-      window.scrollTo(0,0);
-      return;
-    }
-    return oldShow.apply(this,arguments);
-  };
-
   window.openRepasseView=function(){
-    ensureStandaloneRepasse();
-    window.showView('repasse');
-    var btn=document.getElementById('nav-repasse-owner');
-    document.querySelectorAll('[data-view]').forEach(function(b){b.classList.toggle('active',b===btn)});
+    var view=ensureRepasseView(); if(!view)return;
+    document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('active',v===view)});
+    document.querySelectorAll('[data-view]').forEach(function(b){b.classList.toggle('active',b.dataset.view==='repasse')});
+    var crumb=document.getElementById('crumb'); if(crumb)crumb.textContent='Repasse ao proprietário';
+    if(typeof window.renderOwnerTransfers==='function')window.renderOwnerTransfers();
+    window.scrollTo(0,0);
   };
-
-  function convertNav(){
-    var btn=document.getElementById('nav-repasse-owner');
-    if(!btn)return;
-    btn.setAttribute('data-view','repasse');
-    btn.removeAttribute('onclick');
-  }
-
-  var oldRenderRents=window.renderRents;
-  window.renderRents=function(){
-    var result;
-    if(typeof oldRenderRents==='function')result=oldRenderRents.apply(this,arguments);
-    ensureStandaloneRepasse();
-    moveRepassePanel();
-    renderStandaloneRepasse();
-    return result;
-  };
-
-  var css=document.createElement('style');
-  css.id='dormus-repasse-separated-866-style';
-  css.textContent=`
-    #repasse.repasse-standalone .repasse-panel,
-    #repasse-standalone-panel{width:100%;max-width:100%;box-sizing:border-box}
-    #repasse-standalone-panel .table-wrap{width:100%;max-width:100%;overflow-x:hidden;overflow-y:visible}
-    #repasse-standalone-panel .repasse-table{width:100%;max-width:100%;min-width:0;table-layout:fixed;border-collapse:collapse}
-    #repasse-standalone-panel .repasse-table th,
-    #repasse-standalone-panel .repasse-table td{padding:7px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px;vertical-align:middle}
-    #repasse-standalone-panel .repasse-table th:nth-child(1){width:23%}
-    #repasse-standalone-panel .repasse-table th:nth-child(2){width:9%}
-    #repasse-standalone-panel .repasse-table th:nth-child(3){width:11%}
-    #repasse-standalone-panel .repasse-table th:nth-child(4){width:10%}
-    #repasse-standalone-panel .repasse-table th:nth-child(5){width:13%}
-    #repasse-standalone-panel .repasse-table th:nth-child(6){width:11%}
-    #repasse-standalone-panel .repasse-table th:nth-child(7){width:10%}
-    #repasse-standalone-panel .repasse-table th:nth-child(8){width:13%}
-    #repasse-standalone-panel .repasse-table .row-sub{display:inline;margin-left:5px}
-    #repasse-standalone-panel .repasse-table .row-sub:before{content:'· '}
-    #repasse-standalone-panel .repasse-table .button{font-size:11px;padding:5px 7px;white-space:nowrap}
-    #repasse-standalone-panel .repasse-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}
-    @media(max-width:900px){
-      #repasse-standalone-panel .repasse-table th,
-      #repasse-standalone-panel .repasse-table td{font-size:10.5px;padding:6px 4px}
-      #repasse-standalone-panel .repasse-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
-    }
-  `;
-  document.head.appendChild(css);
-
-  function boot(){
-    convertNav();
-    ensureStandaloneRepasse();
-    moveRepassePanel();
-    renderStandaloneRepasse();
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);
-  else boot();
+  function boot(){ensureRepasseView();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
+<style id="dormus-repasse-final-style">
+#repasse .repasse-panel{margin-top:16px;width:100%;box-sizing:border-box}
+#repasse .table-wrap{width:100%;overflow-x:hidden}
+#repasse .repasse-table{width:100%;table-layout:fixed}
+#repasse .repasse-table th,#repasse .repasse-table td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
 </body>
 <script id="dormus-863-compras-repasse">
 (function(){
