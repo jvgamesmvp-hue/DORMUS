@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.7</title>
+  <title>Dormus | Gestão imobiliária · 8.8</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -6431,6 +6431,7 @@ input::placeholder,textarea::placeholder {
     width: 100%;
     max-width: 960px;
     margin: 0 auto;
+    page: repasseLandscape;
     border: 2px solid #3d3d3d;
     background: #fff;
     color: #222;
@@ -6655,9 +6656,9 @@ input::placeholder,textarea::placeholder {
     margin-top: 18px;
   }
   @media print {
-    @page { size: A4 portrait; margin: 12mm; }
+    @page repasseLandscape { size: A4 landscape; margin: 7mm; }
     body { background: #fff !important; }
-    .owner-transfer-print-sheet { max-width: none; }
+    .owner-transfer-print-sheet { width: 100%; max-width: none; }
   }
   @media (max-width: 620px) {
     .owner-transfer-print-title { font-size: 18px; }
@@ -7548,7 +7549,7 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
      var owner=first.o.name||'Proprietário não informado';
      var issue=datePt(new Date().toISOString());
      return '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' · '+esc(owner)+'</title><style>'+
-       'html,body{margin:0;padding:0;background:#fff}body{font-family:Arial,Helvetica,sans-serif;padding:12mm;color:#222}*{box-sizing:border-box}.print-actions{display:flex;justify-content:center;gap:8px;margin:0 auto 16px}.print-actions button{border:1px solid #30463b;border-radius:6px;padding:9px 14px;background:#30463b;color:#fff;font-weight:700;cursor:pointer}.sheet{width:100%;max-width:960px;margin:0 auto;border:2px solid #3d3d3d;background:#fff}.title{padding:10px 14px 8px;border-bottom:2px solid #3d3d3d;text-align:center;font-size:25px;font-weight:800}.owner{padding:8px 12px;border-bottom:2px solid #3d3d3d;font-size:18px;font-weight:700;text-transform:uppercase}.table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:14px}.table th,.table td{border-right:1px solid #4a4a4a;border-bottom:1px solid #4a4a4a;min-height:27px;padding:5px 8px;vertical-align:middle}.table th:last-child,.table td:last-child{border-right:0}.table th{background:#f3f3f3;font-size:15px;text-align:center}.date{width:14%;text-align:center}.description{width:43%}.money{width:14.33%;text-align:right;white-space:nowrap}.property{color:#555;font-size:12px;font-weight:400;margin-top:2px}.section td{background:#f3f3f3;border-top:2px solid #333;font-weight:800;letter-spacing:1px;text-transform:uppercase}.total td{border-top:2px solid #333;font-weight:800;letter-spacing:.7px;padding-top:8px;padding-bottom:8px}.total-label{letter-spacing:5px!important}.footer{display:grid;grid-template-columns:120px 1fr;min-height:108px}.brand{display:flex;align-items:center;justify-content:center;padding:8px;background:#4b4b4b;color:#fff;text-align:center;font-size:12px;font-weight:700;line-height:1.2}.brand strong{display:block;font-family:Georgia,serif;font-size:19px;font-weight:400}.footer-main{display:flex;flex-direction:column;justify-content:space-between;padding:8px 12px 5px;text-align:center}.signatures{display:flex;justify-content:space-around;gap:35px;margin:12px auto 4px;width:min(560px,100%)}.signature{border-top:1px solid #333;min-width:190px;padding-top:4px;font-weight:700}.contact{border-top:1px solid #555;padding-top:4px;font-size:10px;line-height:1.35}@media print{.print-actions{display:none!important}body{padding:0}.sheet{max-width:none}}@media(max-width:620px){body{padding:5mm}.title{font-size:18px}.owner{font-size:14px}.table{font-size:11px}.table th{font-size:11px}.table th,.table td{padding:4px}.footer{grid-template-columns:82px 1fr}.brand strong{font-size:14px}.signatures{gap:10px}.signature{min-width:0;flex:1;font-size:10px}}'+
+       'html,body{margin:0;padding:0;background:#fff}body{font-family:Arial,Helvetica,sans-serif;padding:12mm;color:#222}*{box-sizing:border-box}.print-actions{display:flex;justify-content:center;gap:8px;margin:0 auto 16px}.print-actions button{border:1px solid #30463b;border-radius:6px;padding:9px 14px;background:#30463b;color:#fff;font-weight:700;cursor:pointer}.sheet{width:100%;max-width:960px;margin:0 auto;border:2px solid #3d3d3d;background:#fff}.title{padding:10px 14px 8px;border-bottom:2px solid #3d3d3d;text-align:center;font-size:25px;font-weight:800}.owner{padding:8px 12px;border-bottom:2px solid #3d3d3d;font-size:18px;font-weight:700;text-transform:uppercase}.table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:14px}.table th,.table td{border-right:1px solid #4a4a4a;border-bottom:1px solid #4a4a4a;min-height:27px;padding:5px 8px;vertical-align:middle}.table th:last-child,.table td:last-child{border-right:0}.table th{background:#f3f3f3;font-size:15px;text-align:center}.date{width:14%;text-align:center}.description{width:43%}.money{width:14.33%;text-align:right;white-space:nowrap}.property{color:#555;font-size:12px;font-weight:400;margin-top:2px}.section td{background:#f3f3f3;border-top:2px solid #333;font-weight:800;letter-spacing:1px;text-transform:uppercase}.total td{border-top:2px solid #333;font-weight:800;letter-spacing:.7px;padding-top:8px;padding-bottom:8px}.total-label{letter-spacing:5px!important}.footer{display:grid;grid-template-columns:120px 1fr;min-height:108px}.brand{display:flex;align-items:center;justify-content:center;padding:8px;background:#4b4b4b;color:#fff;text-align:center;font-size:12px;font-weight:700;line-height:1.2}.brand strong{display:block;font-family:Georgia,serif;font-size:19px;font-weight:400}.footer-main{display:flex;flex-direction:column;justify-content:space-between;padding:8px 12px 5px;text-align:center}.signatures{display:flex;justify-content:space-around;gap:35px;margin:12px auto 4px;width:min(560px,100%)}.signature{border-top:1px solid #333;min-width:190px;padding-top:4px;font-weight:700}.contact{border-top:1px solid #555;padding-top:4px;font-size:10px;line-height:1.35}@media print{@page{size:A4 landscape;margin:7mm}.print-actions{display:none!important}body{padding:0}.sheet{width:100%;max-width:none}}@media(max-width:620px){body{padding:5mm}.title{font-size:18px}.owner{font-size:14px}.table{font-size:11px}.table th{font-size:11px}.table th,.table td{padding:4px}.footer{grid-template-columns:82px 1fr}.brand strong{font-size:14px}.signatures{gap:10px}.signature{min-width:0;flex:1;font-size:10px}}'+
        '</style></head><body><div class="print-actions"><button onclick="window.print()">🖨 Imprimir / salvar PDF</button><button onclick="window.close()">Fechar</button></div><article class="sheet"><div class="title">'+esc(title)+'</div><div class="owner">Nome: '+esc(owner)+'</div><table class="table"><thead><tr><th class="date">Data</th><th class="description">Descrição</th><th class="money">Entrada</th><th class="money">Saída</th><th class="money">Saldo</th></tr></thead><tbody>'+rentRows+feeRow+deductionRow+'<tr><td></td><td></td><td></td><td></td><td class="money">'+money(balance)+'</td></tr><tr class="total"><td colspan="2" class="total-label">TOTAL GERAL</td><td class="money">'+money(totalEntry)+'</td><td class="money">'+money(totalExit)+'</td><td class="money">'+money(balance)+'</td></tr></tbody></table><footer class="footer"><div class="brand"><div><strong>HD</strong>'+esc(company.name)+'<br><small>GESTÃO IMOBILIÁRIA</small></div></div><div class="footer-main"><div>'+esc(company.city)+', '+esc(issue)+'</div><div class="signatures"><div class="signature">Cliente</div><div class="signature">'+esc(company.name)+'</div></div><div class="contact">'+esc(company.address)+' · '+esc(company.phone)+'<br>'+esc(company.email)+'</div></div></footer></article></body></html>';
    }
    function openStatement(items){
@@ -7609,18 +7610,18 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
 </style>
 
 <style id="dormus-vistoria-model-886-style">
-  .vistoria-model-886{max-width:190mm;margin:0 auto;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.35}
+  .vistoria-model-886{width:100%;max-width:190mm;margin:0 auto;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.35;page:vistoriaPortrait}
   .vistoria-model-886 *{box-sizing:border-box}
   .vistoria-model-886-header{text-align:center;border-bottom:1px solid #222;padding-bottom:8px;margin-bottom:10px}
   .vistoria-model-886-header h1{margin:0 0 14px;font-size:24px;text-transform:capitalize}
-  .vistoria-model-886-identification{text-align:left;display:grid;gap:5px;margin:0 auto}
+  .vistoria-model-886-identification{text-align:left;display:grid;grid-template-columns:1fr;gap:5px;margin:0 auto}
   .vistoria-model-886-identification p{margin:0}
   .vistoria-model-886-identification b{font-weight:700}
   .vistoria-model-886-checkline{text-align:left;margin-top:9px;line-height:1.6}
   .vistoria-model-886-facade{margin:12px 0 10px}
   .vistoria-model-886-facade-title{font-weight:700;font-size:15px;margin-bottom:5px}
   .vistoria-model-886-facade img{display:block;max-width:100%;max-height:62mm;margin:0 auto;border:1px solid #222;object-fit:contain}
-  .vistoria-model-886-room{page-break-inside:avoid;margin:14px 0 0}
+  .vistoria-model-886-room{page-break-inside:avoid;display:block;margin:14px 0 0}
   .vistoria-model-886-room-title{font-size:16px;text-align:center;font-weight:700;text-decoration:underline;margin:0 0 9px}
   .vistoria-model-886-item{page-break-inside:avoid;border-bottom:1px solid #777;padding:0 0 8px;margin:0 0 8px}
   .vistoria-model-886-item-name{font-weight:700;font-size:13px;margin-bottom:2px}
@@ -7639,14 +7640,23 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   .vistoria-model-886-signatures{display:grid;grid-template-columns:1fr 1fr;gap:45px;text-align:center;margin-top:33px}
   .vistoria-model-886-signature{border-top:1px solid #222;padding-top:4px;min-height:34px}
   @media print{
-    @page{size:A4 portrait;margin:10mm}
-    .vistoria-model-886{max-width:none}
+    @page vistoriaPortrait{size:A4 portrait;margin:10mm}
+    .vistoria-model-886{width:100%;max-width:none}
     .vistoria-model-886-header h1{font-size:22px}
     .vistoria-model-886-room{margin-top:12px}
   }
   @media(max-width:620px){
     .vistoria-model-886-photos{grid-template-columns:repeat(2,1fr)}
     .vistoria-model-886-signatures{gap:18px}
+  }
+  .inspection-model-preview{width:min(1400px,97vw)!important;max-width:none!important}
+  .inspection-model-preview .presentation-body{background:#fff;padding:18px;overflow:auto}
+  .inspection-model-preview .vistoria-model-886{max-width:190mm;box-shadow:0 2px 14px #00000012;padding:4mm}
+  .inspection-model-preview .presentation-actions{margin-top:14px}
+  .dormus-print-sheet-881,.dormus-print-sheet-884,.dormus-print-sheet-885{page:repasseLandscape}
+  @media print{
+    @page repasseLandscape{size:A4 landscape;margin:7mm}
+    .dormus-print-sheet-881,.dormus-print-sheet-884,.dormus-print-sheet-885{width:100%;max-width:none;margin:0;padding:0}
   }
 </style>
 <script id="dormus-vistoria-model-886-script">
@@ -7709,6 +7719,20 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
     try{if(typeof listAttachments==='function')files=await listAttachments('inspection',r.id)}catch(error){console.warn('Não foi possível carregar as fotos da vistoria',error)}
     sheet.innerHTML=reportHtml(r,files);
     setTimeout(function(){window.print();setTimeout(function(){sheet.innerHTML=''},900)},80)
+  }
+  var previousOpenPresentation=window.openPresentation;
+  window.openPresentation=async function(kind,id){
+    if(kind!=='inspection'){
+      return typeof previousOpenPresentation==='function'?previousOpenPresentation(kind,id):undefined
+    }
+    var d=D(),r=(d.inspections||[]).find(function(x){return String(x.id)===String(id)});
+    if(!r)return;
+    var root=document.getElementById('modal-root'),title='Vistoria · '+datePt(r.date);
+    root.innerHTML='<div class="modal-bg" onclick="closeModal(event)"><div class="modal presentation-modal inspection-model-preview" onclick="event.stopPropagation()"><div class="presentation-head"><button class="icon" style="float:right;background:#ffffff12;border-color:#ffffff30;color:#fff" onclick="closeModal()">×</button><div class="eyebrow">Visualização do laudo</div><h2>'+esc(title)+'</h2><p>Esta visualização usa o mesmo modelo da impressão.</p></div><div id="presentation-body" class="presentation-body"><div class="empty">Carregando informações...</div></div></div></div>';
+    var body=document.getElementById('presentation-body');if(!body)return;
+    var files=[];try{if(typeof listAttachments==='function')files=await listAttachments('inspection',id)}catch(error){console.warn('Falha ao carregar anexos da vistoria',error)}
+    if(document.getElementById('presentation-body')!==body)return;
+    body.innerHTML=reportHtml(r,files)+'<div class="presentation-actions"><button class="button button-primary" onclick="openModal(\'inspection\',\''+esc(id)+'\')">Editar vistoria</button><button class="button button-brass" onclick="printInspectionReport(\''+esc(id)+'\')">Imprimir laudo</button><button class="button button-quiet" onclick="closeModal()">Fechar</button></div>';
   }
   window.DormusInspectionModel886={html:reportHtml}
 })();
