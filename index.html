@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.3</title>
+  <title>Dormus | Gestão imobiliária · 8.4</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -3125,9 +3125,19 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sa
     }
     const w=window.open('','_blank','width=900,height=700');
     if(!w){alert('Permita pop-ups para gerar o documento.');return}
-    w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+E(title)+'</title><style>body{font:14px Arial;color:#20372d;padding:40px;line-height:1.6}h1{font:28px Georgia}h2{font:21px Georgia;border-bottom:1px solid #ddd;padding-bottom:8px}h3{margin-top:25px;color:#496b59}li{margin:7px 0}@media print{button{display:none}}</style></head><body>'+rows.join('')+'<p style="margin-top:50px;color:#777">Gerado pelo DORMUS em '+new Date().toLocaleString('pt-BR')+'</p><button onclick="print()">Imprimir / Salvar PDF</button>\n<style id="dormus-883-media-report-style">
-.media-batch-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.media-batch-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}.media-batch-card{position:relative;border:1px solid var(--line,#dce5ef);border-radius:12px;padding:8px;background:#f7f9fc;overflow:hidden}.media-batch-card.is-video{min-height:130px}.media-batch-thumb{display:block;width:100%;height:120px;object-fit:cover;border-radius:8px;background:#e7edf5}.media-batch-check{position:absolute;top:12px;left:12px;width:20px;height:20px;z-index:2}.media-batch-meta{display:flex;gap:6px;align-items:center;margin-top:7px}.media-batch-meta strong{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}.media-batch-meta small{font-size:9px;color:var(--muted,#7185a2)}.media-batch-room{width:100%;margin-top:7px}.media-batch-report{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:10px;color:var(--muted,#7185a2)}.inspection-camera-modal{max-width:760px}.inspection-camera-stage{background:#071126;border-radius:14px;padding:10px}.inspection-camera-stage video{display:block;width:100%;max-height:62vh;object-fit:cover;border-radius:10px;background:#000}.inspection-camera-actions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:10px}.inspection-report-photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 16px}.inspection-report-photo-grid figure{margin:0}.inspection-report-photo-grid img{width:100%;height:42mm;object-fit:cover;border:1px solid #d5d8d0}.inspection-report-photo-grid figcaption{font-size:8px;color:#657067;margin-top:3px}.inspection-report-room{page-break-inside:avoid}.inspection-report-check{font-weight:700}.inspection-report-model-note{font-size:9px;color:#657067;margin-top:4px}@media(max-width:700px){.media-batch-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.inspection-report-photo-grid{grid-template-columns:repeat(2,1fr)}}
-</style>
+    w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+E(title)+'</title><style>body{font:14px Arial;color:#20372d;padding:40px;line-height:1.6}h1{font:28px Georgia}h2{font:21px Georgia;border-bottom:1px solid #ddd;padding-bottom:8px}h3{margin-top:25px;color:#496b59}li{margin:7px 0}@media print{button{display:none}}</style></head><body>'+rows.join('')+'<p style="margin-top:50px;color:#777">Gerado pelo DORMUS em '+new Date().toLocaleString('pt-BR')+'</p><button onclick="print()">Imprimir / Salvar PDF</button></body></html>');
+    w.document.close();
+  };
+  function enhanceAssistant(){
+    if(window.__dormus837Assistant)return;window.__dormus837Assistant=true;const old=window.assistantSubmit;window.assistantSubmit=function(e){if(e)e.preventDefault();const input=document.getElementById('assistant-input');const q=input?.value.trim();if(!q)return;input.value='';const add=window.assistantAsk;add(q)};
+  }
+  const oldShow=window.showView;if(typeof oldShow==='function'&&!window.__dormus837Show){window.__dormus837Show=true;window.showView=function(id){const r=oldShow(id);setTimeout(()=>{if(id==='home')renderSmart();if(id==='properties')addP360Buttons();if(id==='maintenance')addMaintFlow()},70);return r}}
+  function boot(){ensureSmart();renderSmart();addP360Buttons();addMaintFlow();enhanceAssistant()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,700));else setTimeout(boot,700);
+  setInterval(()=>{if(document.querySelector('.view.active')?.id==='home')renderSmart()},8000);
+})();
+</script>
+
 <script id="dormus-883-media-report-script">
 (function(){
   const MEDIA_VERSION='8.83';
@@ -3329,7 +3339,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sa
 <script id="dormus-884-repasse-print-and-body-fix">
 (function(){
   'use strict';
-  function DB(){ return window.DormusDB || {}; }
+  function DB(){ return (typeof db!=='undefined' ? db : (window.DormusDB || {})); }
   function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function money(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
   function findCharge(id){
@@ -3392,19 +3402,6 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sa
 .dormus-print-sheet-884{background:#fff;color:#202b28;max-width:1000px;margin:0 auto;padding:38px;font-family:Arial,sans-serif;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
 .dormus-print-sheet-884 h1{margin:0 0 6px;font-size:26px}.dormus-print-sheet-884 h2{margin:0 0 22px;font-size:20px}.dormus-print-grid-884{display:grid;grid-template-columns:1fr 1fr;gap:4px 24px}.dormus-print-sheet-884 table{width:100%;border-collapse:collapse;margin-top:22px}.dormus-print-sheet-884 th,.dormus-print-sheet-884 td{border:1px solid #b9c2bd;padding:11px;text-align:left}.dormus-print-actions-884{display:flex;justify-content:flex-end;gap:8px;margin-bottom:20px}.dormus-print-actions-884 button{border:0;border-radius:7px;padding:9px 14px;cursor:pointer}.dormus-print-footer-884{margin-top:45px;padding-top:12px;border-top:1px solid #ccc;font-size:12px}@media print{body>*:not(#dormus-print-overlay-884){display:none!important}#dormus-print-overlay-884{position:static;background:#fff;padding:0;overflow:visible} .dormus-print-sheet-884{box-shadow:none;max-width:none;padding:0;border-radius:0}.dormus-print-actions-884{display:none!important}}
 </style>
-
-</body></html>');
-    w.document.close();
-  };
-  function enhanceAssistant(){
-    if(window.__dormus837Assistant)return;window.__dormus837Assistant=true;const old=window.assistantSubmit;window.assistantSubmit=function(e){if(e)e.preventDefault();const input=document.getElementById('assistant-input');const q=input?.value.trim();if(!q)return;input.value='';const add=window.assistantAsk;add(q)};
-  }
-  const oldShow=window.showView;if(typeof oldShow==='function'&&!window.__dormus837Show){window.__dormus837Show=true;window.showView=function(id){const r=oldShow(id);setTimeout(()=>{if(id==='home')renderSmart();if(id==='properties')addP360Buttons();if(id==='maintenance')addMaintFlow()},70);return r}}
-  function boot(){ensureSmart();renderSmart();addP360Buttons();addMaintFlow();enhanceAssistant()}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,700));else setTimeout(boot,700);
-  setInterval(()=>{if(document.querySelector('.view.active')?.id==='home')renderSmart()},8000);
-})();
-</script>
 
 
 
@@ -7330,7 +7327,7 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
 <script id="dormus-881-repasse-final-fix">
 (function(){
   'use strict';
-  function D(){return window.DormusDB||{};}
+  function D(){return (typeof db!=='undefined'?db:(window.DormusDB||{}));}
   function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]});}
   function money(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
   function paid(){return (D().rentalCharges||[]).filter(function(r){return Number(r.paidAmount||0)>0;});}
@@ -7453,5 +7450,66 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   if(window.supabaseClient?.auth?.onAuthStateChange) window.supabaseClient.auth.onAuthStateChange((_event,session)=>{if(session)setTimeout(sync,100)});
 })();
 </script>
+
+
+<script id="dormus-885-repasse-print-hard-fix">
+(function(){
+  'use strict';
+  function current(){ return (typeof db!=='undefined' ? db : (window.DormusDB||{})); }
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function money(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
+  function find(id){
+    var d=current(), charges=Array.isArray(d.rentalCharges)?d.rentalCharges:[], key=String(id||'').trim();
+    var r=charges.find(function(x){return String(x.id)===key;}); if(r)return r;
+    var tr=(d.ownerTransfers||[]).find(function(x){return String(x.id)===key||String(x.chargeId)===key;});
+    if(tr){r=charges.find(function(x){return String(x.id)===String(tr.chargeId);}); if(r)return r;}
+    // Some old rows use a payment/charge reference field rather than id.
+    r=charges.find(function(x){return String(x.chargeId||x.rentId||x.rentalId||x.lancamentoId||'')===key;}); if(r)return r;
+    return null;
+  }
+  function print(id){
+    var d=current(), r=find(id);
+    if(!r){
+      // Last fallback: use the first paid charge represented by the current Repasse row.
+      var b=document.activeElement && document.activeElement.closest ? document.activeElement.closest('tr') : null;
+      var month=b && b.querySelector('td:nth-child(2)') ? b.querySelector('td:nth-child(2)').textContent.trim() : '';
+      var paid=(d.rentalCharges||[]).filter(function(x){return Number(x.paidAmount||0)>0 && (!month || String(x.referenceMonth||'')===month);});
+      if(paid.length===1) r=paid[0];
+    }
+    if(!r){alert('Não foi possível localizar este aluguel no cadastro.');return;}
+    if(Number(r.paidAmount||0)<=0){alert('Somente aluguéis pagos podem gerar demonstrativo.');return;}
+    var c=(d.contracts||[]).find(function(x){return String(x.id)===String(r.contractId);})||{};
+    var p=(d.properties||[]).find(function(x){return String(x.id)===String(r.propertyId)||String(x.id)===String(c.propertyId);})||{};
+    var ownerId=c.ownerId||c.proprietarioId||p.ownerId||p.proprietarioId||r.ownerId;
+    var o=(d.owners||[]).find(function(x){return String(x.id)===String(ownerId);})||{};
+    var tenantId=r.tenantId||r.locatarioId||c.tenantId||c.locatarioId;
+    var t=(d.tenants||[]).find(function(x){return String(x.id)===String(tenantId);})||{};
+    var gross=Number(r.paidAmount||0), fee=gross*Number(c.adminFee||0)/100, month=String(r.referenceMonth||'');
+    var deduction=typeof window.ownerMaintenanceDeduction==='function'?Number(window.ownerMaintenanceDeduction(r.propertyId,month)||0):0;
+    var net=Math.max(gross-fee-deduction,0);
+    var old=document.getElementById('dormus-print-overlay-885');if(old)old.remove();
+    var ov=document.createElement('div');ov.id='dormus-print-overlay-885';
+    ov.innerHTML='<div class="dormus-print-sheet-885"><div class="dormus-print-actions-885"><button type="button" id="dormus-print-now-885">🖨 Imprimir</button><button type="button" id="dormus-print-close-885">Fechar</button></div><h1>Prestação de Contas</h1><h2>'+esc(o.name||'Proprietário não informado')+'</h2><p><b>Imóvel:</b> '+esc(p.name||p.address||'—')+'</p><p><b>Locatário:</b> '+esc(t.name||'—')+'</p><p><b>Competência:</b> '+esc(month||'—')+'</p><p><b>Data do pagamento:</b> '+esc(r.paymentDate||r.paidDate||r.dataPagamento||'—')+'</p><table><tr><th>Aluguel recebido</th><th>Administração</th><th>Desconto manutenção</th><th>Valor a repassar</th></tr><tr><td>'+money(gross)+'</td><td>'+money(fee)+'</td><td>'+money(deduction)+'</td><td><strong>'+money(net)+'</strong></td></tr></table></div>';
+    document.body.appendChild(ov);
+    document.getElementById('dormus-print-now-885').onclick=function(){window.print();};
+    document.getElementById('dormus-print-close-885').onclick=function(){ov.remove();};
+  }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('[data-print-881],[data-print-880],[data-print-875],[data-print-charge],[data-owner-transfer-print]');
+    if(!b)return;
+    var id=b.dataset.print881||b.dataset.print880||b.dataset.print875||b.dataset.printCharge||'';
+    if(!id && b.dataset.ownerTransferPrint){
+      var tr=(current().ownerTransfers||[]).find(function(x){return String(x.id)===String(b.dataset.ownerTransferPrint);});
+      id=tr?tr.chargeId:'';
+    }
+    if(!id)return;
+    e.preventDefault();e.stopImmediatePropagation();print(id);
+  },true);
+  window.DormusHardPrint885=print;
+})();
+</script>
+<style id="dormus-885-print-style">
+#dormus-print-overlay-885{position:fixed;inset:0;z-index:1000000;background:rgba(0,0,0,.55);overflow:auto;padding:30px;box-sizing:border-box}#dormus-print-overlay-885 .dormus-print-sheet-885{background:#fff;color:#202b28;max-width:1000px;margin:0 auto;padding:38px;font-family:Arial,sans-serif}#dormus-print-overlay-885 table{width:100%;border-collapse:collapse;margin-top:20px}#dormus-print-overlay-885 th,#dormus-print-overlay-885 td{border:1px solid #bbb;padding:10px;text-align:left}#dormus-print-actions-885{display:flex;gap:8px}@media print{body>*:not(#dormus-print-overlay-885){display:none!important}#dormus-print-overlay-885{position:static;background:#fff;padding:0}.dormus-print-actions-885{display:none!important}}
+</style>
 
 </body>
