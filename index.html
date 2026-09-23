@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.30</title>
+  <title>Dormus | Gestão imobiliária · 8.31</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -6667,6 +6667,189 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
 #repasse .table-wrap{width:100%;overflow-x:hidden}
 #repasse .repasse-table{width:100%;table-layout:fixed}
 #repasse .repasse-table th,#repasse .repasse-table td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+<script id="dormus-repasse-875-final">
+(function(){
+  'use strict';
+
+  function esc(v){
+    if(typeof window.esc0==='function') return window.esc0(v==null?'':String(v));
+    return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]});
+  }
+  function money(v){
+    if(typeof window.money0==='function') return window.money0(v);
+    return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  }
+  function month(){
+    return document.getElementById('rent-month-filter')?.value || new Date().toISOString().slice(0,7);
+  }
+  function hideLegacyRepasse(){
+    document.querySelectorAll('#rents #repasse-panel, #rents-list + #repasse-panel, #rents .repasse-panel').forEach(function(el){
+      if(el.id!=='repasse-standalone-panel') el.remove();
+    });
+  }
+  function ensureStandalone(){
+    hideLegacyRepasse();
+    var view=document.getElementById('repasse');
+    var layout='<div class="page-head"><div><div class="eyebrow">Gestão financeira</div><h1>Repasse ao proprietário</h1><p class="lead">Controle exclusivamente os repasses aos proprietários. Os aluguéis ficam somente no módulo Aluguéis.</p></div><button type="button" class="button button-primary" id="repasse-refresh-875">↻ Atualizar repasses</button></div><section id="repasse-standalone-panel" class="panel repasse-panel"><div class="panel-head"><div><div class="panel-title">Repasses aos proprietários</div><div class="panel-kicker">Valores de aluguéis já pagos e respectivos descontos.</div></div></div><div id="repasse-standalone-content"></div></section>';
+    if(!view){
+      view=document.createElement('section');
+      view.id='repasse';
+      view.className='view';
+      view.innerHTML=layout;
+      var main=document.querySelector('.main');
+      if(main) main.appendChild(view);
+    }else if(!document.getElementById('repasse-standalone-content')){
+      view.innerHTML=layout;
+    }
+    var refresh=document.getElementById('repasse-refresh-875');
+    if(refresh && !refresh.dataset.bound875){
+      refresh.dataset.bound875='1';
+      refresh.addEventListener('click',function(){
+        if(typeof window.generateOwnerTransfers==='function') window.generateOwnerTransfers();
+        else renderStandalone();
+      });
+    }
+    return view;
+  }
+
+  function makeTempTransfer(charge){
+    var c=(db.contracts||[]).find(function(x){return x.id===charge.contractId;})||{};
+    var gross=Number(charge.paidAmount||0);
+    var fee=gross*Number(c.adminFee||0)/100;
+    var deduction=typeof window.ownerMaintenanceDeduction==='function' ? Number(window.ownerMaintenanceDeduction(charge.propertyId,charge.referenceMonth||month())||0) : 0;
+    return {id:'preview-'+charge.id,chargeId:charge.id,contractId:c.id,propertyId:charge.propertyId,ownerId:c.ownerId,referenceMonth:charge.referenceMonth||month(),gross:gross,fee:fee,deduction:deduction,net:Math.max(gross-fee-deduction,0),date:'',status:'Pendente'};
+  }
+
+  function printForCharge(chargeId){
+    var charge=(db.rentalCharges||[]).find(function(x){return x.id===chargeId;});
+    if(!charge){alert('Não foi possível localizar este aluguel.');return;}
+    var existing=(db.ownerTransfers||[]).find(function(x){return x.chargeId===chargeId;});
+    var transfer=existing||makeTempTransfer(charge);
+    if(typeof window.printOwnerTransferStatement==='function'){
+      if(existing){ window.printOwnerTransferStatement(existing.id); return; }
+      // Preview without creating a repasse in the database.
+      var popup=window.open('','_blank','width=1000,height=800');
+      if(!popup){alert('O navegador bloqueou a janela de impressão. Permita pop-ups para o DORMUS e tente novamente.');return;}
+      try{
+        popup.document.open();
+        popup.document.write(statementHtmlForTransfer(transfer));
+        popup.document.close();
+        popup.focus();
+        setTimeout(function(){popup.print();},350);
+      }catch(e){try{popup.close();}catch(_){ } alert('Não foi possível abrir o demonstrativo.');}
+    }
+  }
+
+  function statementHtmlForTransfer(transfer){
+    // Use the existing statement generator by temporarily exposing the preview transfer.
+    var list=db.ownerTransfers||[];
+    db.ownerTransfers=list.concat([transfer]);
+    var html='';
+    try{
+      if(typeof statementData==='function' && typeof statementHtml==='function') html=statementHtml(statementData(transfer));
+      else if(typeof window.statementHtml==='function') html=window.statementHtml(window.statementData(transfer));
+    }catch(e){ console.error(e); }
+    db.ownerTransfers=list;
+    if(!html){
+      // Fallback: simple printable statement if the legacy helpers are scoped differently.
+      var c=(db.contracts||[]).find(function(x){return x.id===transfer.contractId;})||{};
+      var o=(db.owners||[]).find(function(x){return x.id===transfer.ownerId;})||{};
+      html='<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Prestação de Contas</title><style>body{font-family:Arial;padding:35px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #ccc;padding:8px}</style></head><body><h1>Prestação de Contas</h1><p><b>Proprietário:</b> '+esc(o.name||'Não informado')+'</p><table><tr><th>Recebido</th><th>Administração</th><th>Desconto</th><th>Repasse</th></tr><tr><td>'+money(transfer.gross)+'</td><td>'+money(transfer.fee)+'</td><td>'+money(transfer.deduction||0)+'</td><td>'+money(transfer.net)+'</td></tr></table><script>window.onload=function(){window.print()}<\/script></body></html>';
+    }
+    return html;
+  }
+
+  function renderStandalone(){
+    var view=ensureStandalone();
+    var el=document.getElementById('repasse-standalone-content');
+    if(!el)return;
+    var m=month();
+    var paid=(db.rentalCharges||[]).filter(function(r){return String(r.referenceMonth||'')===String(m)&&Number(r.paidAmount||0)>0;});
+    var rows=paid.map(function(r){
+      var c=(db.contracts||[]).find(function(x){return x.id===r.contractId;})||{};
+      var o=(db.owners||[]).find(function(x){return x.id===c.ownerId;})||{};
+      var p=(db.properties||[]).find(function(x){return x.id===r.propertyId||x.id===c.propertyId;})||{};
+      var gross=Number(r.paidAmount||0);
+      var fee=gross*Number(c.adminFee||0)/100;
+      var deduction=typeof window.ownerMaintenanceDeduction==='function'?Number(window.ownerMaintenanceDeduction(r.propertyId,m)||0):0;
+      var net=Math.max(gross-fee-deduction,0);
+      var tr=(db.ownerTransfers||[]).find(function(x){return x.chargeId===r.id;});
+      return {r:r,c:c,o:o,p:p,gross:gross,fee:fee,deduction:deduction,net:net,tr:tr};
+    });
+    var totals=rows.reduce(function(a,x){a.gross+=x.gross;a.fee+=x.fee;a.deduction+=x.deduction;a.net+=x.net;return a;},{gross:0,fee:0,deduction:0,net:0});
+    var html='<div class="repasse-summary"><div class="summary"><label>Recebido</label><strong>'+money(totals.gross)+'</strong></div><div class="summary"><label>Administração</label><strong>'+money(totals.fee)+'</strong></div><div class="summary"><label>Desconto manutenção</label><strong>'+money(totals.deduction)+'</strong></div><div class="summary"><label>A repassar</label><strong>'+money(totals.net)+'</strong></div></div>';
+    html+='<div class="table-wrap repasse-table-wrap-875"><table class="table repasse-table"><thead><tr><th>Proprietário / imóvel</th><th>Competência</th><th>Recebido</th><th>Admin.</th><th>Desconto</th><th>Repasse</th><th>Status</th><th>Ações</th></tr></thead><tbody>';
+    if(!rows.length){
+      html+='<tr><td colspan="8" class="repasse-empty-875">Nenhum aluguel pago nesta competência.</td></tr>';
+    }else{
+      html+=rows.map(function(x){
+        var actions='';
+        if(x.tr){
+          actions+='<span class="repasse-date-875">'+esc(typeof window.fmt==='function'?window.fmt(x.tr.date):x.tr.date||'Repassado')+'</span>';
+        }else{
+          actions+='<button type="button" class="button button-small button-primary" data-mark-875="'+esc(x.r.id)+'">Marcar repasse</button>';
+        }
+        actions+='<button type="button" class="button button-small" data-print-875="'+esc(x.r.id)+'">🖨 Imprimir demonstrativo</button>';
+        return '<tr><td><strong>'+esc(x.o.name||'—')+'</strong><div class="row-sub">'+esc(x.p.name||x.p.address||'—')+'</div></td><td>'+esc(m)+'</td><td>'+money(x.gross)+'</td><td>'+money(x.fee)+'</td><td>'+money(x.deduction)+'</td><td><strong>'+money(x.net)+'</strong></td><td><span class="repasse-status '+(x.tr?'pago':'pendente')+'">'+(x.tr?'Repassado':'Pendente')+'</span></td><td class="repasse-actions-875">'+actions+'</td></tr>';
+      }).join('');
+    }
+    html+='</tbody></table></div>';
+    el.innerHTML=html;
+    el.querySelectorAll('[data-mark-875]').forEach(function(btn){
+      btn.addEventListener('click',async function(){
+        btn.disabled=true;btn.textContent='Salvando...';
+        try{
+          if(typeof window.markOwnerTransfer==='function') await window.markOwnerTransfer(btn.dataset.mark875);
+          renderStandalone();
+        }catch(e){btn.disabled=false;btn.textContent='Marcar repasse';alert(e.message||'Não foi possível marcar o repasse.');}
+      });
+    });
+    el.querySelectorAll('[data-print-875]').forEach(function(btn){
+      btn.addEventListener('click',function(){printForCharge(btn.dataset.print875);});
+    });
+  }
+
+  // Keep the existing database/auth behavior. Only the presentation and navigation of Repasse are replaced.
+  window.openRepasseView=function(){
+    var view=ensureStandalone();
+    document.querySelectorAll('.view').forEach(function(v){v.classList.toggle('active',v===view);});
+    document.querySelectorAll('[data-view]').forEach(function(b){b.classList.toggle('active',b.dataset.view==='repasse');});
+    document.querySelectorAll('.nav button').forEach(function(b){if(b.id!=='nav-repasse-owner')b.classList.remove('active');});
+    var btn=document.getElementById('nav-repasse-owner');if(btn)btn.classList.add('active');
+    var crumb=document.getElementById('crumb');if(crumb)crumb.textContent='Repasse ao proprietário';
+    renderStandalone();
+    window.scrollTo(0,0);
+  };
+
+  // Replace the legacy renderer so it can no longer inject Repasse inside Aluguéis.
+  window.renderOwnerTransfers=renderStandalone;
+  var legacyGenerateOwnerTransfers=window.generateOwnerTransfers;
+  window.generateOwnerTransfers=async function(){
+    if(typeof legacyGenerateOwnerTransfers==='function'){
+      await legacyGenerateOwnerTransfers.apply(this,arguments);
+    }
+    renderStandalone();
+  };
+
+  function boot(){
+    ensureStandalone();
+    hideLegacyRepasse();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+<style id="dormus-repasse-875-style">
+#repasse{width:100%}
+#repasse .repasse-table-wrap-875{width:100%;overflow-x:hidden}
+#repasse .repasse-table{width:100%;table-layout:fixed}
+#repasse .repasse-table th,#repasse .repasse-table td{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+#repasse .repasse-actions-875{display:flex;gap:6px;align-items:center;flex-wrap:wrap;white-space:normal}
+#repasse .repasse-actions-875 .button{font-size:11px;padding:7px 9px}
+#repasse .repasse-date-875{font-size:11px;margin-right:4px}
+#repasse .repasse-empty-875{text-align:center;padding:28px}
+#rents #repasse-panel{display:none!important}
+@media(max-width:1100px){#repasse .repasse-table{font-size:11px}#repasse .repasse-table th,#repasse .repasse-table td{padding:8px 6px}}
 </style>
 </body>
 <script id="dormus-863-compras-repasse">
