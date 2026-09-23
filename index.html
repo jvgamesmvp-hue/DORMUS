@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.56</title>
+  <title>Dormus | Gestão imobiliária · 8.40</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -1133,7 +1133,7 @@ async function handlePortalLogin(event,kind){
       if(error){
         if(error.message?.toLowerCase().includes('email not confirmed')) throw new Error('Este usuário ainda não teve o e-mail confirmado no Supabase.');
         if(error.message?.toLowerCase().includes('invalid login credentials')) throw new Error('Senha inválida para este usuário.');
-        if(error.message?.toLowerCase().includes('database error querying schema')) throw new Error('O acesso da Sandra ainda precisa ser reparado pelo administrador. Entre com João Victor, abra o menu do usuário e use “Corrigir acesso da Sandra”.');
+        if(error.message?.toLowerCase().includes('database error querying schema')) throw new Error('O Supabase retornou erro de banco ao autenticar esta conta. Verifique no Supabase Auth se a senha da Sandra foi definida e se o projeto Auth está saudável.');
         throw error;
       }
       window.DormusLoginProfile=loginProfile;
@@ -1902,10 +1902,9 @@ window.globalDormusSearch=function(q){
 document.addEventListener('click',e=>{const box=document.getElementById('global-search-results');const wrap=document.querySelector('.global-search');if(box&&wrap&&!wrap.contains(e.target))box.classList.remove('show');if(!e.target.closest('#profile-button')&&!e.target.closest('.profile-menu'))document.querySelector('.profile-menu')?.classList.remove('show');if(!e.target.closest('#notifications-button')&&!e.target.closest('.notifications-panel'))document.querySelector('.notifications-panel')?.classList.remove('show')});
 
 window.toggleProfileMenu=function(){
-  let el=document.querySelector('.profile-menu');if(!el){el=document.createElement('div');el.className='profile-menu';el.innerHTML='<h3>Conta Dormus</h3><p id="profile-email">Usuário conectado</p><button class="menu-action" onclick="openDormusThemePicker()">🎨 Personalizar visual</button><button class="menu-action" id="profile-username-action" onclick="openUsernameSettings()">👤 Alterar usuário da imobiliária</button><button class="menu-action" id="profile-sandra-action" onclick="fixSandraAccess()">🔐 Corrigir acesso da Sandra</button><button class="menu-action" onclick="showView(\'home\');toggleProfileMenu()">Ir para Dashboard</button><button class="menu-action" onclick="logoutDormus()">Sair da conta</button>';document.body.appendChild(el)}
+  let el=document.querySelector('.profile-menu');if(!el){el=document.createElement('div');el.className='profile-menu';el.innerHTML='<h3>Conta Dormus</h3><p id="profile-email">Usuário conectado</p><button class="menu-action" onclick="openDormusThemePicker()">🎨 Personalizar visual</button><button class="menu-action" id="profile-username-action" onclick="openUsernameSettings()">👤 Alterar usuário da imobiliária</button><button class="menu-action" onclick="showView(\'home\');toggleProfileMenu()">Ir para Dashboard</button><button class="menu-action" onclick="logoutDormus()">Sair da conta</button>';document.body.appendChild(el)}
   const email=document.getElementById('auth-email')?.textContent||'Usuário conectado';const pe=document.getElementById('profile-email');if(pe)pe.textContent=email;el.classList.toggle('show');document.querySelector('.notifications-panel')?.classList.remove('show');
 };
-window.fixSandraAccess=async function(){try{const {data:{session}}=await supabaseClient.auth.getSession();if(!session){alert('Entre primeiro com o administrador João Victor.');return}const access=window.DormusIdentityAccess835;if(access?.perfil&&String(access.perfil).toLowerCase()!=='admin'){alert('Somente um administrador pode corrigir este acesso.');return}const btn=document.getElementById('profile-sandra-action');if(btn){btn.disabled=true;btn.textContent='🔐 Corrigindo...'}const res=await fetch(SUPABASE_URL+'/functions/v1/dormus-login',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({action:'set_password',username:'sandra',password:'sandra'})});const info=await res.json().catch(()=>({}));if(!res.ok||!info?.ok)throw new Error(info?.error||'Não foi possível corrigir o acesso da Sandra.');alert('Acesso da Sandra corrigido.\n\nUsuário: sandra\nSenha: sandra');document.querySelector('.profile-menu')?.classList.remove('show')}catch(e){console.error(e);alert(e?.message||'Não foi possível corrigir o acesso da Sandra.')}finally{const btn=document.getElementById('profile-sandra-action');if(btn){btn.disabled=false;btn.textContent='🔐 Corrigir acesso da Sandra'}}};
 window.toggleNotifications=function(){
   let el=document.querySelector('.notifications-panel');if(!el){el=document.createElement('div');el.className='notifications-panel';document.body.appendChild(el)}
   const today=new Date();const exp=(db.contracts||[]).filter(c=>['Ativo','vencendo','Vencendo'].includes(c.status)&&c.end&&((new Date(c.end+'T00:00:00')-today)/86400000)>=0&&((new Date(c.end+'T00:00:00')-today)/86400000)<=60).length;
@@ -7058,6 +7057,90 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
+
+<script id="dormus-881-repasse-final-fix">
+(function(){
+  'use strict';
+  function D(){return window.DormusDB||{};}
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]});}
+  function money(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
+  function paid(){return (D().rentalCharges||[]).filter(function(r){return Number(r.paidAmount||0)>0;});}
+  function ctx(r){
+    var db=D();
+    var c=(db.contracts||[]).find(function(x){return String(x.id)===String(r.contractId);})||{};
+    var p=(db.properties||[]).find(function(x){return String(x.id)===String(r.propertyId)||String(x.id)===String(c.propertyId);})||{};
+    var ownerId=c.ownerId??c.proprietarioId??p.ownerId??p.proprietarioId??r.ownerId??null;
+    var o=(db.owners||[]).find(function(x){return String(x.id)===String(ownerId);})||{};
+    var t=(db.tenants||[]).find(function(x){return String(x.id)===String(r.tenantId)||String(x.id)===String(c.tenantId);})||{};
+    var month=String(r.referenceMonth||'');
+    var gross=Number(r.paidAmount||0);
+    var fee=gross*Number(c.adminFee||0)/100;
+    var deduction=typeof window.ownerMaintenanceDeduction==='function'?Number(window.ownerMaintenanceDeduction(r.propertyId,month)||0):0;
+    var net=Math.max(gross-fee-deduction,0);
+    var tr=(db.ownerTransfers||[]).find(function(x){return String(x.chargeId)===String(r.id);});
+    return {r:r,c:c,p:p,o:o,t:t,month:month,gross:gross,fee:fee,deduction:deduction,net:net,tr:tr};
+  }
+  function months(){
+    var set={}; paid().forEach(function(r){if(r.referenceMonth)set[String(r.referenceMonth)]=1;});
+    return Object.keys(set).sort().reverse();
+  }
+  function currentMonth(){
+    var sel=document.getElementById('repasse-month-881');
+    return sel&&sel.value?sel.value:(months()[0]||'');
+  }
+  function ensureView(){
+    if(typeof window.openRepasseView==='function' && document.getElementById('repasse')) return document.getElementById('repasse');
+    return document.getElementById('repasse');
+  }
+  function render(){
+    var el=document.getElementById('repasse-standalone-content'); if(!el)return;
+    var ms=months(); var selected=currentMonth();
+    if(selected && !ms.includes(selected)) selected=ms[0]||'';
+    var rows=paid().filter(function(r){return !selected||String(r.referenceMonth||'')===String(selected);}).map(ctx);
+    var totals=rows.reduce(function(a,x){a.gross+=x.gross;a.fee+=x.fee;a.deduction+=x.deduction;a.net+=x.net;return a;},{gross:0,fee:0,deduction:0,net:0});
+    var html='<div class="repasse-filter-881"><label><span>Competência</span><select id="repasse-month-881">'+ms.map(function(m){return '<option value="'+esc(m)+'" '+(m===selected?'selected':'')+'>'+esc(m)+'</option>';}).join('')+'</select></label><span class="repasse-only-paid-881">Somente aluguéis pagos</span></div>';
+    html+='<div class="repasse-summary"><div class="summary"><label>Recebido</label><strong>'+money(totals.gross)+'</strong></div><div class="summary"><label>Administração</label><strong>'+money(totals.fee)+'</strong></div><div class="summary"><label>Desconto manutenção</label><strong>'+money(totals.deduction)+'</strong></div><div class="summary"><label>A repassar</label><strong>'+money(totals.net)+'</strong></div></div>';
+    html+='<div class="table-wrap repasse-table-wrap-875"><table class="table repasse-table"><thead><tr><th>Proprietário / imóvel</th><th>Competência</th><th>Recebido</th><th>Admin.</th><th>Desconto</th><th>Repasse</th><th>Status</th><th>Ações</th></tr></thead><tbody>';
+    if(!rows.length){html+='<tr><td colspan="8" class="repasse-empty-875">Nenhum aluguel pago encontrado. Vá em Aluguéis, marque a baixa como paga e informe o valor recebido.</td></tr>';}
+    else rows.forEach(function(x){
+      var action=x.tr?'<span class="repasse-date-875">Repassado '+esc(x.tr.date||'')+'</span>':'<button type="button" class="button button-small button-primary" data-mark-881="'+esc(x.r.id)+'">Marcar repasse</button>';
+      action+='<button type="button" class="button button-small" data-print-881="'+esc(x.r.id)+'">🖨 Imprimir demonstrativo</button>';
+      html+='<tr><td><strong>'+esc(x.o.name||'Proprietário não identificado')+'</strong><div class="row-sub">'+esc(x.p.name||x.p.address||'Imóvel não informado')+'</div></td><td>'+esc(x.month)+'</td><td>'+money(x.gross)+'</td><td>'+money(x.fee)+'</td><td>'+money(x.deduction)+'</td><td><strong>'+money(x.net)+'</strong></td><td><span class="repasse-status '+(x.tr?'pago':'pendente')+'">'+(x.tr?'Repassado':'Pendente')+'</span></td><td class="repasse-actions-875">'+action+'</td></tr>';
+    });
+    html+='</tbody></table></div>';
+    el.innerHTML=html;
+    var sel=document.getElementById('repasse-month-881'); if(sel)sel.addEventListener('change',render);
+    el.querySelectorAll('[data-mark-881]').forEach(function(btn){btn.addEventListener('click',async function(){
+      var id=String(btn.dataset.mark881||''); var db=D(); var r=(db.rentalCharges||[]).find(function(x){return String(x.id)===id;});
+      if(!r||Number(r.paidAmount||0)<=0){alert('Este aluguel não está pago e não pode entrar no repasse.');return;}
+      btn.disabled=true;btn.textContent='Salvando...';
+      try{
+        db.ownerTransfers=db.ownerTransfers||[]; var tr=db.ownerTransfers.find(function(x){return String(x.chargeId)===id;}); var x=ctx(r);
+        if(!tr){tr={id:typeof window.uid==='function'?window.uid():'ot-'+Date.now(),chargeId:r.id,contractId:r.contractId,propertyId:r.propertyId,ownerId:(x.c.ownerId??x.c.proprietarioId??x.o.id??null),referenceMonth:x.month,gross:x.gross,fee:x.fee,deduction:x.deduction,net:x.net,date:new Date().toISOString().slice(0,10),status:'Repassado'};db.ownerTransfers.push(tr);}else{tr.status='Repassado';tr.date=tr.date||new Date().toISOString().slice(0,10);}
+        if(typeof window.save==='function'){var ok=await window.save();if(ok===false)throw new Error('Não foi possível salvar o repasse.');}
+        render();
+      }catch(e){console.error(e);btn.disabled=false;btn.textContent='Marcar repasse';alert(e.message||'Não foi possível marcar o repasse.');}
+    });});
+    el.querySelectorAll('[data-print-881]').forEach(function(btn){btn.addEventListener('click',function(){printCharge(String(btn.dataset.print881||''));});});
+  }
+  function printCharge(id){
+    var r=(D().rentalCharges||[]).find(function(x){return String(x.id)===String(id);});
+    if(!r||Number(r.paidAmount||0)<=0){alert('Somente aluguéis pagos podem gerar demonstrativo.');return;}
+    var x=ctx(r), old=document.getElementById('dormus-print-overlay-881'); if(old)old.remove();
+    var ov=document.createElement('div');ov.id='dormus-print-overlay-881';ov.innerHTML='<div class="dormus-print-sheet-881"><div class="dormus-print-actions-881"><button type="button" id="dormus-print-now-881">🖨 Imprimir</button><button type="button" id="dormus-print-close-881">Fechar</button></div><h1>Prestação de Contas</h1><h2>'+esc(x.o.name||'Proprietário não informado')+'</h2><p><b>Imóvel:</b> '+esc(x.p.name||x.p.address||'—')+'</p><p><b>Locatário:</b> '+esc(x.t.name||'—')+'</p><p><b>Competência:</b> '+esc(x.month)+'</p><p><b>Data do pagamento:</b> '+esc(r.paymentDate||r.paidDate||'—')+'</p><table><tr><th>Aluguel recebido</th><th>Administração</th><th>Desconto manutenção</th><th>Valor a repassar</th></tr><tr><td>'+money(x.gross)+'</td><td>'+money(x.fee)+'</td><td>'+money(x.deduction)+'</td><td><strong>'+money(x.net)+'</strong></td></tr></table><p class="dormus-print-footer-881">DORMUS · Demonstrativo de repasse ao proprietário</p></div>';
+    document.body.appendChild(ov);
+    document.getElementById('dormus-print-now-881').onclick=function(){window.print();};
+    document.getElementById('dormus-print-close-881').onclick=function(){ov.remove();};
+  }
+  window.renderOwnerTransfers=render;
+  window.printOwnerTransferStatement=function(id){var tr=(D().ownerTransfers||[]).find(function(x){return String(x.id)===String(id);});if(tr)printCharge(tr.chargeId);};
+  function boot(){setTimeout(function(){if(document.getElementById('repasse-standalone-content'))render();},500);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+<style id="dormus-881-style">
+.repasse-filter-881{display:flex;align-items:end;gap:14px;margin:0 0 16px;padding:12px;border:1px solid rgba(120,140,130,.35);border-radius:12px;background:#eef3ef}.repasse-filter-881 label{display:flex;flex-direction:column;gap:5px;font-weight:700;font-size:12px}.repasse-filter-881 select{min-width:150px;padding:9px 12px;border-radius:8px;border:1px solid #b9c8bf;background:#fff;color:#20352d}.repasse-only-paid-881{font-size:12px;font-weight:700;padding-bottom:10px}.dormus-print-sheet-881{background:#fff;color:#222;max-width:1000px;margin:30px auto;padding:40px;font-family:Arial,sans-serif}.dormus-print-sheet-881 h1{margin:0 0 6px}.dormus-print-sheet-881 table{width:100%;border-collapse:collapse;margin-top:24px}.dormus-print-sheet-881 th,.dormus-print-sheet-881 td{border:1px solid #bbb;padding:12px;text-align:left}.dormus-print-actions-881{display:flex;gap:8px;justify-content:flex-end;margin-bottom:20px}.dormus-print-actions-881 button{padding:9px 14px;border:0;border-radius:7px;cursor:pointer}.dormus-print-footer-881{margin-top:50px;border-top:1px solid #ccc;padding-top:15px}@media print{body>*:not(#dormus-print-overlay-881){display:none!important}#dormus-print-overlay-881{display:block!important;position:static!important;background:#fff!important}.dormus-print-sheet-881{margin:0;max-width:none;padding:0}.dormus-print-actions-881{display:none!important}}
+</style>
 </body>
 <script id="dormus-863-compras-repasse">
 (function(){
