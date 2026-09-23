@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.4</title>
+  <title>Dormus | Gestão imobiliária · 8.5</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -3389,9 +3389,10 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sa
   document.addEventListener('click',function(ev){
     var b=ev.target.closest && ev.target.closest('[data-print-881],[data-print-880],[data-print-875],[data-print-charge]');
     if(!b)return;
-    ev.preventDefault(); ev.stopImmediatePropagation();
-    var id=b.dataset.print881 || b.dataset.print880 || b.dataset.print875 || b.dataset.printCharge || '';
-    printCharge(id);
+     ev.preventDefault(); ev.stopImmediatePropagation();
+     var id=b.dataset.print881 || b.dataset.print880 || b.dataset.print875 || b.dataset.printCharge || '';
+     if(typeof window.DormusOwnerStatementPrint==='function') window.DormusOwnerStatementPrint(id);
+     else printCharge(id);
   },true);
   // Remove only executable scripts accidentally placed after </html> in older versions is no longer needed;
   // this final script is intentionally inside <body> so its source cannot be rendered as page text.
@@ -7467,33 +7468,114 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
     r=charges.find(function(x){return String(x.chargeId||x.rentId||x.rentalId||x.lancamentoId||'')===key;}); if(r)return r;
     return null;
   }
-  function print(id){
-    var d=current(), r=find(id);
-    if(!r){
-      // Last fallback: use the first paid charge represented by the current Repasse row.
-      var b=document.activeElement && document.activeElement.closest ? document.activeElement.closest('tr') : null;
-      var month=b && b.querySelector('td:nth-child(2)') ? b.querySelector('td:nth-child(2)').textContent.trim() : '';
-      var paid=(d.rentalCharges||[]).filter(function(x){return Number(x.paidAmount||0)>0 && (!month || String(x.referenceMonth||'')===month);});
-      if(paid.length===1) r=paid[0];
-    }
-    if(!r){alert('Não foi possível localizar este aluguel no cadastro.');return;}
-    if(Number(r.paidAmount||0)<=0){alert('Somente aluguéis pagos podem gerar demonstrativo.');return;}
-    var c=(d.contracts||[]).find(function(x){return String(x.id)===String(r.contractId);})||{};
-    var p=(d.properties||[]).find(function(x){return String(x.id)===String(r.propertyId)||String(x.id)===String(c.propertyId);})||{};
-    var ownerId=c.ownerId||c.proprietarioId||p.ownerId||p.proprietarioId||r.ownerId;
-    var o=(d.owners||[]).find(function(x){return String(x.id)===String(ownerId);})||{};
-    var tenantId=r.tenantId||r.locatarioId||c.tenantId||c.locatarioId;
-    var t=(d.tenants||[]).find(function(x){return String(x.id)===String(tenantId);})||{};
-    var gross=Number(r.paidAmount||0), fee=gross*Number(c.adminFee||0)/100, month=String(r.referenceMonth||'');
-    var deduction=typeof window.ownerMaintenanceDeduction==='function'?Number(window.ownerMaintenanceDeduction(r.propertyId,month)||0):0;
-    var net=Math.max(gross-fee-deduction,0);
-    var old=document.getElementById('dormus-print-overlay-885');if(old)old.remove();
-    var ov=document.createElement('div');ov.id='dormus-print-overlay-885';
-    ov.innerHTML='<div class="dormus-print-sheet-885"><div class="dormus-print-actions-885"><button type="button" id="dormus-print-now-885">🖨 Imprimir</button><button type="button" id="dormus-print-close-885">Fechar</button></div><h1>Prestação de Contas</h1><h2>'+esc(o.name||'Proprietário não informado')+'</h2><p><b>Imóvel:</b> '+esc(p.name||p.address||'—')+'</p><p><b>Locatário:</b> '+esc(t.name||'—')+'</p><p><b>Competência:</b> '+esc(month||'—')+'</p><p><b>Data do pagamento:</b> '+esc(r.paymentDate||r.paidDate||r.dataPagamento||'—')+'</p><table><tr><th>Aluguel recebido</th><th>Administração</th><th>Desconto manutenção</th><th>Valor a repassar</th></tr><tr><td>'+money(gross)+'</td><td>'+money(fee)+'</td><td>'+money(deduction)+'</td><td><strong>'+money(net)+'</strong></td></tr></table></div>';
-    document.body.appendChild(ov);
-    document.getElementById('dormus-print-now-885').onclick=function(){window.print();};
-    document.getElementById('dormus-print-close-885').onclick=function(){ov.remove();};
-  }
+   function chargeContext(r){
+     var d=current();
+     var c=(d.contracts||[]).find(function(x){return String(x.id)===String(r.contractId);})||{};
+     var p=(d.properties||[]).find(function(x){return String(x.id)===String(r.propertyId)||String(x.id)===String(c.propertyId);})||{};
+     var ownerId=c.ownerId??c.proprietarioId??p.ownerId??p.proprietarioId??r.ownerId??null;
+     var o=(d.owners||[]).find(function(x){return String(x.id)===String(ownerId);})||{};
+     var tenantId=r.tenantId??r.locatarioId??c.tenantId??c.locatarioId;
+     var t=(d.tenants||[]).find(function(x){return String(x.id)===String(tenantId);})||{};
+     var month=String(r.referenceMonth||'');
+     var gross=Number(r.paidAmount||0);
+     var fee=gross*Number(c.adminFee||0)/100;
+     var deduction=typeof window.ownerMaintenanceDeduction==='function'?Number(window.ownerMaintenanceDeduction(r.propertyId,month)||0):0;
+     return {r:r,c:c,p:p,o:o,t:t,ownerId:ownerId,month:month,gross:gross,fee:fee,deduction:deduction,net:Math.max(gross-fee-deduction,0)};
+   }
+   function paidOptions(anchor){
+     var d=current(), a=chargeContext(anchor);
+     return (d.rentalCharges||[]).filter(function(item){
+       if(Number(item.paidAmount||0)<=0)return false;
+       if(String(item.referenceMonth||'')!==a.month)return false;
+       var x=chargeContext(item);
+       return a.ownerId!=null&&x.ownerId!=null&&String(x.ownerId)===String(a.ownerId);
+     }).map(chargeContext).sort(function(a,b){
+       return String(a.p.name||a.p.address||'').localeCompare(String(b.p.name||b.p.address||''));
+     });
+   }
+   function datePt(value){
+     if(!value)return'';
+     var s=String(value).slice(0,10);
+     return s.indexOf('-')>=0?s.split('-').reverse().join('/'):s;
+   }
+   function monthLabel(value){
+     if(!value)return'';
+     var parts=String(value).slice(0,7).split('-');
+     var date=new Date(Number(parts[0]),Number(parts[1])-1,1);
+     return date.toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+   }
+   function companyData(first){
+     var d=current(), company=d.company||d.settings||{};
+     return {
+       name:company.name||'Horne Dutra Imóveis',
+       city:first.p.city||company.city||'Conselheiro Pena',
+       state:first.p.state||company.state||'MG',
+       address:company.address||'Rua Antonio Aprigio, 611 - Centro - Conselheiro Pena/MG',
+       phone:company.phone||'Tel. (33) 3499-1715 · (33) 9 8899-7281',
+       email:company.email||'horne dutra@yahoo.com.br'
+     };
+   }
+   function statementHtml(items){
+     var first=items[0], company=companyData(first), title='Prestação de Contas '+monthLabel(first.month);
+     var balance=0, totalEntry=0, totalExit=0;
+     var rentRows=items.map(function(item){
+       balance+=item.gross; totalEntry+=item.gross;
+       var payment=item.r.paymentDate||item.r.paidDate||item.r.dataPagamento||item.r.date;
+       var tenant=String(item.t.name||'').trim().split(/\s+/)[0];
+       var desc='Aluguel recebido'+(tenant?' · '+esc(tenant):'');
+       var property=item.p.name||item.p.address||'Imóvel não informado';
+       return '<tr><td class="date">'+esc(datePt(payment)||datePt(new Date().toISOString()))+'</td><td class="description">'+desc+'<div class="property">'+esc(property)+'</div></td><td class="money">'+money(item.gross)+'</td><td class="money"></td><td class="money">'+money(balance)+'</td></tr>';
+     }).join('');
+     var fees=items.reduce(function(sum,item){return sum+item.fee;},0);
+     var deductions=items.reduce(function(sum,item){return sum+item.deduction;},0);
+     if(fees){balance-=fees;totalExit+=fees;}
+     var feeRow=fees?'<tr><td class="date"></td><td class="description">Taxa de administração</td><td class="money"></td><td class="money">'+money(fees)+'</td><td class="money">'+money(balance)+'</td></tr>':'';
+     if(deductions){balance-=deductions;totalExit+=deductions;}
+     var deductionRow=deductions?'<tr><td class="date"></td><td class="description">Desconto de manutenção</td><td class="money"></td><td class="money">'+money(deductions)+'</td><td class="money">'+money(balance)+'</td></tr>':'';
+     var owner=first.o.name||'Proprietário não informado';
+     var issue=datePt(new Date().toISOString());
+     return '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' · '+esc(owner)+'</title><style>'+
+       'html,body{margin:0;padding:0;background:#fff}body{font-family:Arial,Helvetica,sans-serif;padding:12mm;color:#222}*{box-sizing:border-box}.print-actions{display:flex;justify-content:center;gap:8px;margin:0 auto 16px}.print-actions button{border:1px solid #30463b;border-radius:6px;padding:9px 14px;background:#30463b;color:#fff;font-weight:700;cursor:pointer}.sheet{width:100%;max-width:960px;margin:0 auto;border:2px solid #3d3d3d;background:#fff}.title{padding:10px 14px 8px;border-bottom:2px solid #3d3d3d;text-align:center;font-size:25px;font-weight:800}.owner{padding:8px 12px;border-bottom:2px solid #3d3d3d;font-size:18px;font-weight:700;text-transform:uppercase}.table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:14px}.table th,.table td{border-right:1px solid #4a4a4a;border-bottom:1px solid #4a4a4a;min-height:27px;padding:5px 8px;vertical-align:middle}.table th:last-child,.table td:last-child{border-right:0}.table th{background:#f3f3f3;font-size:15px;text-align:center}.date{width:14%;text-align:center}.description{width:43%}.money{width:14.33%;text-align:right;white-space:nowrap}.property{color:#555;font-size:12px;font-weight:400;margin-top:2px}.section td{background:#f3f3f3;border-top:2px solid #333;font-weight:800;letter-spacing:1px;text-transform:uppercase}.total td{border-top:2px solid #333;font-weight:800;letter-spacing:.7px;padding-top:8px;padding-bottom:8px}.total-label{letter-spacing:5px!important}.footer{display:grid;grid-template-columns:120px 1fr;min-height:108px}.brand{display:flex;align-items:center;justify-content:center;padding:8px;background:#4b4b4b;color:#fff;text-align:center;font-size:12px;font-weight:700;line-height:1.2}.brand strong{display:block;font-family:Georgia,serif;font-size:19px;font-weight:400}.footer-main{display:flex;flex-direction:column;justify-content:space-between;padding:8px 12px 5px;text-align:center}.signatures{display:flex;justify-content:space-around;gap:35px;margin:12px auto 4px;width:min(560px,100%)}.signature{border-top:1px solid #333;min-width:190px;padding-top:4px;font-weight:700}.contact{border-top:1px solid #555;padding-top:4px;font-size:10px;line-height:1.35}@media print{.print-actions{display:none!important}body{padding:0}.sheet{max-width:none}}@media(max-width:620px){body{padding:5mm}.title{font-size:18px}.owner{font-size:14px}.table{font-size:11px}.table th{font-size:11px}.table th,.table td{padding:4px}.footer{grid-template-columns:82px 1fr}.brand strong{font-size:14px}.signatures{gap:10px}.signature{min-width:0;flex:1;font-size:10px}}'+
+       '</style></head><body><div class="print-actions"><button onclick="window.print()">🖨 Imprimir / salvar PDF</button><button onclick="window.close()">Fechar</button></div><article class="sheet"><div class="title">'+esc(title)+'</div><div class="owner">Nome: '+esc(owner)+'</div><table class="table"><thead><tr><th class="date">Data</th><th class="description">Descrição</th><th class="money">Entrada</th><th class="money">Saída</th><th class="money">Saldo</th></tr></thead><tbody><tr class="section"><td colspan="5">Aluguéis recebidos</td></tr>'+rentRows+'<tr class="section"><td colspan="5">Repasse ao proprietário</td></tr>'+feeRow+deductionRow+'<tr><td></td><td></td><td></td><td></td><td class="money">'+money(balance)+'</td></tr><tr class="total"><td colspan="2" class="total-label">TOTAL GERAL</td><td class="money">'+money(totalEntry)+'</td><td class="money">'+money(totalExit)+'</td><td class="money">'+money(balance)+'</td></tr></tbody></table><footer class="footer"><div class="brand"><div><strong>HD</strong>'+esc(company.name)+'<br><small>GESTÃO IMOBILIÁRIA</small></div></div><div class="footer-main"><div>'+esc(company.city)+', '+esc(issue)+'</div><div class="signatures"><div class="signature">Cliente</div><div class="signature">'+esc(company.name)+'</div></div><div class="contact">'+esc(company.address)+' · '+esc(company.phone)+'<br>'+esc(company.email)+'</div></div></footer></article></body></html>';
+   }
+   function openStatement(items){
+     var popup=window.open('','_blank','width=1000,height=800');
+     if(!popup){alert('O navegador bloqueou a janela de impressão. Permita pop-ups para o DORMUS e tente novamente.');return;}
+     try{
+       popup.document.open();popup.document.write(statementHtml(items));popup.document.close();popup.focus();
+       setTimeout(function(){popup.print();},350);
+     }catch(error){try{popup.close();}catch(_){ }alert('Não foi possível abrir o demonstrativo para impressão.');}
+   }
+   function selection(anchor,options){
+     var old=document.getElementById('owner-transfer-choice-root');if(old)old.remove();
+     var root=document.createElement('div');root.id='owner-transfer-choice-root';root.className='owner-transfer-choice-backdrop';
+     var owner=anchor.o.name||'Proprietário não informado';
+     root.innerHTML='<div class="owner-transfer-choice-modal" role="dialog" aria-modal="true"><div class="owner-transfer-choice-head"><h2>Aluguéis do demonstrativo</h2><button type="button" class="icon" data-choice-close>×</button></div><p class="owner-transfer-choice-help">Proprietário: <strong>'+esc(owner)+'</strong><br>Selecione quais aluguéis pagos devem aparecer nesta prestação de contas.</p><div class="owner-transfer-choice-list">'+options.map(function(item){return '<label class="owner-transfer-choice-item"><input type="checkbox" data-statement-charge="'+esc(item.r.id)+'" checked><span><span class="owner-transfer-choice-property">'+esc(item.p.name||item.p.address||'Imóvel não informado')+'</span><span class="owner-transfer-choice-detail">'+esc(item.t.name||'Locatário não informado')+' · '+money(item.gross)+'</span></span><span class="owner-transfer-choice-status">'+esc(item.month||'Pago')+'</span></label>';}).join('')+'</div><div class="owner-transfer-choice-actions"><button type="button" class="button button-quiet" data-choice-close>Cancelar</button><button type="button" class="button button-primary" data-choice-confirm>Imprimir demonstrativo</button></div></div>';
+     document.body.appendChild(root);
+     root.querySelectorAll('[data-choice-close]').forEach(function(button){button.addEventListener('click',function(){root.remove();});});
+     root.addEventListener('click',function(event){if(event.target===root)root.remove();});
+     root.querySelector('[data-choice-confirm]').addEventListener('click',function(){
+       var ids=[].slice.call(root.querySelectorAll('[data-statement-charge]:checked')).map(function(input){return String(input.dataset.statementCharge);});
+       var selected=options.filter(function(item){return ids.indexOf(String(item.r.id))>=0;});
+       if(!selected.length){alert('Selecione pelo menos um aluguel.');return;}
+       root.remove();openStatement(selected);
+     });
+   }
+   function print(id){
+     var d=current(),r=find(id);
+     if(!r){
+       var b=document.activeElement&&document.activeElement.closest?document.activeElement.closest('tr'):null;
+       var selectedMonth=b&&b.querySelector('td:nth-child(2)')?b.querySelector('td:nth-child(2)').textContent.trim():'';
+       var fallback=(d.rentalCharges||[]).filter(function(x){return Number(x.paidAmount||0)>0&&(!selectedMonth||String(x.referenceMonth||'')===selectedMonth);});
+       if(fallback.length===1)r=fallback[0];
+     }
+     if(!r){alert('Não foi possível localizar este aluguel no cadastro.');return;}
+     if(Number(r.paidAmount||0)<=0){alert('Somente aluguéis pagos podem gerar demonstrativo.');return;}
+     var anchor=chargeContext(r),options=paidOptions(r);
+     if(!options.length)options=[anchor];
+     if(options.length>1){selection(anchor,options);return;}
+     openStatement(options);
+   }
   document.addEventListener('click',function(e){
     var b=e.target.closest&&e.target.closest('[data-print-881],[data-print-880],[data-print-875],[data-print-charge],[data-owner-transfer-print]');
     if(!b)return;
@@ -7505,7 +7587,8 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
     if(!id)return;
     e.preventDefault();e.stopImmediatePropagation();print(id);
   },true);
-  window.DormusHardPrint885=print;
+   window.DormusHardPrint885=print;
+   window.DormusOwnerStatementPrint=print;
 })();
 </script>
 <style id="dormus-885-print-style">
