@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.2</title>
+  <title>Dormus | Gestão imobiliária · 8.3</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -3325,6 +3325,74 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sa
   console.info('DORMUS '+MEDIA_VERSION+' · mídia e laudo aprimorados carregados');
 })();
 </script>
+
+<script id="dormus-884-repasse-print-and-body-fix">
+(function(){
+  'use strict';
+  function DB(){ return window.DormusDB || {}; }
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function money(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
+  function findCharge(id){
+    var db=DB(), list=Array.isArray(db.rentalCharges)?db.rentalCharges:[];
+    var key=String(id==null?'':id).trim();
+    if(!key)return null;
+    var r=list.find(function(x){return String(x.id)==key;});
+    if(r)return r;
+    // Some legacy buttons carry a transfer id instead of the rental charge id.
+    var tr=(db.ownerTransfers||[]).find(function(x){return String(x.id)==key;});
+    if(tr) return list.find(function(x){return String(x.id)==String(tr.chargeId);})||null;
+    return null;
+  }
+  function context(r){
+    var db=DB();
+    var c=(db.contracts||[]).find(function(x){return String(x.id)==String(r.contractId);})||{};
+    var p=(db.properties||[]).find(function(x){return String(x.id)==String(r.propertyId)||String(x.id)==String(c.propertyId);})||{};
+    var ownerId=c.ownerId ?? c.proprietarioId ?? p.ownerId ?? p.proprietarioId ?? r.ownerId;
+    var o=(db.owners||[]).find(function(x){return String(x.id)==String(ownerId);})||{};
+    var tenantId=r.tenantId ?? c.tenantId ?? r.locatarioId ?? c.locatarioId;
+    var t=(db.tenants||[]).find(function(x){return String(x.id)==String(tenantId);})||{};
+    var gross=Number(r.paidAmount||0);
+    var fee=gross*Number(c.adminFee||0)/100;
+    var month=String(r.referenceMonth||'');
+    var deduction=typeof window.ownerMaintenanceDeduction==='function' ? Number(window.ownerMaintenanceDeduction(r.propertyId,month)||0) : 0;
+    return {c:c,p:p,o:o,t:t,gross:gross,fee:fee,deduction:deduction,net:Math.max(gross-fee-deduction,0),month:month};
+  }
+  function printCharge(id){
+    var r=findCharge(id);
+    if(!r){ alert('Não foi possível localizar este aluguel no cadastro. Atualize a página e tente novamente.'); return; }
+    if(Number(r.paidAmount||0)<=0){ alert('Somente aluguéis pagos podem gerar demonstrativo.'); return; }
+    var x=context(r), old=document.getElementById('dormus-print-overlay-884');
+    if(old)old.remove();
+    var ov=document.createElement('div');
+    ov.id='dormus-print-overlay-884';
+    ov.innerHTML='<div class="dormus-print-sheet-884"><div class="dormus-print-actions-884"><button type="button" id="dormus-print-now-884">🖨 Imprimir</button><button type="button" id="dormus-print-close-884">Fechar</button></div><h1>Prestação de Contas</h1><h2>'+esc(x.o.name||'Proprietário não informado')+'</h2><div class="dormus-print-grid-884"><p><b>Imóvel:</b> '+esc(x.p.name||x.p.address||'—')+'</p><p><b>Locatário:</b> '+esc(x.t.name||'—')+'</p><p><b>Competência:</b> '+esc(x.month||'—')+'</p><p><b>Data do pagamento:</b> '+esc(r.paymentDate||r.paidDate||r.dataPagamento||'—')+'</p></div><table><thead><tr><th>Aluguel recebido</th><th>Administração</th><th>Desconto manutenção</th><th>Valor a repassar</th></tr></thead><tbody><tr><td>'+money(x.gross)+'</td><td>'+money(x.fee)+'</td><td>'+money(x.deduction)+'</td><td><strong>'+money(x.net)+'</strong></td></tr></tbody></table><p class="dormus-print-footer-884">DORMUS · Demonstrativo de repasse ao proprietário</p></div>';
+    document.body.appendChild(ov);
+    document.getElementById('dormus-print-now-884').onclick=function(){window.print();};
+    document.getElementById('dormus-print-close-884').onclick=function(){ov.remove();};
+  }
+  window.DormusPrintOwnerCharge884=printCharge;
+  window.printOwnerTransferStatement=function(id){
+    var db=DB(), tr=(db.ownerTransfers||[]).find(function(x){return String(x.id)==String(id);});
+    printCharge(tr ? tr.chargeId : id);
+  };
+  // Capture all legacy/current demonstrative buttons, regardless of which previous renderer created them.
+  document.addEventListener('click',function(ev){
+    var b=ev.target.closest && ev.target.closest('[data-print-881],[data-print-880],[data-print-875],[data-print-charge]');
+    if(!b)return;
+    ev.preventDefault(); ev.stopImmediatePropagation();
+    var id=b.dataset.print881 || b.dataset.print880 || b.dataset.print875 || b.dataset.printCharge || '';
+    printCharge(id);
+  },true);
+  // Remove only executable scripts accidentally placed after </html> in older versions is no longer needed;
+  // this final script is intentionally inside <body> so its source cannot be rendered as page text.
+})();
+</script>
+<style id="dormus-884-print-style">
+#dormus-print-overlay-884{position:fixed;inset:0;z-index:999999;background:rgba(0,0,0,.55);overflow:auto;padding:30px;box-sizing:border-box}
+.dormus-print-sheet-884{background:#fff;color:#202b28;max-width:1000px;margin:0 auto;padding:38px;font-family:Arial,sans-serif;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.dormus-print-sheet-884 h1{margin:0 0 6px;font-size:26px}.dormus-print-sheet-884 h2{margin:0 0 22px;font-size:20px}.dormus-print-grid-884{display:grid;grid-template-columns:1fr 1fr;gap:4px 24px}.dormus-print-sheet-884 table{width:100%;border-collapse:collapse;margin-top:22px}.dormus-print-sheet-884 th,.dormus-print-sheet-884 td{border:1px solid #b9c2bd;padding:11px;text-align:left}.dormus-print-actions-884{display:flex;justify-content:flex-end;gap:8px;margin-bottom:20px}.dormus-print-actions-884 button{border:0;border-radius:7px;padding:9px 14px;cursor:pointer}.dormus-print-footer-884{margin-top:45px;padding-top:12px;border-top:1px solid #ccc;font-size:12px}@media print{body>*:not(#dormus-print-overlay-884){display:none!important}#dormus-print-overlay-884{position:static;background:#fff;padding:0;overflow:visible} .dormus-print-sheet-884{box-shadow:none;max-width:none;padding:0;border-radius:0}.dormus-print-actions-884{display:none!important}}
+</style>
+
 </body></html>');
     w.document.close();
   };
@@ -7342,7 +7410,7 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
 <style id="dormus-881-style">
 .repasse-filter-881{display:flex;align-items:end;gap:14px;margin:0 0 16px;padding:12px;border:1px solid rgba(120,140,130,.35);border-radius:12px;background:#eef3ef}.repasse-filter-881 label{display:flex;flex-direction:column;gap:5px;font-weight:700;font-size:12px}.repasse-filter-881 select{min-width:150px;padding:9px 12px;border-radius:8px;border:1px solid #b9c8bf;background:#fff;color:#20352d}.repasse-only-paid-881{font-size:12px;font-weight:700;padding-bottom:10px}.dormus-print-sheet-881{background:#fff;color:#222;max-width:1000px;margin:30px auto;padding:40px;font-family:Arial,sans-serif}.dormus-print-sheet-881 h1{margin:0 0 6px}.dormus-print-sheet-881 table{width:100%;border-collapse:collapse;margin-top:24px}.dormus-print-sheet-881 th,.dormus-print-sheet-881 td{border:1px solid #bbb;padding:12px;text-align:left}.dormus-print-actions-881{display:flex;gap:8px;justify-content:flex-end;margin-bottom:20px}.dormus-print-actions-881 button{padding:9px 14px;border:0;border-radius:7px;cursor:pointer}.dormus-print-footer-881{margin-top:50px;border-top:1px solid #ccc;padding-top:15px}@media print{body>*:not(#dormus-print-overlay-881){display:none!important}#dormus-print-overlay-881{display:block!important;position:static!important;background:#fff!important}.dormus-print-sheet-881{margin:0;max-width:none;padding:0}.dormus-print-actions-881{display:none!important}}
 </style>
-</body>
+
 <script id="dormus-863-compras-repasse">
 (function(){
   const style=document.createElement('style');style.textContent='.maintenance-payer-note{padding:10px 12px;border:1px solid #d6e0d7;border-radius:9px;background:#eef4ef;color:#315345;font-size:11px;line-height:1.45}.maintenance-payer-note strong{color:#203d37}.repasse-table th,.repasse-table td{white-space:nowrap}';document.head.appendChild(style);
@@ -7385,3 +7453,5 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   if(window.supabaseClient?.auth?.onAuthStateChange) window.supabaseClient.auth.onAuthStateChange((_event,session)=>{if(session)setTimeout(sync,100)});
 })();
 </script>
+
+</body>
