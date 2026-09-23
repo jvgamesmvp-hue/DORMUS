@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.5</title>
+  <title>Dormus | Gestão imobiliária · 8.6</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -6747,7 +6747,8 @@ input::placeholder,textarea::placeholder {
 
   function statementHtml(data){
     const d=data;
-    const title='Prestação de Contas '+monthName(d.competence);
+     const selectedCompetence=document.getElementById('repasse-month-881')?.value||d.competence;
+     const title='Prestação de Contas '+monthName(selectedCompetence);
     const issueDateLabel=datePt(d.issueDate)||datePt(todayIso());
     const ownerName=d.owner.name||'Proprietário não informado';
     let balance=0;
@@ -6787,16 +6788,10 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
 <article class="owner-transfer-print-sheet">
   <div class="owner-transfer-print-title">${escapeHtml(title)}</div>
   <div class="owner-transfer-print-owner">Nome: ${escapeHtml(ownerName)}</div>
-  <div class="owner-transfer-print-summary">
-    <div class="owner-transfer-print-summary-item"><span>Aluguéis recebidos</span><strong>${amount(d.gross)}</strong></div>
-    <div class="owner-transfer-print-summary-item"><span>Repasse ao proprietário</span><strong>${amount(d.net)}</strong></div>
-  </div>
   <table class="owner-transfer-print-table">
     <thead><tr><th class="date">Data</th><th class="description">Descrição</th><th class="amount">Entrada</th><th class="amount">Saída</th><th class="balance">Saldo</th></tr></thead>
     <tbody>
-      <tr class="section-row"><td colspan="5">Aluguéis recebidos</td></tr>
       ${rentRows}
-      <tr class="section-row"><td colspan="5">Repasse ao proprietário</td></tr>
       ${feeRows}
       <tr class="ledger-row"><td></td><td></td><td></td><td></td><td class="balance">${amount(d.net)}</td></tr>
       <tr class="ledger-row"><td></td><td></td><td></td><td></td><td></td></tr>
@@ -7516,7 +7511,9 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
      };
    }
    function statementHtml(items){
-     var first=items[0], company=companyData(first), title='Prestação de Contas '+monthLabel(first.month);
+     var first=items[0], company=companyData(first);
+     var selectedCompetence=(document.getElementById('repasse-month-881')?.value||first.month||'').slice(0,7);
+     var title='Prestação de Contas '+monthLabel(selectedCompetence);
      var balance=0, totalEntry=0, totalExit=0;
      var rentRows=items.map(function(item){
        balance+=item.gross; totalEntry+=item.gross;
@@ -7536,7 +7533,7 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
      var issue=datePt(new Date().toISOString());
      return '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' · '+esc(owner)+'</title><style>'+
        'html,body{margin:0;padding:0;background:#fff}body{font-family:Arial,Helvetica,sans-serif;padding:12mm;color:#222}*{box-sizing:border-box}.print-actions{display:flex;justify-content:center;gap:8px;margin:0 auto 16px}.print-actions button{border:1px solid #30463b;border-radius:6px;padding:9px 14px;background:#30463b;color:#fff;font-weight:700;cursor:pointer}.sheet{width:100%;max-width:960px;margin:0 auto;border:2px solid #3d3d3d;background:#fff}.title{padding:10px 14px 8px;border-bottom:2px solid #3d3d3d;text-align:center;font-size:25px;font-weight:800}.owner{padding:8px 12px;border-bottom:2px solid #3d3d3d;font-size:18px;font-weight:700;text-transform:uppercase}.table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:14px}.table th,.table td{border-right:1px solid #4a4a4a;border-bottom:1px solid #4a4a4a;min-height:27px;padding:5px 8px;vertical-align:middle}.table th:last-child,.table td:last-child{border-right:0}.table th{background:#f3f3f3;font-size:15px;text-align:center}.date{width:14%;text-align:center}.description{width:43%}.money{width:14.33%;text-align:right;white-space:nowrap}.property{color:#555;font-size:12px;font-weight:400;margin-top:2px}.section td{background:#f3f3f3;border-top:2px solid #333;font-weight:800;letter-spacing:1px;text-transform:uppercase}.total td{border-top:2px solid #333;font-weight:800;letter-spacing:.7px;padding-top:8px;padding-bottom:8px}.total-label{letter-spacing:5px!important}.footer{display:grid;grid-template-columns:120px 1fr;min-height:108px}.brand{display:flex;align-items:center;justify-content:center;padding:8px;background:#4b4b4b;color:#fff;text-align:center;font-size:12px;font-weight:700;line-height:1.2}.brand strong{display:block;font-family:Georgia,serif;font-size:19px;font-weight:400}.footer-main{display:flex;flex-direction:column;justify-content:space-between;padding:8px 12px 5px;text-align:center}.signatures{display:flex;justify-content:space-around;gap:35px;margin:12px auto 4px;width:min(560px,100%)}.signature{border-top:1px solid #333;min-width:190px;padding-top:4px;font-weight:700}.contact{border-top:1px solid #555;padding-top:4px;font-size:10px;line-height:1.35}@media print{.print-actions{display:none!important}body{padding:0}.sheet{max-width:none}}@media(max-width:620px){body{padding:5mm}.title{font-size:18px}.owner{font-size:14px}.table{font-size:11px}.table th{font-size:11px}.table th,.table td{padding:4px}.footer{grid-template-columns:82px 1fr}.brand strong{font-size:14px}.signatures{gap:10px}.signature{min-width:0;flex:1;font-size:10px}}'+
-       '</style></head><body><div class="print-actions"><button onclick="window.print()">🖨 Imprimir / salvar PDF</button><button onclick="window.close()">Fechar</button></div><article class="sheet"><div class="title">'+esc(title)+'</div><div class="owner">Nome: '+esc(owner)+'</div><table class="table"><thead><tr><th class="date">Data</th><th class="description">Descrição</th><th class="money">Entrada</th><th class="money">Saída</th><th class="money">Saldo</th></tr></thead><tbody><tr class="section"><td colspan="5">Aluguéis recebidos</td></tr>'+rentRows+'<tr class="section"><td colspan="5">Repasse ao proprietário</td></tr>'+feeRow+deductionRow+'<tr><td></td><td></td><td></td><td></td><td class="money">'+money(balance)+'</td></tr><tr class="total"><td colspan="2" class="total-label">TOTAL GERAL</td><td class="money">'+money(totalEntry)+'</td><td class="money">'+money(totalExit)+'</td><td class="money">'+money(balance)+'</td></tr></tbody></table><footer class="footer"><div class="brand"><div><strong>HD</strong>'+esc(company.name)+'<br><small>GESTÃO IMOBILIÁRIA</small></div></div><div class="footer-main"><div>'+esc(company.city)+', '+esc(issue)+'</div><div class="signatures"><div class="signature">Cliente</div><div class="signature">'+esc(company.name)+'</div></div><div class="contact">'+esc(company.address)+' · '+esc(company.phone)+'<br>'+esc(company.email)+'</div></div></footer></article></body></html>';
+       '</style></head><body><div class="print-actions"><button onclick="window.print()">🖨 Imprimir / salvar PDF</button><button onclick="window.close()">Fechar</button></div><article class="sheet"><div class="title">'+esc(title)+'</div><div class="owner">Nome: '+esc(owner)+'</div><table class="table"><thead><tr><th class="date">Data</th><th class="description">Descrição</th><th class="money">Entrada</th><th class="money">Saída</th><th class="money">Saldo</th></tr></thead><tbody>'+rentRows+feeRow+deductionRow+'<tr><td></td><td></td><td></td><td></td><td class="money">'+money(balance)+'</td></tr><tr class="total"><td colspan="2" class="total-label">TOTAL GERAL</td><td class="money">'+money(totalEntry)+'</td><td class="money">'+money(totalExit)+'</td><td class="money">'+money(balance)+'</td></tr></tbody></table><footer class="footer"><div class="brand"><div><strong>HD</strong>'+esc(company.name)+'<br><small>GESTÃO IMOBILIÁRIA</small></div></div><div class="footer-main"><div>'+esc(company.city)+', '+esc(issue)+'</div><div class="signatures"><div class="signature">Cliente</div><div class="signature">'+esc(company.name)+'</div></div><div class="contact">'+esc(company.address)+' · '+esc(company.phone)+'<br>'+esc(company.email)+'</div></div></footer></article></body></html>';
    }
    function openStatement(items){
      var popup=window.open('','_blank','width=1000,height=800');
