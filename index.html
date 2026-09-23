@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.40</title>
+  <title>Dormus | Gestão imobiliária · 8.2</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -816,7 +816,8 @@ async function carregarDadosSupabase(){
       const media=kind==='inspection'?inspectionMediaFiles():(input?[...(input.files||[])].map((file,index)=>({file,room:file.type?.startsWith('image/')?(document.querySelector(`[data-new-file-room="${index}"]`)?.value||'Geral'):''})):[]);
       for(const entry of media){
         let file=entry.file,room=entry.room||'';
-        if(kind==='inspection'&&file.type?.startsWith('image/'))file=await compressInspectionImage(file);
+        if(file.type?.startsWith('image/'))file=await compressInspectionImage(file,1920,.86);
+        if(file.type?.startsWith('video/'))file=window.DormusCompressVideo?await window.DormusCompressVideo(file):file;
         const key=`${kind}:${recordId}:${uid()}`;
         const path=`${kind}/${recordId}/${key}-${storageSafeName(file.name)}`;
         const {error}=await supabaseClient.storage.from(STORAGE_BUCKET).upload(path,file,{upsert:false,contentType:file.type||'application/octet-stream'});
@@ -3124,7 +3125,207 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sa
     }
     const w=window.open('','_blank','width=900,height=700');
     if(!w){alert('Permita pop-ups para gerar o documento.');return}
-    w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+E(title)+'</title><style>body{font:14px Arial;color:#20372d;padding:40px;line-height:1.6}h1{font:28px Georgia}h2{font:21px Georgia;border-bottom:1px solid #ddd;padding-bottom:8px}h3{margin-top:25px;color:#496b59}li{margin:7px 0}@media print{button{display:none}}</style></head><body>'+rows.join('')+'<p style="margin-top:50px;color:#777">Gerado pelo DORMUS em '+new Date().toLocaleString('pt-BR')+'</p><button onclick="print()">Imprimir / Salvar PDF</button>\n</body></html>');
+    w.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+E(title)+'</title><style>body{font:14px Arial;color:#20372d;padding:40px;line-height:1.6}h1{font:28px Georgia}h2{font:21px Georgia;border-bottom:1px solid #ddd;padding-bottom:8px}h3{margin-top:25px;color:#496b59}li{margin:7px 0}@media print{button{display:none}}</style></head><body>'+rows.join('')+'<p style="margin-top:50px;color:#777">Gerado pelo DORMUS em '+new Date().toLocaleString('pt-BR')+'</p><button onclick="print()">Imprimir / Salvar PDF</button>\n<style id="dormus-883-media-report-style">
+.media-batch-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.media-batch-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}.media-batch-card{position:relative;border:1px solid var(--line,#dce5ef);border-radius:12px;padding:8px;background:#f7f9fc;overflow:hidden}.media-batch-card.is-video{min-height:130px}.media-batch-thumb{display:block;width:100%;height:120px;object-fit:cover;border-radius:8px;background:#e7edf5}.media-batch-check{position:absolute;top:12px;left:12px;width:20px;height:20px;z-index:2}.media-batch-meta{display:flex;gap:6px;align-items:center;margin-top:7px}.media-batch-meta strong{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}.media-batch-meta small{font-size:9px;color:var(--muted,#7185a2)}.media-batch-room{width:100%;margin-top:7px}.media-batch-report{display:flex;align-items:center;gap:6px;margin-top:6px;font-size:10px;color:var(--muted,#7185a2)}.inspection-camera-modal{max-width:760px}.inspection-camera-stage{background:#071126;border-radius:14px;padding:10px}.inspection-camera-stage video{display:block;width:100%;max-height:62vh;object-fit:cover;border-radius:10px;background:#000}.inspection-camera-actions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:10px}.inspection-report-photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 16px}.inspection-report-photo-grid figure{margin:0}.inspection-report-photo-grid img{width:100%;height:42mm;object-fit:cover;border:1px solid #d5d8d0}.inspection-report-photo-grid figcaption{font-size:8px;color:#657067;margin-top:3px}.inspection-report-room{page-break-inside:avoid}.inspection-report-check{font-weight:700}.inspection-report-model-note{font-size:9px;color:#657067;margin-top:4px}@media(max-width:700px){.media-batch-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.inspection-report-photo-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+<script id="dormus-883-media-report-script">
+(function(){
+  const MEDIA_VERSION='8.83';
+  let pendingInspectionMedia=[];
+  let inspectionPhotoStream=null;
+  let inspectionPhotoVideo=null;
+  let inspectionPhotoCanvas=null;
+
+  function mediaId(){return 'm'+Date.now().toString(36)+Math.random().toString(36).slice(2,8)}
+  function fileExt(type,name=''){const m=String(type||'').split('/')[1];if(m)return m.split(';')[0];const x=String(name).split('.').pop();return x&&x!==name?x:'bin'}
+  function safeName(name){return String(name||'arquivo').replace(/[^a-zA-Z0-9._-]+/g,'_').slice(0,100)||'arquivo'}
+  function roomOptions(current='Geral'){return typeof photoRoomOptions==='function'?photoRoomOptions(current):'<option value="Geral">Geral</option>'}
+  function formatMB(n){return n?`${(n/1048576).toFixed(1)} MB`:''}
+
+  async function compressImageUniversal(file,maxSide=1920,quality=.86){
+    if(!file?.type?.startsWith('image/'))return file;
+    try{
+      const bitmap=await createImageBitmap(file);
+      const scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
+      const canvas=document.createElement('canvas');
+      canvas.width=Math.max(1,Math.round(bitmap.width*scale));
+      canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+      const ctx=canvas.getContext('2d',{alpha:false});
+      ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+      ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close?.();
+      const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',quality));
+      if(!blob)return file;
+      return new File([blob],safeName(file.name).replace(/\.[^.]+$/i,'.jpg'),{type:'image/jpeg',lastModified:Date.now()});
+    }catch(e){console.warn('Compressão de imagem indisponível',e);return file}
+  }
+
+  function addPending(file,room='Geral',includeInReport=true){
+    if(!file||!file.size)return;
+    pendingInspectionMedia.push({id:mediaId(),file,room:room||'Geral',selected:true,includeInReport:!!includeInReport});
+  }
+
+  function renderPendingMedia(){
+    const el=document.getElementById('inspection-pending-media');if(!el)return;
+    if(!pendingInspectionMedia.length){el.innerHTML='<div class="attachments-help">Nenhuma foto ou vídeo aguardando seleção.</div>';return}
+    el.innerHTML=`<div class="media-batch-toolbar"><strong>${pendingInspectionMedia.length} mídia(s) aguardando seleção</strong><button type="button" class="button button-small" onclick="window.selectAllInspectionMedia(true)">Selecionar todas</button><button type="button" class="button button-small" onclick="window.selectAllInspectionMedia(false)">Desmarcar todas</button></div><div class="media-batch-grid">${pendingInspectionMedia.map(x=>{
+      const isImg=x.file.type?.startsWith('image/');
+      return `<div class="media-batch-card ${isImg?'':'is-video'}" data-media-card="${esc(x.id)}"><input class="media-batch-check" type="checkbox" ${x.selected?'checked':''} onchange="window.toggleInspectionMedia('${esc(x.id)}',this.checked)"><label><input class="media-batch-report" type="checkbox" ${x.includeInReport?'checked':''} onchange="window.toggleInspectionReportMedia('${esc(x.id)}',this.checked)"> incluir no laudo</label>${isImg?`<img class="media-batch-thumb" data-media-preview="${esc(x.id)}" alt="Prévia">`:`<div class="media-batch-thumb" style="display:grid;place-items:center;font-size:34px">🎥</div>`}<div class="media-batch-meta"><strong>${esc(x.file.name||'mídia')}</strong><small>${formatMB(x.file.size)}</small></div><select class="media-batch-room" onchange="window.setInspectionMediaRoom('${esc(x.id)}',this.value)">${roomOptions(x.room)}</select></div>`}).join('')}</div>`;
+    pendingInspectionMedia.forEach(x=>{if(x.file.type?.startsWith('image/')){const img=document.querySelector(`[data-media-preview="${CSS.escape(x.id)}"]`);if(img){img.src=URL.createObjectURL(x.file);img.onload=()=>URL.revokeObjectURL(img.src)}}});
+  }
+  window.toggleInspectionMedia=(id,v)=>{const x=pendingInspectionMedia.find(a=>a.id===id);if(x)x.selected=!!v;};
+  window.toggleInspectionReportMedia=(id,v)=>{const x=pendingInspectionMedia.find(a=>a.id===id);if(x)x.includeInReport=!!v;};
+  window.setInspectionMediaRoom=(id,v)=>{const x=pendingInspectionMedia.find(a=>a.id===id);if(x)x.room=v||'Geral';};
+  window.selectAllInspectionMedia=v=>{pendingInspectionMedia.forEach(x=>x.selected=!!v);renderPendingMedia()};
+
+  async function handleInspectionFiles(files,room='Geral'){
+    for(const file of [...(files||[])]){
+      if(file.type?.startsWith('image/')){
+        const compressed=await compressImageUniversal(file,1920,.86);
+        addPending(compressed,room,true);
+      }else if(file.type?.startsWith('video/')){
+        const compressed=await compressVideoForUpload(file);
+        addPending(compressed,room,true);
+      }
+    }
+    renderPendingMedia();
+  }
+
+  window.startInspectionPhotoBatch=async function(){
+    if(!navigator.mediaDevices?.getUserMedia){alert('A câmera deste navegador não está disponível. Use “Selecionar várias fotos”.');return}
+    try{
+      inspectionPhotoStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});
+      document.getElementById('modal-root').insertAdjacentHTML('beforeend',`<div class="modal-bg" id="inspection-photo-camera" style="z-index:10020"><div class="modal inspection-camera-modal" onclick="event.stopPropagation()"><div class="modal-head"><h2>Tirar várias fotos</h2><button class="icon" onclick="window.closeInspectionPhotoCamera()">×</button></div><div class="inspection-camera-stage"><video id="inspection-photo-video" autoplay muted playsinline></video><canvas id="inspection-photo-canvas" hidden></canvas></div><div class="form-field" style="margin-top:10px"><label>Cômodo das fotos</label><select id="inspection-photo-room">${roomOptions('Geral')}</select></div><div class="inspection-camera-actions"><button type="button" class="button button-primary" onclick="window.captureInspectionPhoto()">📸 Tirar foto</button><button type="button" class="button button-brass" onclick="window.closeInspectionPhotoCamera()">Concluir fotos</button></div><div class="attachments-help">Você pode tirar quantas fotos quiser. Elas ficam em uma seleção temporária; somente as marcadas serão gravadas no cadastro.</div></div></div>`);
+      inspectionPhotoVideo=document.getElementById('inspection-photo-video');inspectionPhotoCanvas=document.getElementById('inspection-photo-canvas');inspectionPhotoVideo.srcObject=inspectionPhotoStream;
+    }catch(e){console.error(e);alert('Não foi possível abrir a câmera. Autorize o acesso à câmera e tente novamente.');}
+  };
+  window.captureInspectionPhoto=async function(){
+    if(!inspectionPhotoVideo||!inspectionPhotoCanvas)return;
+    const w=inspectionPhotoVideo.videoWidth||1920,h=inspectionPhotoVideo.videoHeight||1080,scale=Math.min(1,1920/Math.max(w,h));
+    inspectionPhotoCanvas.width=Math.round(w*scale);inspectionPhotoCanvas.height=Math.round(h*scale);
+    const ctx=inspectionPhotoCanvas.getContext('2d',{alpha:false});ctx.imageSmoothingQuality='high';ctx.drawImage(inspectionPhotoVideo,0,0,inspectionPhotoCanvas.width,inspectionPhotoCanvas.height);
+    const blob=await new Promise(resolve=>inspectionPhotoCanvas.toBlob(resolve,'image/jpeg',.86));
+    if(blob){const f=new File([blob],`vistoria-${Date.now()}.jpg`,{type:'image/jpeg',lastModified:Date.now()});addPending(f,document.getElementById('inspection-photo-room')?.value||'Geral',true);renderPendingMedia()}
+  };
+  window.closeInspectionPhotoCamera=function(){if(inspectionPhotoStream)inspectionPhotoStream.getTracks().forEach(t=>t.stop());inspectionPhotoStream=null;inspectionPhotoVideo=null;inspectionPhotoCanvas=null;document.getElementById('inspection-photo-camera')?.remove()};
+
+  window.openInspectionVideoRecorder=async function(){
+    const host=document.getElementById('inspection-recorder');if(!host)return;
+    if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){alert('Este navegador não permite gravação de vídeo. Use “Selecionar vídeos”.');return}
+    try{
+      const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720},frameRate:{ideal:24,max:30}},audio:true});
+      const mime=['video/mp4','video/webm;codecs=vp8,opus','video/webm'].find(x=>MediaRecorder.isTypeSupported?.(x))||'';
+      const chunks=[];const rec=new MediaRecorder(stream,mime?{mimeType:mime,videoBitsPerSecond:900000,audioBitsPerSecond:48000}:undefined);
+      host.hidden=false;host.innerHTML=`<video id="dormus-video-live" autoplay muted playsinline class="inspection-recorder-video"></video><div class="inspection-recorder-controls"><button type="button" class="button button-danger" id="dormus-stop-video">⏹ Parar vídeo</button></div>`;
+      const live=document.getElementById('dormus-video-live');live.srcObject=stream;document.getElementById('dormus-stop-video').onclick=()=>rec.stop();
+      rec.ondataavailable=e=>{if(e.data?.size)chunks.push(e.data)};
+      rec.onstop=()=>{const type=rec.mimeType||mime||'video/webm';const ext=type.includes('mp4')?'mp4':'webm';const f=new File([new Blob(chunks,{type})],`vistoria-${Date.now()}.${ext}`,{type,lastModified:Date.now()});addPending(f,document.getElementById('f-camera-room')?.value||'Geral',true);stream.getTracks().forEach(t=>t.stop());host.hidden=true;host.innerHTML='';renderPendingMedia()};
+      rec.start(1000);
+    }catch(e){console.error(e);alert('Não foi possível abrir a câmera/microfone para o vídeo.');}
+  };
+
+
+  async function compressVideoForUpload(file,maxWidth=1280,fps=24,videoBits=850000,audioBits=48000){
+    if(!file?.type?.startsWith('video/')) return file;
+    if(file.size<2*1024*1024) return file;
+    try{
+      const url=URL.createObjectURL(file),v=document.createElement('video');v.src=url;v.muted=false;v.playsInline=true;v.preload='auto';
+      await new Promise((resolve,reject)=>{v.onloadedmetadata=resolve;v.onerror=()=>reject(new Error('Vídeo não pôde ser decodificado'))});
+      const srcStream=v.captureStream?.()||v.mozCaptureStream?.();
+      if(!srcStream||!window.MediaRecorder)throw new Error('captura de vídeo não suportada');
+      const w=v.videoWidth||1280,h=v.videoHeight||720,scale=Math.min(1,maxWidth/Math.max(w,h));
+      const canvas=document.createElement('canvas');canvas.width=Math.max(2,Math.round(w*scale));canvas.height=Math.max(2,Math.round(h*scale));
+      const ctx=canvas.getContext('2d');const out=canvas.captureStream(fps);
+      srcStream.getAudioTracks().forEach(t=>out.addTrack(t));
+      const mime=['video/mp4','video/webm;codecs=vp8,opus','video/webm'].find(x=>MediaRecorder.isTypeSupported?.(x))||'';
+      const chunks=[],rec=new MediaRecorder(out,mime?{mimeType:mime,videoBitsPerSecond:videoBits,audioBitsPerSecond:audioBits}:undefined);
+      const draw=()=>{if(v.paused||v.ended)return;ctx.drawImage(v,0,0,canvas.width,canvas.height);requestAnimationFrame(draw)};
+      const result=new Promise((resolve,reject)=>{rec.ondataavailable=e=>{if(e.data?.size)chunks.push(e.data)};rec.onerror=()=>reject(rec.error||new Error('Falha na compressão'));rec.onstop=()=>{const type=rec.mimeType||mime||'video/webm';const ext=type.includes('mp4')?'mp4':'webm';resolve(new File([new Blob(chunks,{type})],safeName(file.name).replace(/\.[^.]+$/i,'.'+ext),{type,lastModified:Date.now()}))}});
+      rec.start(1000);v.play();draw();await new Promise(resolve=>{v.onended=resolve});rec.stop();const compressed=await result;out.getTracks().forEach(t=>t.stop());srcStream.getTracks().forEach(t=>t.stop());URL.revokeObjectURL(url);return compressed.size<file.size?compressed:file;
+    }catch(e){console.warn('Não foi possível recomprimir este vídeo no navegador; mantendo original.',e);return file}
+  }
+  window.DormusCompressVideo=compressVideoForUpload;
+
+  function inspectionAttachmentField(r,kind){
+    if(kind!=='inspection')return null;
+    return `<div class="attachments-block inspection-media-block"><div class="inspection-media-title">📷 Fotos e vídeos da vistoria</div><div class="inspection-media-grid"><button type="button" class="media-capture-card media-record-button" onclick="window.startInspectionPhotoBatch()"><span>📸</span><strong>Tirar várias fotos</strong><small>Selecione depois quais serão gravadas</small></button><label class="media-capture-card"><span>🖼️</span><strong>Selecionar várias fotos</strong><small>Escolha várias da galeria</small><input id="f-attachments-media" type="file" accept="image/*" multiple onchange="window.handleInspectionInputFiles(this.files)"></label><button type="button" class="media-capture-card media-record-button" onclick="window.openInspectionVideoRecorder()"><span>🎥</span><strong>Gravar vídeo comprimido</strong><small>720p · bitrate reduzido</small></button><label class="media-capture-card"><span>🎬</span><strong>Selecionar vídeos</strong><small>Escolha vídeos já existentes</small><input id="f-video-media" type="file" accept="video/*" multiple onchange="window.handleInspectionInputFiles(this.files)"></label></div><div class="form-field"><label for="f-camera-room">Cômodo da próxima mídia</label><select id="f-camera-room">${roomOptions('Geral')}</select></div><div id="inspection-recorder" class="inspection-recorder" hidden></div><div id="inspection-pending-media"></div><div id="modal-attachments" class="attachment-list"></div><span class="attachments-help">As fotos são reduzidas para até 1920 px com compressão JPEG de alta qualidade. Os vídeos gravados no DORMUS usam resolução/bitrate reduzidos. Somente as mídias marcadas serão salvas no cadastro e no Storage do Supabase.</span></div>`;
+  }
+  window.handleInspectionInputFiles=async files=>{await handleInspectionFiles(files,document.getElementById('f-camera-room')?.value||'Geral')};
+  window.attachmentField=window.attachmentField||attachmentField;
+
+  const originalAttachmentField=attachmentField;
+  window.attachmentField=attachmentField=function(r,kind){if(kind==='inspection')return inspectionAttachmentField(r,kind);return originalAttachmentField(r,kind)};
+
+  const originalInspectionFiles=window.inspectionMediaFiles||function(){return[]};
+  window.inspectionMediaFiles=function(){return pendingInspectionMedia.filter(x=>x.selected).map(x=>({file:x.file,room:x.room,includeInReport:x.includeInReport,pendingId:x.id}))};
+
+  const originalOpenModal=window.openModal;
+  window.openModal=function(kind,id=''){
+    if(kind==='inspection')pendingInspectionMedia=[];
+    return originalOpenModal(kind,id);
+  };
+
+  const originalShowSelectedFiles=window.showSelectedFiles;
+  window.showSelectedFiles=function(){if(typeof originalShowSelectedFiles==='function')originalShowSelectedFiles();renderPendingMedia()};
+
+  const originalSyncAttachments=window.syncAttachments;
+  window.syncAttachments=async function(kind,recordId){
+    if(kind!=='inspection'){
+      return originalSyncAttachments(kind,recordId);
+    }
+    if(!Array.isArray(db.attachments))db.attachments=[];
+    const remove=[...document.querySelectorAll('.remove-attachment:checked')].map(x=>x.value);
+    if(recordId&&!attachmentRows(kind,recordId).length){try{await migrateLegacyAttachments(kind,recordId)}catch(e){console.warn(e)}}
+    const existing=attachmentRows(kind,recordId),kept=existing.filter(x=>!remove.includes(x.key)),removed=existing.filter(x=>remove.includes(x.key));
+    if(removed.length){const paths=removed.map(x=>x.path).filter(Boolean);if(paths.length){const {error}=await supabaseClient.storage.from(STORAGE_BUCKET).remove(paths);if(error)throw error;}}
+    const updatedExisting=kept.map(file=>{const room=document.querySelector(`[data-room-key="${CSS.escape(file.key)}"]`)?.value;return room?{...file,room}:file});
+    const uploaded=[];
+    for(const entry of pendingInspectionMedia.filter(x=>x.selected)){
+      let file=entry.file;
+      if(file.type?.startsWith('image/'))file=await compressImageUniversal(file,1920,.86);
+      const key=`inspection:${recordId}:${uid()}`;
+      const path=`inspection/${recordId}/${key}-${safeName(file.name)}`;
+      const {error}=await supabaseClient.storage.from(STORAGE_BUCKET).upload(path,file,{upsert:false,contentType:file.type||'application/octet-stream'});
+      if(error)throw error;
+      uploaded.push({key,kind,recordId,name:file.name,type:file.type||'application/octet-stream',size:file.size,path,room:entry.room||'Geral',createdAt:new Date().toISOString(),compressed:true,includeInReport:entry.includeInReport!==false});
+    }
+    db.attachments=db.attachments.filter(file=>!(file.kind===kind&&file.recordId===recordId)).concat(updatedExisting,uploaded);
+    pendingInspectionMedia=[];
+    renderPendingMedia();
+  };
+
+  function reportOwners(r){
+    const property=db.properties.find(x=>x.id===r.propertyId)||{};
+    const contract=db.contracts.find(x=>x.propertyId===r.propertyId&&x.status!=='Encerrado')||db.contracts.find(x=>x.propertyId===r.propertyId)||{};
+    const owner=db.owners.find(x=>x.id===(contract.ownerId||property.ownerId))||{};
+    const tenant=db.tenants.find(x=>x.id===contract.tenantId)||{};
+    return {property,contract,owner,tenant};
+  }
+  function reportItemRows(items){
+    const by={};items.forEach(x=>{const k=x.room||'Geral';(by[k]||(by[k]=[])).push(x)});return Object.entries(by).map(([room,rows])=>`<section class="inspection-report-room"><h3>${esc(room)}</h3><table class="inspection-table"><thead><tr><th>Item</th><th>Estado</th><th>Situação</th><th>Explique / observação</th></tr></thead><tbody>${rows.map(x=>`<tr><td>${esc(x.item||'—')}</td><td>${esc(x.current||'Não informado')}</td><td class="inspection-report-check">${/avaria|reparo|ruim/i.test(x.current||'')?'Com avarias':'Sem avarias'}</td><td>${esc(x.notes||'')}</td></tr>`).join('')}</tbody></table></section>`).join('')}
+  function reportPhotosByRoom(attachments){
+    const groups={};attachments.filter(x=>x.includeInReport!==false&&x.type?.startsWith('image/')&&x.url).forEach(x=>{const k=x.room||'Geral';(groups[k]||(groups[k]=[])).push(x)});
+    return Object.entries(groups).map(([room,files])=>`<section class="inspection-report-room"><h3>Fotos — ${esc(room)}</h3><div class="inspection-report-photo-grid">${files.map(x=>`<figure><img src="${esc(x.url)}" alt="${esc(x.name)}"><figcaption>${esc(x.name)}</figcaption></figure>`).join('')}</div></section>`).join('');
+  }
+  window.inspectionReportHtml=function(r,attachments=[]){
+    const {property,owner,tenant}=reportOwners(r);const items=inspectionItems(r);const facade=attachments.find(x=>x.room==='Fachada'&&x.type?.startsWith('image/')&&x.url&&x.includeInReport!==false);const videos=attachments.filter(x=>x.type?.startsWith('video/')&&x.includeInReport!==false);const painted=r.painted||'Não informado';
+    return `<article class="inspection-report inspection-print-sheet"><header class="inspection-report-header"><div class="inspection-report-brand">dormus<small>GESTÃO IMOBILIÁRIA</small></div><div class="inspection-report-title"><strong>LAUDO DE VISTORIA</strong><span>${esc(r.type||'Vistoria')} · ${esc(formatDatePt(r.date)||'Data não informada')}</span></div></header>${facade?`<section class="inspection-report-facade"><h3>Fachada</h3><img src="${esc(facade.url)}" alt="Foto da fachada"><div>${esc(facade.name||'Foto da fachada')}</div></section>`:''}<h3>Identificação do imóvel</h3><div class="inspection-report-meta"><div><span>Proprietário</span><strong>${esc(owner.name||'Não informado')}</strong></div><div><span>Locatário</span><strong>${esc(tenant.name||'Não informado')}</strong></div><div><span>Endereço do imóvel</span><strong>${esc(presentationAddress(property)||'Não informado')}</strong></div><div><span>Data da vistoria</span><strong>${esc(formatDatePt(r.date)||'Não informado')}</strong></div><div><span>Residencial</span><strong>(${r.type==='Entrada'?'x':' '}) Entrada &nbsp; (${r.type==='Saída'?'x':' '}) Saída</strong></div><div><span>Imóvel pintado</span><strong>${esc(painted)}</strong></div><div><span>Vistoriador</span><strong>${esc(r.responsible||'Não informado')}</strong></div></div><h3>Vistoria por cômodo</h3>${items.length?reportItemRows(items):'<div class="inspection-report-note">Nenhum item selecionado.</div>'}${reportPhotosByRoom(attachments)}${videos.length?`<section class="inspection-report-room"><h3>Vídeos anexados</h3><div class="inspection-report-videos">${videos.map(v=>`<div>${esc(v.name)} · ${formatBytes(v.size)}</div>`).join('')}</div></section>`:''}<h3>Parecer do vistoriador</h3><div class="inspection-report-conclusion"><div class="inspection-report-note">${esc(r.notes||'Nenhum parecer informado.')}</div></div><div class="inspection-report-signatures"><div class="inspection-report-signature">Assinatura do Locador<br>${esc(owner.name||'')}</div><div class="inspection-report-signature">Assinatura do Locatário<br>${esc(tenant.name||'')}</div><div class="inspection-report-signature">Vistoriador<br>${esc(r.responsible||'')}</div></div><div class="inspection-report-foot">Data: ${esc(formatDatePt(r.reportDate||r.date)||'____/____/________')} · Modelo baseado no laudo fornecido para o DORMUS</div></article>`;
+  };
+
+  const originalCollect=window.collect;
+  window.collect=function(kind){const r=originalCollect(kind);if(kind==='inspection'){r.painted=val('f-painted');r.reportDate=val('f-report-date')||val('f-date');}return r};
+  const originalFormFor=window.formFor;
+  window.formFor=function(kind,r){
+    if(kind!=='inspection')return originalFormFor(kind,r);
+    const base=originalFormFor(kind,r);
+    return base.replace(`${textarea('Observações','f-notes',r.notes)}`,`${select('Imóvel pintado','f-painted',['SIM INTERNO','SIM INTERNO E EXTERNO','NÃO','Não informado'],r.painted||'Não informado')}${input('Data do laudo','f-report-date',r.reportDate||r.date,'date')}${textarea('Parecer do vistoriador','f-notes',r.notes)}`);
+  };
+
+  const originalBoot=window.renderAll;
+  if(typeof originalBoot==='function'){/* keep original rendering */}
+  console.info('DORMUS '+MEDIA_VERSION+' · mídia e laudo aprimorados carregados');
+})();
+</script>
+</body></html>');
     w.document.close();
   };
   function enhanceAssistant(){
@@ -7147,5 +7348,40 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   const style=document.createElement('style');style.textContent='.maintenance-payer-note{padding:10px 12px;border:1px solid #d6e0d7;border-radius:9px;background:#eef4ef;color:#315345;font-size:11px;line-height:1.45}.maintenance-payer-note strong{color:#203d37}.repasse-table th,.repasse-table td{white-space:nowrap}';document.head.appendChild(style);
   // Registros antigos continuam válidos; novos/alterados usam Compras + responsável pelo pagamento.
   window.DormusMaintenanceFinance863={ownerMaintenanceDeduction:window.ownerMaintenanceDeduction};
+})();
+</script>
+<script id="dormus-identity-882">
+(function(){
+  function clean(v){return String(v||'').trim().replace(/\s+/g,' ')}
+  function initials(name){const p=clean(name).split(' ').filter(Boolean);return (p.length>1?p.slice(0,2).map(x=>x[0]).join(''):p[0]?.slice(0,2)||'U').toUpperCase()}
+  function applyName(name,email,perfil){
+    name=clean(name)||clean((email||'').split('@')[0])||'Usuário';
+    const h=document.getElementById('home-user-name'); if(h) h.textContent=name;
+    const n=document.getElementById('auth-name'); if(n) n.textContent=name;
+    const e=document.getElementById('auth-email'); if(e){e.textContent=name;e.title=email||''}
+    const r=document.getElementById('auth-role'); if(r) r.textContent=perfil==='admin'?'Administrador':'Conta DORMUS';
+    const a=document.getElementById('profile-button'); if(a) a.textContent=initials(name);
+    return name;
+  }
+  async function sync(){
+    try{
+      const session=(await supabaseClient.auth.getSession()).data?.session;
+      if(!session?.user)return;
+      const email=clean(session.user.email).toLowerCase();
+      let access=null;
+      if(email){
+        const q=await supabaseClient.from('dormus_acessos').select('nome,email,username,perfil').eq('email',email).maybeSingle();
+        if(!q.error) access=q.data||null;
+      }
+      const name=clean(access?.nome)||clean(session.user.user_metadata?.nome)||clean(session.user.user_metadata?.name)||clean(email.split('@')[0]);
+      applyName(name,email,access?.perfil);
+      const profile={email,nome:name,perfil:access?.perfil||'funcionario',username:access?.username||clean(email.split('@')[0])};
+      window.DormusLoginProfile=profile;
+      try{sessionStorage.setItem('dormus_login_profile',JSON.stringify(profile));}catch(e){}
+    }catch(e){console.warn('DORMUS 8.82: não foi possível sincronizar o nome do usuário',e)}
+  }
+  window.DormusSyncIdentity882=sync;
+  setTimeout(sync,300);
+  if(window.supabaseClient?.auth?.onAuthStateChange) window.supabaseClient.auth.onAuthStateChange((_event,session)=>{if(session)setTimeout(sync,100)});
 })();
 </script>
