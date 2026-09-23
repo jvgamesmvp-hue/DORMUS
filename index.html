@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.1</title>
+  <title>Dormus | Gestão imobiliária · 8.2</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -577,7 +577,8 @@ section,article,.section,.content-card,.white-card{
     <aside class="side">
       <a class="brand" href="#" onclick="showView('home');return false"><span class="brand-mark">D</span><span><strong>Dormus</strong><small>GESTÃO IMOBILIÁRIA</small></span></a><div class="provider-only-brand-note">Portal do Prestador<br>Você possui acesso limitado aos serviços atribuídos a você.</div>
       <div class="nav-title">Principal</div><nav class="nav">
-        <button data-view="home" class="active"><span class="nav-icon">⌘</span>Dashboard</button>
+         <button data-view="home" class="active"><span class="nav-icon">⌘</span>Dashboard</button>
+         <button data-view="notifications-center" class="notification-center-nav"><span class="nav-icon">🔔</span>Notificações <span id="notification-center-badge" class="nav-chat-badge" style="display:none">0</span></button>
         <button data-view="properties"><span class="nav-icon">▥</span>Imóveis</button>
         <button data-view="owners"><span class="nav-icon">♙</span>Proprietários</button>
         <button data-view="tenants"><span class="nav-icon">♙</span>Locatários</button>
@@ -623,6 +624,47 @@ section,article,.section,.content-card,.white-card{
           <section class="panel"><div class="panel-head"><div><div class="panel-title">Atalhos rápidos</div><div class="panel-kicker">Ações mais usadas no dia a dia.</div></div></div><div class="quick-actions"><button onclick="openModal('property')">＋ Novo imóvel</button><button onclick="openModal('contract')">＋ Novo contrato</button><button onclick="openModal('maintenance')">＋ Novo chamado</button><button onclick="openCrmLeadModal()">＋ Novo lead</button></div></section>
         </div>
       </section>
+       <section id="notifications-center" class="view">
+         <div class="page-head modern-head notification-center-head">
+           <div><div class="eyebrow">Acompanhamento diário</div><h1>Notificações</h1><p class="lead">Tudo que merece atenção na operação, em um único lugar.</p></div>
+           <div class="notification-center-date"><span>Última atualização</span><strong id="notification-center-updated">Agora</strong></div>
+         </div>
+         <div id="notification-center-summary" class="notification-center-summary"></div>
+         <div class="notification-center-layout">
+           <div class="notification-center-main">
+             <section class="panel notification-card notification-card-contracts" data-notification-target="contracts">
+               <div class="notification-card-head"><div><span class="notification-card-icon">📄</span><div><h2>Contratos perto do vencimento</h2><p>Próximos 60 dias</p></div></div><span id="notification-contracts-count" class="notification-count">0</span></div>
+               <div id="notification-contracts-list" class="notification-list"></div>
+               <button class="notification-card-link" onclick="showView('contracts')">Ver contratos →</button>
+             </section>
+             <section class="panel notification-card notification-card-rents">
+               <div class="notification-card-head"><div><span class="notification-card-icon">💰</span><div><h2>Aluguéis em atraso</h2><p>Valores ainda não recebidos</p></div></div><span id="notification-rents-count" class="notification-count">0</span></div>
+               <div id="notification-rents-list" class="notification-list"></div>
+               <button class="notification-card-link" onclick="showView('rents')">Abrir financeiro →</button>
+             </section>
+             <section class="panel notification-card notification-card-maintenance">
+               <div class="notification-card-head"><div><span class="notification-card-icon">🔧</span><div><h2>Chamados em aberto</h2><p>Manutenções que precisam de acompanhamento</p></div></div><span id="notification-maintenance-count" class="notification-count">0</span></div>
+               <div id="notification-maintenance-list" class="notification-list"></div>
+               <button class="notification-card-link" onclick="showView('maintenance')">Ver chamados →</button>
+             </section>
+             <section class="panel notification-card notification-card-chat">
+               <div class="notification-card-head"><div><span class="notification-card-icon">💬</span><div><h2>Mensagens no chat</h2><p>Conversas com prestadores</p></div></div><span id="notification-chat-count" class="notification-count">0</span></div>
+               <div id="notification-chat-list" class="notification-list"></div>
+               <button class="notification-card-link" onclick="showView('chats')">Abrir chats →</button>
+             </section>
+           </div>
+           <aside class="notification-center-side">
+             <section class="panel notification-weather-card">
+               <div class="notification-card-head"><div><span class="notification-card-icon">☀️</span><div><h2>Clima de hoje</h2><p id="notification-weather-place">Carregando local...</p></div></div></div>
+               <div id="notification-weather" class="notification-weather-content"><div class="notification-loading">Consultando o clima...</div></div>
+             </section>
+             <section class="panel notification-attention-card">
+               <div class="panel-head"><div><div class="panel-title">Resumo rápido</div><div class="panel-kicker">Acesse diretamente o que está pendente.</div></div></div>
+               <div id="notification-center-actions" class="notification-center-actions"></div>
+             </section>
+           </aside>
+         </div>
+       </section>
       <section id="properties" class="view"><div class="page-head"><div><div class="eyebrow">Carteira imobiliária</div><h1>Imóveis</h1><p class="lead" id="properties-subtitle">0 imóveis cadastrados</p></div><button class="button button-primary" onclick="openModal('property')">＋ Novo imóvel</button></div><div class="properties-toolbar"><div class="searchbar"><input id="property-search" placeholder="⌕  Buscar por nome, código, bairro..." oninput="renderProperties()"></div><div class="property-filters"><button class="filter-btn active" data-pfilter="">Todos</button><button class="filter-btn" data-pfilter="Disponível">Disponível</button><button class="filter-btn" data-pfilter="Ocupado">Ocupado</button><button class="filter-btn" data-pfilter="Manutenção">Manutenção</button><button class="filter-btn" data-pfilter="Negociação">Negociação</button></div></div><div id="property-list" class="property-grid"></div></section>
       <section id="owners" class="view"><div id="owners-content"></div></section>
       <section id="tenants" class="view"><div id="tenants-content"></div></section>
@@ -3179,7 +3221,7 @@ body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sa
     if(!pendingInspectionMedia.length){el.innerHTML='<div class="attachments-help">Nenhuma foto ou vídeo aguardando seleção.</div>';return}
     el.innerHTML=`<div class="media-batch-toolbar"><strong>${pendingInspectionMedia.length} mídia(s) aguardando seleção</strong><button type="button" class="button button-small" onclick="window.selectAllInspectionMedia(true)">Selecionar todas</button><button type="button" class="button button-small" onclick="window.selectAllInspectionMedia(false)">Desmarcar todas</button></div><div class="media-batch-grid">${pendingInspectionMedia.map(x=>{
       const isImg=x.file.type?.startsWith('image/');
-       return `<div class="media-batch-card ${isImg?'':'is-video'}" data-media-card="${esc(x.id)}"><input class="media-batch-check" type="checkbox" ${x.selected?'checked':''} onchange="window.toggleInspectionMedia('${esc(x.id)}',this.checked)"><span class="attachments-help">salva no cadastro · não aparece na impressão</span>${isImg?`<img class="media-batch-thumb" data-media-preview="${esc(x.id)}" alt="Prévia">`:`<div class="media-batch-thumb" style="display:grid;place-items:center;font-size:34px">🎥</div>`}<div class="media-batch-meta"><strong>${esc(x.file.name||'mídia')}</strong><small>${formatMB(x.file.size)}</small></div><select class="media-batch-room" onchange="window.setInspectionMediaRoom('${esc(x.id)}',this.value)">${roomOptions(x.room)}</select></div>`}).join('')}</div>`;
+      return `<div class="media-batch-card ${isImg?'':'is-video'}" data-media-card="${esc(x.id)}"><input class="media-batch-check" type="checkbox" ${x.selected?'checked':''} onchange="window.toggleInspectionMedia('${esc(x.id)}',this.checked)"><label><input class="media-batch-report" type="checkbox" ${x.includeInReport?'checked':''} onchange="window.toggleInspectionReportMedia('${esc(x.id)}',this.checked)"> incluir no laudo</label>${isImg?`<img class="media-batch-thumb" data-media-preview="${esc(x.id)}" alt="Prévia">`:`<div class="media-batch-thumb" style="display:grid;place-items:center;font-size:34px">🎥</div>`}<div class="media-batch-meta"><strong>${esc(x.file.name||'mídia')}</strong><small>${formatMB(x.file.size)}</small></div><select class="media-batch-room" onchange="window.setInspectionMediaRoom('${esc(x.id)}',this.value)">${roomOptions(x.room)}</select></div>`}).join('')}</div>`;
     pendingInspectionMedia.forEach(x=>{if(x.file.type?.startsWith('image/')){const img=document.querySelector(`[data-media-preview="${CSS.escape(x.id)}"]`);if(img){img.src=URL.createObjectURL(x.file);img.onload=()=>URL.revokeObjectURL(img.src)}}});
   }
   window.toggleInspectionMedia=(id,v)=>{const x=pendingInspectionMedia.find(a=>a.id===id);if(x)x.selected=!!v;};
@@ -6765,13 +6807,10 @@ input::placeholder,textarea::placeholder {
     }).join('');
     const totalFee=d.items.reduce((sum,item)=>sum+item.fee,0);
     balance-=totalFee;
-     const feeRows=`<tr class="ledger-row">
+    const feeRows=`<tr class="ledger-row">
       <td class="date"></td><td class="description">Taxa de administração</td>
       <td class="amount"></td><td class="amount">${amount(totalFee)}</td><td class="balance">${amount(balance)}</td>
     </tr>`;
-     const minimumLedgerRows=12;
-     const currentLedgerRows=d.items.length+4;
-     const blankRows=Array.from({length:Math.max(0,minimumLedgerRows-currentLedgerRows)},()=>'<tr class="ledger-row"><td></td><td></td><td></td><td></td><td></td></tr>').join('');
     return `<!doctype html>
 <html lang="pt-BR">
 <head>
@@ -6800,7 +6839,7 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
       <tr class="ledger-row"><td></td><td></td><td></td><td></td><td class="balance">${amount(d.net)}</td></tr>
       <tr class="ledger-row"><td></td><td></td><td></td><td></td><td></td></tr>
       <tr class="ledger-row"><td></td><td></td><td></td><td></td><td class="balance">${amount(d.net)}</td></tr>
-       ${blankRows}
+      <tr class="ledger-row"><td></td><td></td><td></td><td></td><td></td></tr>
       <tr class="total-row"><td colspan="2" class="total-label">TOTAL GERAL</td><td class="amount">${amount(d.gross)}</td><td class="amount">${amount(d.fee)}</td><td class="balance">${amount(d.net)}</td></tr>
     </tbody>
   </table>
@@ -7500,6 +7539,8 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
      return (d.rentalCharges||[]).filter(function(item){
        if(Number(item.paidAmount||0)<=0)return false;
         if(String(item.referenceMonth||'').slice(0,7)!==a.month)return false;
+        var transfer=(d.ownerTransfers||[]).find(function(entry){return String(entry.chargeId)===String(item.id);});
+        if(transfer&&String(transfer.status||'').toLowerCase()==='repassado')return false;
        var x=chargeContext(item);
        return a.ownerId!=null&&x.ownerId!=null&&String(x.ownerId)===String(a.ownerId);
      }).map(chargeContext).sort(function(a,b){
@@ -7551,6 +7592,7 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
      var issue=datePt(new Date().toISOString());
      return '<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(title)+' · '+esc(owner)+'</title><style>'+
        'html,body{margin:0;padding:0;background:#fff}body{font-family:Arial,Helvetica,sans-serif;padding:12mm;color:#222}*{box-sizing:border-box}.print-actions{display:flex;justify-content:center;gap:8px;margin:0 auto 16px}.print-actions button{border:1px solid #30463b;border-radius:6px;padding:9px 14px;background:#30463b;color:#fff;font-weight:700;cursor:pointer}.sheet{width:100%;max-width:960px;margin:0 auto;border:2px solid #3d3d3d;background:#fff}.title{padding:10px 14px 8px;border-bottom:2px solid #3d3d3d;text-align:center;font-size:25px;font-weight:800}.owner{padding:8px 12px;border-bottom:2px solid #3d3d3d;font-size:18px;font-weight:700;text-transform:uppercase}.table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:14px}.table th,.table td{border-right:1px solid #4a4a4a;border-bottom:1px solid #4a4a4a;min-height:27px;padding:5px 8px;vertical-align:middle}.table th:last-child,.table td:last-child{border-right:0}.table th{background:#f3f3f3;font-size:15px;text-align:center}.date{width:14%;text-align:center}.description{width:43%}.money{width:14.33%;text-align:right;white-space:nowrap}.property{color:#555;font-size:12px;font-weight:400;margin-top:2px}.section td{background:#f3f3f3;border-top:2px solid #333;font-weight:800;letter-spacing:1px;text-transform:uppercase}.total td{border-top:2px solid #333;font-weight:800;letter-spacing:.7px;padding-top:8px;padding-bottom:8px}.total-label{letter-spacing:5px!important}.footer{display:grid;grid-template-columns:120px 1fr;min-height:108px}.brand{display:flex;align-items:center;justify-content:center;padding:8px;background:#4b4b4b;color:#fff;text-align:center;font-size:12px;font-weight:700;line-height:1.2}.brand strong{display:block;font-family:Georgia,serif;font-size:19px;font-weight:400}.footer-main{display:flex;flex-direction:column;justify-content:space-between;padding:8px 12px 5px;text-align:center}.signatures{display:flex;justify-content:space-around;gap:35px;margin:12px auto 4px;width:min(560px,100%)}.signature{border-top:1px solid #333;min-width:190px;padding-top:4px;font-weight:700}.contact{border-top:1px solid #555;padding-top:4px;font-size:10px;line-height:1.35}@media print{@page{size:A4 landscape;margin:7mm}.print-actions{display:none!important}body{padding:0}.sheet{width:100%;max-width:none}}@media(max-width:620px){body{padding:5mm}.title{font-size:18px}.owner{font-size:14px}.table{font-size:11px}.table th{font-size:11px}.table th,.table td{padding:4px}.footer{grid-template-columns:82px 1fr}.brand strong{font-size:14px}.signatures{gap:10px}.signature{min-width:0;flex:1;font-size:10px}}'+
+       '</style><style>.sheet{max-width:960px}.title{padding:5px 9px 4px;font-size:18px}.owner{padding:4px 8px;font-size:11px}.table{font-size:9px;line-height:1.1}.table th,.table td{min-height:0;height:7mm;padding:2px 4px;line-height:1.1}.table th{font-size:10px}.property{font-size:8px;margin-top:1px}.total td{padding-top:4px;padding-bottom:4px}.total-label{letter-spacing:3px!important}.footer{min-height:48px;grid-template-columns:82px 1fr}.brand{padding:4px;font-size:8px}.brand strong{font-size:13px}.footer-main{padding:4px 7px 3px;font-size:8px}.signatures{gap:18px;margin:4px auto 2px}.signature{min-width:120px;padding-top:2px;font-size:8px}.contact{padding-top:2px;font-size:7px;line-height:1.15}@media print{body{padding:0}.sheet{width:100%;max-width:none}.table th,.table td{height:7mm;padding:2px 4px}}@media(max-width:620px){.title{font-size:16px}.owner{font-size:10px}.table{font-size:8px}.table th{font-size:9px}.footer{grid-template-columns:65px 1fr}.signature{min-width:0}}'+
        '</style></head><body><div class="print-actions"><button onclick="window.print()">🖨 Imprimir / salvar PDF</button><button onclick="window.close()">Fechar</button></div><article class="sheet"><div class="title">'+esc(title)+'</div><div class="owner">Nome: '+esc(owner)+'</div><table class="table"><thead><tr><th class="date">Data</th><th class="description">Descrição</th><th class="money">Entrada</th><th class="money">Saída</th><th class="money">Saldo</th></tr></thead><tbody>'+rentRows+feeRow+deductionRow+'<tr><td></td><td></td><td></td><td></td><td class="money">'+money(balance)+'</td></tr><tr class="total"><td colspan="2" class="total-label">TOTAL GERAL</td><td class="money">'+money(totalEntry)+'</td><td class="money">'+money(totalExit)+'</td><td class="money">'+money(balance)+'</td></tr></tbody></table><footer class="footer"><div class="brand"><div><strong>HD</strong>'+esc(company.name)+'<br><small>GESTÃO IMOBILIÁRIA</small></div></div><div class="footer-main"><div>'+esc(company.city)+', '+esc(issue)+'</div><div class="signatures"><div class="signature">Cliente</div><div class="signature">'+esc(company.name)+'</div></div><div class="contact">'+esc(company.address)+' · '+esc(company.phone)+'<br>'+esc(company.email)+'</div></div></footer></article></body></html>';
    }
    function openStatement(items){
@@ -7619,7 +7661,7 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   .vistoria-model-886-identification p{margin:0}
   .vistoria-model-886-identification b{font-weight:700}
   .vistoria-model-886-checkline{text-align:left;margin-top:9px;line-height:1.6}
-  .vistoria-model-886-facade{display:none!important;margin:12px 0 10px}
+  .vistoria-model-886-facade{margin:12px 0 10px}
   .vistoria-model-886-facade-title{font-weight:700;font-size:15px;margin-bottom:5px}
   .vistoria-model-886-facade img{display:block;max-width:100%;max-height:62mm;margin:0 auto;border:1px solid #222;object-fit:contain}
   .vistoria-model-886-room{page-break-inside:avoid;display:block;margin:14px 0 0}
@@ -7645,7 +7687,6 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
     .vistoria-model-886{width:100%;max-width:none}
     .vistoria-model-886-header h1{font-size:22px}
     .vistoria-model-886-room{margin-top:12px}
-    .vistoria-model-886-facade{display:none!important}
   }
   @media(max-width:620px){
     .vistoria-model-886-photos{grid-template-columns:repeat(2,1fr)}
@@ -7655,9 +7696,6 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   .inspection-model-preview .presentation-body{background:#fff;padding:18px;overflow:auto}
   .inspection-model-preview .vistoria-model-886{max-width:190mm;box-shadow:0 2px 14px #00000012;padding:4mm}
   .inspection-model-preview .presentation-actions{margin-top:14px}
-  .inspection-print-sheet img,
-  .inspection-print-sheet .inspection-report-photo-grid,
-  .inspection-print-sheet .inspection-report-facade{display:none!important}
   .dormus-print-sheet-881,.dormus-print-sheet-884,.dormus-print-sheet-885{page:repasseLandscape}
   @media print{
     @page repasseLandscape{size:A4 landscape;margin:7mm}
@@ -7695,21 +7733,22 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
     if(!/[:：]$/.test(name))name+=':';
     return '<div class="vistoria-model-886-item"><div class="vistoria-model-886-item-name">'+esc(name)+'</div><div class="vistoria-model-886-state">'+stateLine(item)+'</div><div class="vistoria-model-886-explain"><b>Explique:</b> '+esc(item.notes||'')+'</div></div>'
   }
-   function photosHtml(files){
-     /* As fotos continuam no cadastro e no Storage, mas não fazem parte do laudo impresso. */
-     return''
-   }
+  function photosHtml(files){
+    var photos=(files||[]).filter(function(x){return x.includeInReport!==false&&x.type&&x.type.indexOf('image/')===0&&x.url});
+    if(!photos.length)return'';
+    return '<div class="vistoria-model-886-photos">'+photos.map(function(x){return '<figure><img src="'+esc(x.url)+'" alt="'+esc(x.name||'Foto da vistoria')+'"><figcaption>'+esc(x.name||'Foto da vistoria')+'</figcaption></figure>'}).join('')+'</div>'
+  }
   function roomHtml(room,items,files){
     return '<section class="vistoria-model-886-room"><h2 class="vistoria-model-886-room-title">'+esc(room)+':</h2>'+items.map(itemHtml).join('')+photosHtml(files)+'</section>'
   }
   function reportHtml(r,files){
     var d=D(),info=people(r),items=Array.isArray(r.items)?r.items:[],by={},order=[];
     items.forEach(function(item){var room=String(item.room||'Geral').trim()||'Geral';if(!by[room]){by[room]=[];order.push(room)}by[room].push(item)});
-     var facade=null;
-     var roomFiles={};
+    var facade=(files||[]).find(function(x){return x.includeInReport!==false&&x.room==='Fachada'&&x.type&&x.type.indexOf('image/')===0&&x.url});
+    var roomFiles={};(files||[]).filter(function(x){return x.includeInReport!==false&&x.type&&x.type.indexOf('image/')===0&&x.url&&x.room!=='Fachada'}).forEach(function(x){(roomFiles[x.room||'Geral']||(roomFiles[x.room||'Geral']=[])).push(x)});
     var roomSections=order.map(function(room){return roomHtml(room,by[room],roomFiles[room]||[])}).join('');
     var extraRooms=Object.keys(roomFiles).filter(function(room){return order.indexOf(room)<0}).map(function(room){return roomHtml(room,[],roomFiles[room])}).join('');
-     var videos=[];
+    var videos=(files||[]).filter(function(x){return x.includeInReport!==false&&x.type&&x.type.indexOf('video/')===0});
     var painted=String(r.painted||'Não informado').toUpperCase();
     var type=String(r.type||'Entrada').toLowerCase();
     var reportDate=r.reportDate||r.date;
@@ -7741,125 +7780,169 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   window.DormusInspectionModel886={html:reportHtml}
 })();
 </script>
-<script id="dormus-887-owner-transfer-print-layout">
+<style id="dormus-886-notification-center-style">
+  .notification-center-nav{position:relative}
+  .notification-center-nav .nav-chat-badge{margin-left:auto;background:#d98f73}
+  .notification-center-head{align-items:center}
+  .notification-center-date{min-width:150px;padding:11px 13px;border:1px solid var(--j-line,#d8ddd4);border-radius:11px;background:var(--j-card,#fbfaf5);text-align:right}
+  .notification-center-date span{display:block;color:var(--j-muted,#71847e);font-size:10px}
+  .notification-center-date strong{display:block;margin-top:4px;color:var(--j-text,#203d37);font-size:12px}
+  .notification-center-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:15px}
+  .notification-summary-item{display:flex;align-items:center;gap:10px;padding:14px;border:1px solid var(--j-line,#d8ddd4);border-radius:13px;background:var(--j-card,#fbfaf5);box-shadow:0 6px 20px rgba(32,59,52,.06)}
+  .notification-summary-item i{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#e7efe9;font-style:normal}
+  .notification-summary-item strong{display:block;color:var(--j-text,#203d37);font-size:20px}
+  .notification-summary-item span{display:block;margin-top:2px;color:var(--j-muted,#71847e);font-size:10px}
+  .notification-center-layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.7fr);gap:15px;align-items:start}
+  .notification-center-main{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+  .notification-card{margin:0;min-width:0}
+  .notification-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+  .notification-card-head>div{display:flex;align-items:flex-start;gap:9px;min-width:0}
+  .notification-card-icon{width:34px;height:34px;flex:0 0 auto;display:grid;place-items:center;border-radius:10px;background:#edf2ed;font-size:16px}
+  .notification-card h2{margin:1px 0 3px;color:var(--j-text,#203d37);font-size:15px;line-height:1.2}
+  .notification-card-head p{margin:0;color:var(--j-muted,#71847e);font-size:10px}
+  .notification-count{min-width:27px;height:27px;padding:0 7px;border-radius:999px;display:grid;place-items:center;background:#f4ddd6;color:#a55745;font-size:11px;font-weight:800}
+  .notification-list{min-height:78px}
+  .notification-list-item{display:flex;width:100%;gap:9px;align-items:flex-start;padding:9px 0;border:0;border-bottom:1px solid var(--j-line,#d8ddd4);background:transparent;color:inherit;text-align:left;cursor:pointer}
+  .notification-list-item:last-child{border-bottom:0}
+  .notification-list-item:hover strong{color:#a55745}
+  .notification-list-item>i{font-style:normal;font-size:13px;line-height:1.2}
+  .notification-list-item strong{display:block;color:var(--j-text,#203d37);font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .notification-list-item span{display:block;margin-top:3px;color:var(--j-muted,#71847e);font-size:10px;line-height:1.35}
+  .notification-empty{display:flex;align-items:center;min-height:78px;color:var(--j-muted,#71847e);font-size:11px}
+  .notification-empty.ok{color:#438b69}
+  .notification-card-link{margin-top:10px;padding:0;border:0;background:transparent;color:#b86650;font-size:11px;font-weight:800;cursor:pointer}
+  .notification-center-side{display:grid;gap:15px}
+  .notification-weather-card,.notification-attention-card{margin:0}
+  .notification-weather-content{min-height:120px}
+  .notification-loading{padding:20px 0;color:var(--j-muted,#71847e);font-size:11px}
+  .notification-weather-main{display:flex;align-items:center;gap:12px;padding:3px 0 12px;border-bottom:1px solid var(--j-line,#d8ddd4)}
+  .notification-weather-main .weather-icon{font-size:38px}
+  .notification-weather-main strong{display:block;color:var(--j-text,#203d37);font:29px Georgia,serif}
+  .notification-weather-main span{display:block;margin-top:3px;color:var(--j-muted,#71847e);font-size:11px}
+  .notification-weather-details{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;padding-top:11px}
+  .notification-weather-details span{display:block;color:var(--j-muted,#71847e);font-size:9px}
+  .notification-weather-details strong{display:block;margin-top:3px;color:var(--j-text,#203d37);font-size:11px}
+  .notification-center-actions{display:grid;gap:8px}
+  .notification-action{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 11px;border:1px solid var(--j-line,#d8ddd4);border-radius:9px;background:transparent;color:var(--j-text,#203d37);text-align:left;cursor:pointer}
+  .notification-action:hover{border-color:#d98f73;background:#fff7f3}
+  .notification-action strong{font-size:11px}
+  .notification-action span{color:#b86650;font-size:11px;font-weight:800}
+  @media(max-width:1000px){.notification-center-summary{grid-template-columns:repeat(2,1fr)}.notification-center-layout{grid-template-columns:1fr}.notification-center-side{grid-template-columns:1fr 1fr}}
+  @media(max-width:700px){.notification-center-main,.notification-center-side{grid-template-columns:1fr}.notification-center-head{display:block}.notification-center-date{margin-top:12px;text-align:left}.notification-center-summary{grid-template-columns:1fr 1fr}}
+  @media(max-width:460px){.notification-center-summary{grid-template-columns:1fr}.notification-center-date{min-width:0}}
+</style>
+<script id="dormus-886-notification-center-script">
 (function(){
   'use strict';
-  if(window.__dormusOwnerTransferPrintLayout887)return;
-  window.__dormusOwnerTransferPrintLayout887=true;
-
-  /*
-   * The statement is printed from a separate about:blank window.  Apply the
-   * final print layout there, after the generated markup has been written,
-   * so the A4 landscape page is used instead of leaving the footer halfway
-   * down the sheet.
-   */
-  var nativeOpen=window.open;
-  window.open=function(){
-    var popup=nativeOpen.apply(this,arguments);
-    if(!popup)return popup;
-    var started=Date.now();
-    var patch=function(){
-      try{
-        var doc=popup.document;
-        if(!doc||!doc.documentElement)return;
-        var sheet=doc.querySelector('.sheet,.owner-transfer-print-sheet');
-        if(!sheet)return;
-        if(doc.getElementById('dormus-owner-transfer-print-layout-887-style')){
-          clearInterval(timer);
-          return;
-        }
-        var style=doc.createElement('style');
-        style.id='dormus-owner-transfer-print-layout-887-style';
-        style.textContent=[
-          '@page{size:A4 landscape;margin:7mm}',
-          'html,body{margin:0!important;padding:0!important;width:100%!important;min-height:100%!important}',
-          'body{display:block!important}',
-          '.print-actions{display:none!important}',
-          '.sheet,.owner-transfer-print-sheet{width:100%!important;max-width:none!important;margin:0!important;min-height:196mm!important;display:flex!important;flex-direction:column!important}',
-          '.sheet .table,.owner-transfer-print-table{width:100%!important;max-width:none!important;flex:1 1 auto!important;margin-top:0!important;font-size:12px!important}',
-          '.sheet .table th,.sheet .table td,.owner-transfer-print-table th,.owner-transfer-print-table td{padding:4px 6px!important;min-height:22px!important}',
-          '.sheet .table th,.owner-transfer-print-table th{font-size:12px!important}',
-          '.sheet .property,.owner-transfer-print-property{font-size:10px!important}',
-          '.sheet .title{padding:7px 10px 5px!important;font-size:20px!important}',
-          '.sheet .owner{padding:6px 10px!important;font-size:15px!important}',
-          '.sheet .total td{padding-top:6px!important;padding-bottom:6px!important}',
-           '.sheet .footer,.owner-transfer-print-footer{margin-top:auto!important;min-height:30mm!important}',
-          '.sheet .footer{grid-template-columns:95px 1fr!important}',
-          '.sheet .brand{font-size:10px!important}',
-          '.sheet .brand strong{font-size:16px!important}',
-          '.sheet .footer-main{font-size:10px!important;padding:6px 8px 4px!important}',
-          '.sheet .signatures{gap:20px!important;margin:8px auto 3px!important}',
-          '.sheet .signature{min-width:140px!important;font-size:10px!important}',
-          '.sheet .contact{font-size:8px!important}',
-          '@media print{.sheet,.owner-transfer-print-sheet{break-inside:avoid;page-break-inside:avoid}.sheet tr,.owner-transfer-print-table tr{break-inside:avoid;page-break-inside:avoid}}'
-        ].join('');
-        (doc.head||doc.documentElement).appendChild(style);
-      }catch(error){}
-      if(Date.now()-started>5000)clearInterval(timer);
-    };
-    var timer=setInterval(patch,50);
-    patch();
-    return popup;
+  var chatLoaded=false,chatMessages=[],chatConversationCount=0,weatherLoaded='';
+  var escN=function(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
+  var D=function(){return window.DormusDB||{}};
+  var dbDate=function(v){return v?new Date(String(v).length===10?String(v)+'T12:00:00':v):null};
+  var dateN=function(v){var d=dbDate(v);return d?d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}):'Sem data'};
+  var moneyN=function(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})};
+  var nameN=function(kind,id){return (D()[kind]||[]).find(function(x){return String(x.id)===String(id)})?.name||'Não informado'};
+  var statusOpen=function(v){return !['Concluído','Concluída','Cancelado','Cancelada','Encerrado','Encerrada'].includes(String(v||''))};
+  var statusRent=function(r){
+    if(typeof window.rentStatus==='function')return window.rentStatus(r);
+    var total=typeof window.rentChargeTotal==='function'?Number(window.rentChargeTotal(r)||0):Number(r.total||r.rent||0);
+    return Number(r.paidAmount||0)>=total?'Pago':(dbDate(r.dueDate)&&dbDate(r.dueDate)<new Date()?'Em atraso':'Em aberto');
   };
-})();
-</script>
-<script id="dormus-888-inspection-print-preview">
-(function(){
-  'use strict';
-  if(window.__dormusInspectionPrintPreview888)return;
-  window.__dormusInspectionPrintPreview888=true;
-
-  function database(){
-    return window.DormusDB||{};
+  function counts(){
+    var d=D(),today=new Date(),contracts=(d.contracts||[]).filter(function(c){
+      if(!c.end||!['Ativo','Vencendo','vencendo','ativo'].includes(c.status))return false;
+      var days=Math.ceil((dbDate(c.end)-today)/86400000);return days>=0&&days<=60;
+    }).sort(function(a,b){return String(a.end).localeCompare(String(b.end))});
+    var overdue=(d.rentalCharges||[]).filter(function(r){return ['Em atraso','Inadimplente'].includes(statusRent(r))}).sort(function(a,b){return String(a.dueDate||'').localeCompare(String(b.dueDate||''))});
+    var maintenance=(d.maintenance||[]).filter(function(x){return statusOpen(x.status)}).sort(function(a,b){var rank=function(x){return /urg/i.test(x.priority||'')?0:/alta/i.test(x.priority||'')?1:2};return rank(a)-rank(b)});
+    return {contracts:contracts,overdue:overdue,maintenance:maintenance};
   }
-  function escapeHtml(value){
-    return String(value==null?'':value).replace(/[&<>"']/g,function(char){
-      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[char];
+  function setText(id,value){var el=document.getElementById(id);if(el)el.textContent=value}
+  function renderRows(id,items,empty,renderer){
+    var el=document.getElementById(id);if(!el)return;
+    el.innerHTML=items.length?items.slice(0,4).map(renderer).join(''):'<div class="notification-empty '+(empty[1]?'ok':'')+'">'+empty[0]+'</div>';
+  }
+  function renderSummary(c,chatCount){
+    var total=c.contracts.length+c.overdue.length+c.maintenance.length+chatCount;
+    var el=document.getElementById('notification-center-summary');if(!el)return;
+    el.innerHTML='<div class="notification-summary-item"><i>⚠️</i><div><strong>'+c.contracts.length+'</strong><span>Contratos vencendo</span></div></div>'+
+      '<div class="notification-summary-item"><i>💰</i><div><strong>'+c.overdue.length+'</strong><span>Aluguéis em atraso</span></div></div>'+
+      '<div class="notification-summary-item"><i>🔧</i><div><strong>'+c.maintenance.length+'</strong><span>Chamados abertos</span></div></div>'+
+      '<div class="notification-summary-item"><i>🔔</i><div><strong>'+total+'</strong><span>Pontos de atenção</span></div></div>';
+    var badge=document.getElementById('notification-center-badge');if(badge){badge.textContent=total>99?'99+':String(total);badge.style.display=total?'inline-flex':'none'}
+  }
+  function renderActions(c,chatCount){
+    var el=document.getElementById('notification-center-actions');if(!el)return;
+    var rows=[['Contratos vencendo',c.contracts.length,'contracts'],['Aluguéis em atraso',c.overdue.length,'rents'],['Chamados em aberto',c.maintenance.length,'maintenance'],['Conversas no chat',chatCount,'chats']];
+    el.innerHTML=rows.map(function(x){return '<button class="notification-action" onclick="showView(\''+x[2]+'\')"><strong>'+x[0]+'</strong><span>'+x[1]+' →</span></button>'}).join('');
+  }
+  function render(c){
+    if(!document.getElementById('notifications-center'))return;
+    setText('notification-contracts-count',c.contracts.length);
+    setText('notification-rents-count',c.overdue.length);
+    setText('notification-maintenance-count',c.maintenance.length);
+    renderRows('notification-contracts-list',c.contracts,['Nenhum contrato vence nos próximos 60 dias.',true],function(x){
+      var days=Math.max(0,Math.ceil((dbDate(x.end)-new Date())/86400000));
+      return '<button class="notification-list-item" onclick="showView(\'contracts\')"><i>📄</i><span><strong>'+escN(nameN('properties',x.propertyId))+'</strong><span>'+escN(nameN('tenants',x.tenantId))+' · vence em '+dateN(x.end)+' ('+days+' dias)</span></span></button>';
     });
-  }
-  function dateLabel(value){
-    if(!value)return'';
-    var text=String(value).slice(0,10);
-    return text.indexOf('-')>=0?text.split('-').reverse().join('/'):text;
-  }
-  function previewHtml(report,files){
-    var renderer=window.DormusInspectionModel886&&window.DormusInspectionModel886.html;
-    if(typeof renderer==='function')return renderer(report,files||[]);
-    if(typeof window.inspectionReportHtml==='function')return window.inspectionReportHtml(report,files||[]);
-    return '<article class="inspection-print-sheet"><h1>Laudo de Vistoria</h1><p>Não foi possível montar o modelo do laudo.</p></article>';
-  }
-  function openLoadingPreview(popup,title){
-    popup.document.open();
-    popup.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+escapeHtml(title)+'</title><style>html,body{margin:0;padding:0;background:#fff;font-family:Arial,sans-serif}.loading{padding:28px;color:#20372d}</style></head><body><div class="loading">Preparando visualização do laudo...</div></body></html>');
-    popup.document.close();
-  }
-  function writeReportPreview(popup,report,files){
-    var title='Laudo de Vistoria · '+dateLabel(report.date);
-    var modelStyle=document.getElementById('dormus-vistoria-model-886-style')?.textContent||'';
-    var reportMarkup=previewHtml(report,files);
-    var css='html,body{margin:0;padding:0;background:#fff;color:#111}body{font-family:Arial,Helvetica,sans-serif;padding:10mm}.print-actions{display:flex;justify-content:center;gap:8px;margin:0 auto 12px}.print-actions button{border:1px solid #2f6f5e;border-radius:6px;padding:9px 14px;background:#2f6f5e;color:#fff;font-weight:700;cursor:pointer}@media print{body{padding:0}.print-actions{display:none!important}.inspection-print-sheet{break-after:auto;page-break-after:auto}}@page{size:A4 portrait;margin:10mm}';
-    popup.document.open();
-    popup.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+escapeHtml(title)+'</title><style>'+modelStyle+css+'</style></head><body><div class="print-actions"><button type="button" onclick="window.print()">🖨 Imprimir novamente</button><button type="button" onclick="window.close()">Fechar</button></div>'+reportMarkup+'</body></html>');
-    popup.document.close();
-    popup.focus();
-  }
-  window.printInspectionReport=async function(id){
-    var d=database();
-    var report=(d.inspections||[]).find(function(item){return String(item.id)===String(id)});
-    if(!report){alert('Vistoria não encontrada.');return}
-    var title='Laudo de Vistoria · '+dateLabel(report.date);
-    var popup=window.open('','_blank','width=1200,height=900');
-    if(!popup){alert('O navegador bloqueou a janela de visualização. Permita pop-ups para o DORMUS e tente novamente.');return}
-    openLoadingPreview(popup,title);
-    var files=[];
-    try{
-      if(typeof listAttachments==='function')files=await listAttachments('inspection',report.id);
-    }catch(error){
-      console.warn('Não foi possível carregar as mídias do laudo.',error);
+    renderRows('notification-rents-list',c.overdue,['Nenhum aluguel em atraso.',true],function(x){
+      var total=typeof window.rentChargeTotal==='function'?Number(window.rentChargeTotal(x)||0):Number(x.total||x.rent||0),open=Math.max(total-Number(x.paidAmount||0),0);
+      return '<button class="notification-list-item" onclick="showView(\'rents\')"><i>💰</i><span><strong>'+escN(nameN('properties',x.propertyId))+'</strong><span>'+escN(nameN('tenants',x.tenantId))+' · '+moneyN(open)+' em aberto · vencido em '+dateN(x.dueDate)+'</span></span></button>';
+    });
+    renderRows('notification-maintenance-list',c.maintenance,['Nenhum chamado em aberto.',true],function(x){
+      return '<button class="notification-list-item" onclick="showView(\'maintenance\')"><i>🔧</i><span><strong>'+escN(x.description||'Chamado de manutenção')+'</strong><span>'+escN(nameN('properties',x.propertyId))+' · '+escN(x.status||'Aberto')+' · prioridade '+escN(x.priority||'Média')+'</span></span></button>';
+    });
+    if(chatLoaded){
+      setText('notification-chat-count',chatConversationCount);
+      renderRows('notification-chat-list',chatMessages,['Nenhuma mensagem encontrada no chat.',true],function(x){return '<button class="notification-list-item" onclick="showView(\'chats\')"><i>💬</i><span><strong>'+escN(x.sender_name||'Nova mensagem')+'</strong><span>'+escN(String(x.message||'').slice(0,100))+' · '+(x.created_at?new Date(x.created_at).toLocaleDateString('pt-BR'):'agora')+'</span></span></button>'});
+      renderSummary(c,chatConversationCount);renderActions(c,chatConversationCount);
+    }else{
+      renderRows('notification-chat-list',[],['Carregando mensagens do chat...',false],function(){return ''});
+      renderSummary(c,0);renderActions(c,0);
     }
-    writeReportPreview(popup,report,files);
-    setTimeout(function(){try{popup.print()}catch(error){console.warn('A janela de impressão não pôde ser aberta.',error)}},350);
-  };
+    var updated=document.getElementById('notification-center-updated');if(updated)updated.textContent=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    loadChat(c);
+    loadWeather();
+  }
+  async function loadChat(c){
+    if(chatLoaded||typeof supabaseClient==='undefined')return;
+    chatLoaded=true;
+    try{
+      var q=await supabaseClient.from('prestador_servico_mensagens').select('id,servico_id,sender_name,message,created_at,sender_role').order('created_at',{ascending:false}).limit(100);
+      if(q.error)throw q.error;
+      var rows=q.data||[],groups=new Set(rows.map(function(x){return String(x.servico_id||'')}).filter(Boolean));
+      chatMessages=rows.slice(0,4);chatConversationCount=groups.size;
+      var list=document.getElementById('notification-chat-list');setText('notification-chat-count',groups.size);
+      if(list)list.innerHTML=rows.length?rows.slice(0,4).map(function(x){return '<button class="notification-list-item" onclick="showView(\'chats\')"><i>💬</i><span><strong>'+escN(x.sender_name||'Nova mensagem')+'</strong><span>'+escN(String(x.message||'').slice(0,100))+' · '+(x.created_at?new Date(x.created_at).toLocaleDateString('pt-BR'):'agora')+'</span></span></button>'}).join(''):'<div class="notification-empty ok">Nenhuma mensagem encontrada no chat.</div>';
+      renderSummary(c,groups.size);renderActions(c,groups.size);
+    }catch(e){
+      var list=document.getElementById('notification-chat-list');if(list)list.innerHTML='<div class="notification-empty">Abra Chats para carregar as conversas.</div>';
+      renderSummary(c,0);renderActions(c,0);
+    }
+  }
+  function weatherLabel(code){
+    var map={0:['☀️','Céu limpo'],1:['🌤️','Predominantemente limpo'],2:['⛅','Parcialmente nublado'],3:['☁️','Nublado'],45:['🌫️','Neblina'],48:['🌫️','Neblina'],51:['🌦️','Garoa leve'],53:['🌦️','Garoa'],55:['🌧️','Garoa intensa'],61:['🌧️','Chuva leve'],63:['🌧️','Chuva'],65:['🌧️','Chuva forte'],71:['🌨️','Neve'],73:['🌨️','Neve'],75:['❄️','Neve forte'],80:['🌦️','Pancadas de chuva'],81:['🌧️','Pancadas de chuva'],82:['⛈️','Pancadas fortes'],95:['⛈️','Trovoada'],96:['⛈️','Trovoada com granizo'],99:['⛈️','Trovoada forte']};return map[code]||['🌤️','Condição não informada'];
+  }
+  async function loadWeather(){
+    var d=D(),property=(d.properties||[]).find(function(x){return x.city})||{},place=property.city||'Conselheiro Pena',state=property.state||'MG',key=place+'-'+state;
+    setText('notification-weather-place',place+(state?' · '+state:''));
+    if(weatherLoaded===key)return;weatherLoaded=key;
+    var host=document.getElementById('notification-weather');if(!host)return;
+    try{
+      var geo=await fetch('https://geocoding-api.open-meteo.com/v1/search?name='+encodeURIComponent(place)+'&count=1&language=pt&format=json').then(function(r){return r.json()}),location=geo.results&&geo.results[0];
+      if(!location)throw new Error('local não encontrado');
+      var api='https://api.open-meteo.com/v1/forecast?latitude='+location.latitude+'&longitude='+location.longitude+'&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,wind_speed_10m&daily=temperature_2m_max,temperature_2m_min,weather_code&timezone=auto&forecast_days=1';
+      var data=await fetch(api).then(function(r){return r.json()}),current=data.current||{},daily=data.daily||{},weather=weatherLabel(Number(current.weather_code));
+      host.innerHTML='<div class="notification-weather-main"><span class="weather-icon">'+weather[0]+'</span><div><strong>'+Math.round(Number(current.temperature_2m||0))+'°C</strong><span>'+weather[1]+'</span></div></div><div class="notification-weather-details"><div><span>Máxima / mínima</span><strong>'+Math.round(Number(daily.temperature_2m_max?.[0]||0))+'° / '+Math.round(Number(daily.temperature_2m_min?.[0]||0))+'°</strong></div><div><span>Sensação</span><strong>'+Math.round(Number(current.apparent_temperature||0))+'°C</strong></div><div><span>Umidade</span><strong>'+Math.round(Number(current.relative_humidity_2m||0))+'%</strong></div><div><span>Vento</span><strong>'+Math.round(Number(current.wind_speed_10m||0))+' km/h</strong></div></div>';
+    }catch(e){host.innerHTML='<div class="notification-empty">Não foi possível consultar o clima agora.</div>'}
+  }
+  window.renderNotificationCenter=function(){render(counts())};
+  var oldRenderView=window.renderView;
+  if(typeof oldRenderView==='function')window.renderView=function(id){var result=oldRenderView.apply(this,arguments);if(id==='notifications-center')window.renderNotificationCenter();return result};
+  var oldShowView=window.showView;
+  if(typeof oldShowView==='function')window.showView=function(id){var result=oldShowView.apply(this,arguments);if(id==='notifications-center')window.renderNotificationCenter();return result};
+  var oldEnter=window.enterDormus;
+  if(typeof oldEnter==='function')window.enterDormus=async function(session){var result=await oldEnter.apply(this,arguments);if(!window.DormusProviderPortal?.access)setTimeout(function(){window.showView('notifications-center')},40);return result};
+  setTimeout(async function(){try{var session=typeof supabaseClient!=='undefined'?(await supabaseClient.auth.getSession())?.data?.session:null;if(session&&!window.DormusProviderPortal?.access&&document.querySelector('.view.active')?.id==='home')window.showView('notifications-center')}catch(e){}},1400);
 })();
 </script>
 </body>
