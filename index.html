@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.31</title>
+  <title>Dormus | Gestão imobiliária · 8.32</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -6472,23 +6472,29 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
 </body></html>`;
   }
 
+  function resolveChargeContext(charge){
+    const contract=(db.contracts||[]).find(item=>String(item.id)===String(charge?.contractId))||{};
+    const property=(db.properties||[]).find(item=>String(item.id)===String(charge?.propertyId)||String(item.id)===String(contract.propertyId))||{};
+    const tenant=(db.tenants||[]).find(item=>String(item.id)===String(charge?.tenantId)||String(item.id)===String(contract.tenantId))||{};
+    const ownerId=contract.ownerId ?? contract.proprietarioId ?? property.ownerId ?? property.proprietarioId ?? charge?.ownerId ?? null;
+    return {contract,property,tenant,ownerId};
+  }
+
   function paidChargesForOwner(chargeId){
-    const anchor=(db.rentalCharges||[]).find(item=>item.id===chargeId);
+    const anchor=(db.rentalCharges||[]).find(item=>String(item.id)===String(chargeId));
     if(!anchor)return[];
-    const anchorContract=(db.contracts||[]).find(item=>item.id===anchor.contractId)||{};
-    const ownerId=anchorContract.ownerId;
+    const anchorCtx=resolveChargeContext(anchor);
+    if(anchorCtx.ownerId==null)return[];
     const month=anchor.referenceMonth||'';
     return (db.rentalCharges||[])
-      .filter(charge=>(charge.referenceMonth||'')===month&&Number(charge.paidAmount||0)>0)
+      .filter(charge=>String(charge.referenceMonth||'')===String(month)&&Number(charge.paidAmount||0)>0)
       .map(charge=>{
-        const contract=(db.contracts||[]).find(item=>item.id===charge.contractId)||{};
-        const property=(db.properties||[]).find(item=>item.id===charge.propertyId||item.id===contract.propertyId)||{};
-        const tenant=(db.tenants||[]).find(item=>item.id===charge.tenantId||item.id===contract.tenantId)||{};
-        const transfer=(db.ownerTransfers||[]).find(item=>item.chargeId===charge.id);
-        return {charge,contract,property,tenant,transfer};
+        const ctx=resolveChargeContext(charge);
+        const transfer=(db.ownerTransfers||[]).find(item=>String(item.chargeId)===String(charge.id));
+        return {charge,contract:ctx.contract,property:ctx.property,tenant:ctx.tenant,transfer,ownerId:ctx.ownerId};
       })
-      .filter(item=>item.contract.ownerId===ownerId)
-      .sort((a,b)=>String(a.property.name||'').localeCompare(String(b.property.name||'')));
+      .filter(item=>item.ownerId!=null&&String(item.ownerId)===String(anchorCtx.ownerId))
+      .sort((a,b)=>String(a.property.name||a.property.address||'').localeCompare(String(b.property.name||b.property.address||'')));
   }
 
   function closeOwnerTransferChoice(){
@@ -6519,10 +6525,21 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   }
 
   function openOwnerTransferChoice(chargeId){
-    const options=paidChargesForOwner(chargeId);
-    if(!options.length){alert('Não foi possível localizar os aluguéis pagos deste proprietário.');return}
-    const anchor=options.find(item=>item.charge.id===chargeId)||options[0];
-    const ownerName=(db.owners||[]).find(item=>item.id===anchor.contract.ownerId)?.name||'Proprietário';
+    const anchorCharge=(db.rentalCharges||[]).find(item=>String(item.id)===String(chargeId));
+    if(!anchorCharge){alert('Não foi possível localizar este aluguel pago.');return}
+    let options=paidChargesForOwner(chargeId);
+    // Mesmo que existam dados antigos sem ownerId no contrato, permita o repasse individual.
+    if(!options.length){
+      const ctx=resolveChargeContext(anchorCharge);
+      if(Number(anchorCharge.paidAmount||0)>0){
+        const transfer=(db.ownerTransfers||[]).find(item=>String(item.chargeId)===String(anchorCharge.id));
+        options=[{charge:anchorCharge,contract:ctx.contract,property:ctx.property,tenant:ctx.tenant,transfer,ownerId:ctx.ownerId}];
+      }
+    }
+    if(!options.length){alert('Não foi possível localizar os aluguéis pagos deste proprietário. Verifique se este aluguel está marcado como pago.');return}
+    const anchor=options.find(item=>String(item.charge.id)===String(chargeId))||options[0];
+    const ownerId=anchor.ownerId ?? anchor.contract.ownerId ?? anchor.contract.proprietarioId ?? anchor.property.ownerId ?? anchor.property.proprietarioId;
+    const ownerName=(db.owners||[]).find(item=>String(item.id)===String(ownerId))?.name||'Proprietário';
     closeOwnerTransferChoice();
     const root=document.createElement('div');
     root.id='owner-transfer-choice-root';
@@ -6565,12 +6582,21 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   }
 
   window.printOwnerTransferStatement=function(transferId){
-    const transfer=(db.ownerTransfers||[]).find(item=>item.id===transferId);
+    const transfer=(db.ownerTransfers||[]).find(item=>String(item.id)===String(transferId));
     if(!transfer){alert('Não foi possível localizar os dados deste repasse.');return}
     const popup=window.open('','_blank','width=1000,height=800');
-    if(!popup){alert('O navegador bloqueou a janela de impressão. Permita pop-ups para o Dormus e tente novamente.');return}
+    if(!popup){alert('O navegador bloqueou a janela de impressão. Permita pop-ups para o DORMUS e tente novamente.');return}
+    let html='';
+    try{
+      if(typeof statementData==='function'&&typeof statementHtml==='function') html=statementHtml(statementData(transfer));
+    }catch(e){console.error(e)}
+    if(!html){
+      const c=(db.contracts||[]).find(x=>String(x.id)===String(transfer.contractId))||{};
+      const o=(db.owners||[]).find(x=>String(x.id)===String(transfer.ownerId ?? c.ownerId))||{};
+      html='<!doctype html><html lang=\"pt-BR\"><head><meta charset=\"utf-8\"><title>Prestação de Contas</title><style>body{font-family:Arial;padding:35px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:10px;text-align:left}</style></head><body><h1>Prestação de Contas</h1><p><b>Proprietário:</b> '+esc(o.name||'Não informado')+'</p><table><tr><th>Recebido</th><th>Administração</th><th>Desconto</th><th>Repasse</th></tr><tr><td>'+money(transfer.gross)+'</td><td>'+money(transfer.fee)+'</td><td>'+money(transfer.deduction||0)+'</td><td>'+money(transfer.net)+'</td></tr></table><script>window.onload=function(){window.print()}<\/script></body></html>';
+    }
     popup.document.open();
-    popup.document.write(statementHtml(statementData(transfer)));
+    popup.document.write(html);
     popup.document.close();
     popup.focus();
     setTimeout(()=>popup.print(),350);
@@ -6767,9 +6793,10 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
     var m=month();
     var paid=(db.rentalCharges||[]).filter(function(r){return String(r.referenceMonth||'')===String(m)&&Number(r.paidAmount||0)>0;});
     var rows=paid.map(function(r){
-      var c=(db.contracts||[]).find(function(x){return x.id===r.contractId;})||{};
-      var o=(db.owners||[]).find(function(x){return x.id===c.ownerId;})||{};
-      var p=(db.properties||[]).find(function(x){return x.id===r.propertyId||x.id===c.propertyId;})||{};
+      var c=(db.contracts||[]).find(function(x){return String(x.id)===String(r.contractId);})||{};
+      var p=(db.properties||[]).find(function(x){return String(x.id)===String(r.propertyId)||String(x.id)===String(c.propertyId);})||{};
+      var ownerId=c.ownerId ?? c.proprietarioId ?? p.ownerId ?? p.proprietarioId ?? r.ownerId;
+      var o=(db.owners||[]).find(function(x){return String(x.id)===String(ownerId);})||{};
       var gross=Number(r.paidAmount||0);
       var fee=gross*Number(c.adminFee||0)/100;
       var deduction=typeof window.ownerMaintenanceDeduction==='function'?Number(window.ownerMaintenanceDeduction(r.propertyId,m)||0):0;
