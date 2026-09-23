@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.8</title>
+  <title>Dormus | Gestão imobiliária · 8.9</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -7497,8 +7497,6 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
      return (d.rentalCharges||[]).filter(function(item){
        if(Number(item.paidAmount||0)<=0)return false;
         if(String(item.referenceMonth||'').slice(0,7)!==a.month)return false;
-        var transfer=(d.ownerTransfers||[]).find(function(entry){return String(entry.chargeId)===String(item.id);});
-        if(transfer&&String(transfer.status||'').toLowerCase()==='repassado')return false;
        var x=chargeContext(item);
        return a.ownerId!=null&&x.ownerId!=null&&String(x.ownerId)===String(a.ownerId);
      }).map(chargeContext).sort(function(a,b){
@@ -7735,6 +7733,127 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
     body.innerHTML=reportHtml(r,files)+'<div class="presentation-actions"><button class="button button-primary" onclick="openModal(\'inspection\',\''+esc(id)+'\')">Editar vistoria</button><button class="button button-brass" onclick="printInspectionReport(\''+esc(id)+'\')">Imprimir laudo</button><button class="button button-quiet" onclick="closeModal()">Fechar</button></div>';
   }
   window.DormusInspectionModel886={html:reportHtml}
+})();
+</script>
+<script id="dormus-887-owner-transfer-print-layout">
+(function(){
+  'use strict';
+  if(window.__dormusOwnerTransferPrintLayout887)return;
+  window.__dormusOwnerTransferPrintLayout887=true;
+
+  /*
+   * The statement is printed from a separate about:blank window.  Apply the
+   * final print layout there, after the generated markup has been written,
+   * so the A4 landscape page is used instead of leaving the footer halfway
+   * down the sheet.
+   */
+  var nativeOpen=window.open;
+  window.open=function(){
+    var popup=nativeOpen.apply(this,arguments);
+    if(!popup)return popup;
+    var started=Date.now();
+    var patch=function(){
+      try{
+        var doc=popup.document;
+        if(!doc||!doc.documentElement)return;
+        var sheet=doc.querySelector('.sheet,.owner-transfer-print-sheet');
+        if(!sheet)return;
+        if(doc.getElementById('dormus-owner-transfer-print-layout-887-style')){
+          clearInterval(timer);
+          return;
+        }
+        var style=doc.createElement('style');
+        style.id='dormus-owner-transfer-print-layout-887-style';
+        style.textContent=[
+          '@page{size:A4 landscape;margin:7mm}',
+          'html,body{margin:0!important;padding:0!important;width:100%!important;min-height:100%!important}',
+          'body{display:block!important}',
+          '.print-actions{display:none!important}',
+          '.sheet,.owner-transfer-print-sheet{width:100%!important;max-width:none!important;margin:0!important;min-height:196mm!important;display:flex!important;flex-direction:column!important}',
+          '.sheet .table,.owner-transfer-print-table{width:100%!important;max-width:none!important;flex:1 1 auto!important;margin-top:0!important;font-size:12px!important}',
+          '.sheet .table th,.sheet .table td,.owner-transfer-print-table th,.owner-transfer-print-table td{padding:4px 6px!important;min-height:22px!important}',
+          '.sheet .table th,.owner-transfer-print-table th{font-size:12px!important}',
+          '.sheet .property,.owner-transfer-print-property{font-size:10px!important}',
+          '.sheet .title{padding:7px 10px 5px!important;font-size:20px!important}',
+          '.sheet .owner{padding:6px 10px!important;font-size:15px!important}',
+          '.sheet .total td{padding-top:6px!important;padding-bottom:6px!important}',
+          '.sheet .footer,.owner-transfer-print-footer{margin-top:auto!important;min-height:38mm!important}',
+          '.sheet .footer{grid-template-columns:95px 1fr!important}',
+          '.sheet .brand{font-size:10px!important}',
+          '.sheet .brand strong{font-size:16px!important}',
+          '.sheet .footer-main{font-size:10px!important;padding:6px 8px 4px!important}',
+          '.sheet .signatures{gap:20px!important;margin:8px auto 3px!important}',
+          '.sheet .signature{min-width:140px!important;font-size:10px!important}',
+          '.sheet .contact{font-size:8px!important}',
+          '@media print{.sheet,.owner-transfer-print-sheet{break-inside:avoid;page-break-inside:avoid}.sheet tr,.owner-transfer-print-table tr{break-inside:avoid;page-break-inside:avoid}}'
+        ].join('');
+        (doc.head||doc.documentElement).appendChild(style);
+      }catch(error){}
+      if(Date.now()-started>5000)clearInterval(timer);
+    };
+    var timer=setInterval(patch,50);
+    patch();
+    return popup;
+  };
+})();
+</script>
+<script id="dormus-888-inspection-print-preview">
+(function(){
+  'use strict';
+  if(window.__dormusInspectionPrintPreview888)return;
+  window.__dormusInspectionPrintPreview888=true;
+
+  function database(){
+    return window.DormusDB||{};
+  }
+  function escapeHtml(value){
+    return String(value==null?'':value).replace(/[&<>"']/g,function(char){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[char];
+    });
+  }
+  function dateLabel(value){
+    if(!value)return'';
+    var text=String(value).slice(0,10);
+    return text.indexOf('-')>=0?text.split('-').reverse().join('/'):text;
+  }
+  function previewHtml(report,files){
+    var renderer=window.DormusInspectionModel886&&window.DormusInspectionModel886.html;
+    if(typeof renderer==='function')return renderer(report,files||[]);
+    if(typeof window.inspectionReportHtml==='function')return window.inspectionReportHtml(report,files||[]);
+    return '<article class="inspection-print-sheet"><h1>Laudo de Vistoria</h1><p>Não foi possível montar o modelo do laudo.</p></article>';
+  }
+  function openLoadingPreview(popup,title){
+    popup.document.open();
+    popup.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+escapeHtml(title)+'</title><style>html,body{margin:0;padding:0;background:#fff;font-family:Arial,sans-serif}.loading{padding:28px;color:#20372d}</style></head><body><div class="loading">Preparando visualização do laudo...</div></body></html>');
+    popup.document.close();
+  }
+  function writeReportPreview(popup,report,files){
+    var title='Laudo de Vistoria · '+dateLabel(report.date);
+    var modelStyle=document.getElementById('dormus-vistoria-model-886-style')?.textContent||'';
+    var reportMarkup=previewHtml(report,files);
+    var css='html,body{margin:0;padding:0;background:#fff;color:#111}body{font-family:Arial,Helvetica,sans-serif;padding:10mm}.print-actions{display:flex;justify-content:center;gap:8px;margin:0 auto 12px}.print-actions button{border:1px solid #2f6f5e;border-radius:6px;padding:9px 14px;background:#2f6f5e;color:#fff;font-weight:700;cursor:pointer}@media print{body{padding:0}.print-actions{display:none!important}.inspection-print-sheet{break-after:auto;page-break-after:auto}}@page{size:A4 portrait;margin:10mm}';
+    popup.document.open();
+    popup.document.write('<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+escapeHtml(title)+'</title><style>'+modelStyle+css+'</style></head><body><div class="print-actions"><button type="button" onclick="window.print()">🖨 Imprimir novamente</button><button type="button" onclick="window.close()">Fechar</button></div>'+reportMarkup+'</body></html>');
+    popup.document.close();
+    popup.focus();
+  }
+  window.printInspectionReport=async function(id){
+    var d=database();
+    var report=(d.inspections||[]).find(function(item){return String(item.id)===String(id)});
+    if(!report){alert('Vistoria não encontrada.');return}
+    var title='Laudo de Vistoria · '+dateLabel(report.date);
+    var popup=window.open('','_blank','width=1200,height=900');
+    if(!popup){alert('O navegador bloqueou a janela de visualização. Permita pop-ups para o DORMUS e tente novamente.');return}
+    openLoadingPreview(popup,title);
+    var files=[];
+    try{
+      if(typeof listAttachments==='function')files=await listAttachments('inspection',report.id);
+    }catch(error){
+      console.warn('Não foi possível carregar as mídias do laudo.',error);
+    }
+    writeReportPreview(popup,report,files);
+    setTimeout(function(){try{popup.print()}catch(error){console.warn('A janela de impressão não pôde ser aberta.',error)}},350);
+  };
 })();
 </script>
 </body>
