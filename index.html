@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.32</title>
+  <title>Dormus | Gestão imobiliária · 8.34</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -1919,7 +1919,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){document.querySelec
   window.ownerMaintenanceDeduction=ownerMaintenanceDeduction;
   window.renderOwnerTransfers=function(){const el=document.getElementById('repasse-content');if(!el)return;const month=document.getElementById('rent-month-filter')?.value||((new Date()).toISOString().slice(0,7));const paid=(db.rentalCharges||[]).filter(r=>(r.referenceMonth||'')===month&&Number(r.paidAmount||0)>0);let rows=paid.map(r=>{const c=(db.contracts||[]).find(x=>x.id===r.contractId)||{},o=(db.owners||[]).find(x=>x.id===c.ownerId)||{},p=(db.properties||[]).find(x=>x.id===r.propertyId)||{},gross=Number(r.paidAmount||0),fee=gross*Number(c.adminFee||0)/100,deduction=ownerMaintenanceDeduction(r.propertyId,month),net=Math.max(gross-fee-deduction,0),tr=(db.ownerTransfers||[]).find(x=>x.chargeId===r.id);return{r,c,o,p,gross,fee,deduction,net,tr}});const total=rows.reduce((s,x)=>{s.gross+=x.gross;s.fee+=x.fee;s.deduction+=x.deduction;s.net+=x.net;return s},{gross:0,fee:0,deduction:0,net:0}),pending=rows.filter(x=>!x.tr).length;el.innerHTML=`<div class="repasse-summary"><div class="summary"><label>Recebido</label><strong>${money0(total.gross)}</strong></div><div class="summary"><label>Administração</label><strong class="contract360-orange">${money0(total.fee)}</strong></div><div class="summary"><label>Descontos de manutenção</label><strong class="contract360-orange">${money0(total.deduction)}</strong></div><div class="summary"><label>A repassar</label><strong class="contract360-green">${money0(total.net)}</strong></div><div class="summary"><label>Pendentes</label><strong>${pending}</strong></div></div><div class="table-wrap"><table class="table repasse-table"><thead><tr><th>Proprietário / imóvel</th><th>Competência</th><th>Recebido</th><th>Admin.</th><th>Desconto manutenção</th><th>Repasse</th><th>Status</th><th>Ação</th></tr></thead><tbody>${rows.length?rows.map(x=>`<tr><td><strong>${esc0(x.o.name||'—')}</strong><div class="row-sub">${esc0(x.p.name||'—')}</div></td><td>${esc0(month)}</td><td>${money0(x.gross)}</td><td>${money0(x.fee)}</td><td>${money0(x.deduction)}</td><td><strong>${money0(x.net)}</strong></td><td><span class="repasse-status ${x.tr?'pago':'pendente'}">${x.tr?'Repassado':'Pendente'}</span></td><td>${x.tr?fmt(x.tr.date):`<button class="button button-small button-primary" onclick="window.markOwnerTransfer('${esc0(x.r.id)}')">Marcar repasse</button>`}</td></tr>`).join(''):`<tr><td colspan="8" style="text-align:center;padding:25px;color:#8a9ab0">Nenhum aluguel pago nesta competência.</td></tr>`}</tbody></table></div>`};
   window.generateOwnerTransfers=async function(){const month=document.getElementById('rent-month-filter')?.value||new Date().toISOString().slice(0,7);const paid=(db.rentalCharges||[]).filter(r=>(r.referenceMonth||'')===month&&Number(r.paidAmount||0)>0);db.ownerTransfers=db.ownerTransfers||[];let created=0;paid.forEach(r=>{if(db.ownerTransfers.some(t=>t.chargeId===r.id))return;const c=(db.contracts||[]).find(x=>x.id===r.contractId)||{},gross=Number(r.paidAmount||0),fee=gross*Number(c.adminFee||0)/100,deduction=ownerMaintenanceDeduction(r.propertyId,month);db.ownerTransfers.push({id:uid(),chargeId:r.id,contractId:c.id,propertyId:r.propertyId,ownerId:c.ownerId,referenceMonth:month,gross,fee,deduction,net:Math.max(gross-fee-deduction,0),date:'',status:'Pendente'});created++});if(created&&await save()){renderOwnerTransfers();alert(`${created} repasse(s) preparado(s) para conferência.`)}else{renderOwnerTransfers();if(!created)alert('Não há novos pagamentos para preparar repasse nesta competência.')}};
-window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[]).find(x=>x.id===chargeId);if(!r)return;const c=(db.contracts||[]).find(x=>x.id===r.contractId)||{},gross=Number(r.paidAmount||0),fee=gross*Number(c.adminFee||0)/100,deduction=ownerMaintenanceDeduction(r.propertyId,r.referenceMonth||''),net=Math.max(gross-fee-deduction,0);const tr={id:uid(),chargeId:r.id,contractId:c.id,propertyId:r.propertyId,ownerId:c.ownerId,referenceMonth:r.referenceMonth||'',gross,fee,deduction,net,date:new Date().toISOString().slice(0,10),status:'Repassado'};db.ownerTransfers=db.ownerTransfers||[];db.ownerTransfers.push(tr);if(await save())renderOwnerTransfers();else db.ownerTransfers=db.ownerTransfers.filter(x=>x.id!==tr.id)};
+window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[]).find(x=>String(x.id)===String(chargeId));if(!r)throw new Error('Não foi possível localizar o aluguel pago.');const c=(db.contracts||[]).find(x=>String(x.id)===String(r.contractId))||{},gross=Number(r.paidAmount||0),fee=gross*Number(c.adminFee||0)/100,deduction=ownerMaintenanceDeduction(r.propertyId,r.referenceMonth||''),net=Math.max(gross-fee-deduction,0);const tr={id:uid(),chargeId:r.id,contractId:c.id,propertyId:r.propertyId,ownerId:c.ownerId,referenceMonth:r.referenceMonth||'',gross,fee,deduction,net,date:new Date().toISOString().slice(0,10),status:'Repassado'};db.ownerTransfers=db.ownerTransfers||[];db.ownerTransfers.push(tr);if(await save())renderOwnerTransfers();else db.ownerTransfers=db.ownerTransfers.filter(x=>String(x.id)!==String(tr.id));return tr;};
   const oldRenderRents=window.renderRents;window.renderRents=function(){if(typeof oldRenderRents==='function')return oldRenderRents.apply(this,arguments)};
 
   // Diretório de prestadores na Manutenção.
@@ -6504,11 +6504,12 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   async function createOwnerTransferBatch(chargeIds){
     const groupId='otg-'+(typeof uid==='function'?uid():`${Date.now()}-${Math.random().toString(36).slice(2,7)}`);
     for(const chargeId of chargeIds){
-      let transfer=(db.ownerTransfers||[]).find(item=>item.chargeId===chargeId);
+      let transfer=(db.ownerTransfers||[]).find(item=>String(item.chargeId)===String(chargeId));
       if(!transfer){
         if(typeof oldMarkOwnerTransfer!=='function')throw new Error('A função de repasse não está disponível.');
         await oldMarkOwnerTransfer(chargeId);
-        transfer=(db.ownerTransfers||[]).find(item=>item.chargeId===chargeId);
+        transfer=(db.ownerTransfers||[]).find(item=>String(item.chargeId)===String(chargeId));
+        if(!transfer) throw new Error('Não foi possível criar o repasse para este aluguel.');
       }else if(transfer.status!=='Repassado'){
         transfer.status='Repassado';
         transfer.date=todayIso();
@@ -6619,7 +6620,7 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
         const paid=(db.rentalCharges||[]).filter(item=>(item.referenceMonth||'')===month&&Number(item.paidAmount||0)>0);
         const rows=document.querySelectorAll('#repasse-content .repasse-table tbody tr');
         rows.forEach((row,index)=>{
-          const transfer=(db.ownerTransfers||[]).find(item=>item.chargeId===paid[index]?.id);
+          const transfer=(db.ownerTransfers||[]).find(item=>String(item.chargeId)===String(paid[index]?.id));
           if(!transfer)return;
           const action=row.lastElementChild;
           if(!action)return;
@@ -6740,7 +6741,7 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   }
 
   function makeTempTransfer(charge){
-    var c=(db.contracts||[]).find(function(x){return x.id===charge.contractId;})||{};
+    var c=(db.contracts||[]).find(function(x){return String(x.id)===String(charge.contractId);})||{};
     var gross=Number(charge.paidAmount||0);
     var fee=gross*Number(c.adminFee||0)/100;
     var deduction=typeof window.ownerMaintenanceDeduction==='function' ? Number(window.ownerMaintenanceDeduction(charge.propertyId,charge.referenceMonth||month())||0) : 0;
@@ -6748,9 +6749,9 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   }
 
   function printForCharge(chargeId){
-    var charge=(db.rentalCharges||[]).find(function(x){return x.id===chargeId;});
+    var charge=(db.rentalCharges||[]).find(function(x){return String(x.id)===String(chargeId);});
     if(!charge){alert('Não foi possível localizar este aluguel.');return;}
-    var existing=(db.ownerTransfers||[]).find(function(x){return x.chargeId===chargeId;});
+    var existing=(db.ownerTransfers||[]).find(function(x){return String(x.chargeId)===String(chargeId);});
     var transfer=existing||makeTempTransfer(charge);
     if(typeof window.printOwnerTransferStatement==='function'){
       if(existing){ window.printOwnerTransferStatement(existing.id); return; }
@@ -6779,8 +6780,8 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
     db.ownerTransfers=list;
     if(!html){
       // Fallback: simple printable statement if the legacy helpers are scoped differently.
-      var c=(db.contracts||[]).find(function(x){return x.id===transfer.contractId;})||{};
-      var o=(db.owners||[]).find(function(x){return x.id===transfer.ownerId;})||{};
+      var c=(db.contracts||[]).find(function(x){return String(x.id)===String(transfer.contractId);})||{};
+      var o=(db.owners||[]).find(function(x){return String(x.id)===String(transfer.ownerId);})||{};
       html='<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Prestação de Contas</title><style>body{font-family:Arial;padding:35px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #ccc;padding:8px}</style></head><body><h1>Prestação de Contas</h1><p><b>Proprietário:</b> '+esc(o.name||'Não informado')+'</p><table><tr><th>Recebido</th><th>Administração</th><th>Desconto</th><th>Repasse</th></tr><tr><td>'+money(transfer.gross)+'</td><td>'+money(transfer.fee)+'</td><td>'+money(transfer.deduction||0)+'</td><td>'+money(transfer.net)+'</td></tr></table><script>window.onload=function(){window.print()}<\/script></body></html>';
     }
     return html;
@@ -6801,7 +6802,7 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
       var fee=gross*Number(c.adminFee||0)/100;
       var deduction=typeof window.ownerMaintenanceDeduction==='function'?Number(window.ownerMaintenanceDeduction(r.propertyId,m)||0):0;
       var net=Math.max(gross-fee-deduction,0);
-      var tr=(db.ownerTransfers||[]).find(function(x){return x.chargeId===r.id;});
+      var tr=(db.ownerTransfers||[]).find(function(x){return String(x.chargeId)===String(r.id);});
       return {r:r,c:c,o:o,p:p,gross:gross,fee:fee,deduction:deduction,net:net,tr:tr};
     });
     var totals=rows.reduce(function(a,x){a.gross+=x.gross;a.fee+=x.fee;a.deduction+=x.deduction;a.net+=x.net;return a;},{gross:0,fee:0,deduction:0,net:0});
