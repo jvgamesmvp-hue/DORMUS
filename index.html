@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.6</title>
+  <title>Dormus | Gestão imobiliária · 8.7</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -7327,7 +7327,10 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]});}
   function money(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
   function paid(){return (D().rentalCharges||[]).filter(function(r){return Number(r.paidAmount||0)>0;});}
-  function ctx(r){
+   function todayMonth(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+   function monthText(value){var p=String(value||'').slice(0,7).split('-');if(p.length<2||!p[0]||!p[1])return value||'';return new Date(Number(p[0]),Number(p[1])-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});}
+   function passed(tr){return !!tr&&String(tr.status||'').toLowerCase()==='repassado';}
+   function ctx(r){
     var db=D();
     var c=(db.contracts||[]).find(function(x){return String(x.id)===String(r.contractId);})||{};
     var p=(db.properties||[]).find(function(x){return String(x.id)===String(r.propertyId)||String(x.id)===String(c.propertyId);})||{};
@@ -7343,12 +7346,12 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
     return {r:r,c:c,p:p,o:o,t:t,month:month,gross:gross,fee:fee,deduction:deduction,net:net,tr:tr};
   }
   function months(){
-    var set={}; paid().forEach(function(r){if(r.referenceMonth)set[String(r.referenceMonth)]=1;});
+     var set={}; set[todayMonth()]=1; paid().forEach(function(r){if(r.referenceMonth)set[String(r.referenceMonth).slice(0,7)]=1;});
     return Object.keys(set).sort().reverse();
   }
   function currentMonth(){
     var sel=document.getElementById('repasse-month-881');
-    return sel&&sel.value?sel.value:(months()[0]||'');
+     return sel&&sel.value?sel.value:todayMonth();
   }
   function ensureView(){
     if(typeof window.openRepasseView==='function' && document.getElementById('repasse')) return document.getElementById('repasse');
@@ -7356,18 +7359,18 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   }
   function render(){
     var el=document.getElementById('repasse-standalone-content'); if(!el)return;
-    var ms=months(); var selected=currentMonth();
-    if(selected && !ms.includes(selected)) selected=ms[0]||'';
-    var rows=paid().filter(function(r){return !selected||String(r.referenceMonth||'')===String(selected);}).map(ctx);
+     var ms=months(); var selected=currentMonth();
+     if(!selected)selected=todayMonth();
+     var rows=paid().filter(function(r){return String(r.referenceMonth||'').slice(0,7)===String(selected);}).map(ctx).filter(function(x){return !passed(x.tr);});
     var totals=rows.reduce(function(a,x){a.gross+=x.gross;a.fee+=x.fee;a.deduction+=x.deduction;a.net+=x.net;return a;},{gross:0,fee:0,deduction:0,net:0});
-    var html='<div class="repasse-filter-881"><label><span>Competência</span><select id="repasse-month-881">'+ms.map(function(m){return '<option value="'+esc(m)+'" '+(m===selected?'selected':'')+'>'+esc(m)+'</option>';}).join('')+'</select></label><span class="repasse-only-paid-881">Somente aluguéis pagos</span></div>';
+     var html='<div class="repasse-filter-881"><label><span>Competência</span><select id="repasse-month-881">'+ms.map(function(m){return '<option value="'+esc(m)+'" '+(m===selected?'selected':'')+'>'+esc(monthText(m))+'</option>';}).join('')+'</select></label><span class="repasse-only-paid-881">Aluguéis pagos e ainda não repassados</span></div>';
     html+='<div class="repasse-summary"><div class="summary"><label>Recebido</label><strong>'+money(totals.gross)+'</strong></div><div class="summary"><label>Administração</label><strong>'+money(totals.fee)+'</strong></div><div class="summary"><label>Desconto manutenção</label><strong>'+money(totals.deduction)+'</strong></div><div class="summary"><label>A repassar</label><strong>'+money(totals.net)+'</strong></div></div>';
     html+='<div class="table-wrap repasse-table-wrap-875"><table class="table repasse-table"><thead><tr><th>Proprietário / imóvel</th><th>Competência</th><th>Recebido</th><th>Admin.</th><th>Desconto</th><th>Repasse</th><th>Status</th><th>Ações</th></tr></thead><tbody>';
-    if(!rows.length){html+='<tr><td colspan="8" class="repasse-empty-875">Nenhum aluguel pago encontrado. Vá em Aluguéis, marque a baixa como paga e informe o valor recebido.</td></tr>';}
+     if(!rows.length){html+='<tr><td colspan="8" class="repasse-empty-875">Nenhum aluguel pago pendente de repasse nesta competência.</td></tr>';}
     else rows.forEach(function(x){
-      var action=x.tr?'<span class="repasse-date-875">Repassado '+esc(x.tr.date||'')+'</span>':'<button type="button" class="button button-small button-primary" data-mark-881="'+esc(x.r.id)+'">Marcar repasse</button>';
+       var action='<button type="button" class="button button-small button-primary" data-mark-881="'+esc(x.r.id)+'">Marcar repasse</button>';
       action+='<button type="button" class="button button-small" data-print-881="'+esc(x.r.id)+'">🖨 Imprimir demonstrativo</button>';
-      html+='<tr><td><strong>'+esc(x.o.name||'Proprietário não identificado')+'</strong><div class="row-sub">'+esc(x.p.name||x.p.address||'Imóvel não informado')+'</div></td><td>'+esc(x.month)+'</td><td>'+money(x.gross)+'</td><td>'+money(x.fee)+'</td><td>'+money(x.deduction)+'</td><td><strong>'+money(x.net)+'</strong></td><td><span class="repasse-status '+(x.tr?'pago':'pendente')+'">'+(x.tr?'Repassado':'Pendente')+'</span></td><td class="repasse-actions-875">'+action+'</td></tr>';
+       html+='<tr><td><strong>'+esc(x.o.name||'Proprietário não identificado')+'</strong><div class="row-sub">'+esc(x.p.name||x.p.address||'Imóvel não informado')+'</div></td><td>'+esc(x.month)+'</td><td>'+money(x.gross)+'</td><td>'+money(x.fee)+'</td><td>'+money(x.deduction)+'</td><td><strong>'+money(x.net)+'</strong></td><td><span class="repasse-status pendente">Pendente de repasse</span></td><td class="repasse-actions-875">'+action+'</td></tr>';
     });
     html+='</tbody></table></div>';
     el.innerHTML=html;
@@ -7395,6 +7398,17 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
     document.getElementById('dormus-print-close-881').onclick=function(){ov.remove();};
   }
   window.renderOwnerTransfers=render;
+   window.openRepasseView=function(){
+     var view=document.getElementById('repasse');
+     if(!view)return;
+     document.querySelectorAll('.view').forEach(function(item){item.classList.toggle('active',item===view);});
+     document.querySelectorAll('[data-view]').forEach(function(button){button.classList.toggle('active',button.dataset.view==='repasse');});
+     document.querySelectorAll('.nav button').forEach(function(button){if(button.id!=='nav-repasse-owner')button.classList.remove('active');});
+     var nav=document.getElementById('nav-repasse-owner');if(nav)nav.classList.add('active');
+     var crumb=document.getElementById('crumb');if(crumb)crumb.textContent='Repasse ao proprietário';
+     render();
+     window.scrollTo(0,0);
+   };
   window.printOwnerTransferStatement=function(id){var tr=(D().ownerTransfers||[]).find(function(x){return String(x.id)===String(id);});if(tr)printCharge(tr.chargeId);};
   function boot(){setTimeout(function(){if(document.getElementById('repasse-standalone-content'))render();},500);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
@@ -7471,7 +7485,7 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
      var o=(d.owners||[]).find(function(x){return String(x.id)===String(ownerId);})||{};
      var tenantId=r.tenantId??r.locatarioId??c.tenantId??c.locatarioId;
      var t=(d.tenants||[]).find(function(x){return String(x.id)===String(tenantId);})||{};
-     var month=String(r.referenceMonth||'');
+     var month=String(r.referenceMonth||'').slice(0,7);
      var gross=Number(r.paidAmount||0);
      var fee=gross*Number(c.adminFee||0)/100;
      var deduction=typeof window.ownerMaintenanceDeduction==='function'?Number(window.ownerMaintenanceDeduction(r.propertyId,month)||0):0;
@@ -7481,7 +7495,9 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
      var d=current(), a=chargeContext(anchor);
      return (d.rentalCharges||[]).filter(function(item){
        if(Number(item.paidAmount||0)<=0)return false;
-       if(String(item.referenceMonth||'')!==a.month)return false;
+        if(String(item.referenceMonth||'').slice(0,7)!==a.month)return false;
+        var transfer=(d.ownerTransfers||[]).find(function(entry){return String(entry.chargeId)===String(item.id);});
+        if(transfer&&String(transfer.status||'').toLowerCase()==='repassado')return false;
        var x=chargeContext(item);
        return a.ownerId!=null&&x.ownerId!=null&&String(x.ownerId)===String(a.ownerId);
      }).map(chargeContext).sort(function(a,b){
@@ -7592,4 +7608,109 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
 #dormus-print-overlay-885{position:fixed;inset:0;z-index:1000000;background:rgba(0,0,0,.55);overflow:auto;padding:30px;box-sizing:border-box}#dormus-print-overlay-885 .dormus-print-sheet-885{background:#fff;color:#202b28;max-width:1000px;margin:0 auto;padding:38px;font-family:Arial,sans-serif}#dormus-print-overlay-885 table{width:100%;border-collapse:collapse;margin-top:20px}#dormus-print-overlay-885 th,#dormus-print-overlay-885 td{border:1px solid #bbb;padding:10px;text-align:left}#dormus-print-actions-885{display:flex;gap:8px}@media print{body>*:not(#dormus-print-overlay-885){display:none!important}#dormus-print-overlay-885{position:static;background:#fff;padding:0}.dormus-print-actions-885{display:none!important}}
 </style>
 
+<style id="dormus-vistoria-model-886-style">
+  .vistoria-model-886{max-width:190mm;margin:0 auto;background:#fff;color:#111;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.35}
+  .vistoria-model-886 *{box-sizing:border-box}
+  .vistoria-model-886-header{text-align:center;border-bottom:1px solid #222;padding-bottom:8px;margin-bottom:10px}
+  .vistoria-model-886-header h1{margin:0 0 14px;font-size:24px;text-transform:capitalize}
+  .vistoria-model-886-identification{text-align:left;display:grid;gap:5px;margin:0 auto}
+  .vistoria-model-886-identification p{margin:0}
+  .vistoria-model-886-identification b{font-weight:700}
+  .vistoria-model-886-checkline{text-align:left;margin-top:9px;line-height:1.6}
+  .vistoria-model-886-facade{margin:12px 0 10px}
+  .vistoria-model-886-facade-title{font-weight:700;font-size:15px;margin-bottom:5px}
+  .vistoria-model-886-facade img{display:block;max-width:100%;max-height:62mm;margin:0 auto;border:1px solid #222;object-fit:contain}
+  .vistoria-model-886-room{page-break-inside:avoid;margin:14px 0 0}
+  .vistoria-model-886-room-title{font-size:16px;text-align:center;font-weight:700;text-decoration:underline;margin:0 0 9px}
+  .vistoria-model-886-item{page-break-inside:avoid;border-bottom:1px solid #777;padding:0 0 8px;margin:0 0 8px}
+  .vistoria-model-886-item-name{font-weight:700;font-size:13px;margin-bottom:2px}
+  .vistoria-model-886-state{font-size:12px;margin-bottom:2px}
+  .vistoria-model-886-explain{min-height:18px}
+  .vistoria-model-886-photos{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:7px 0 10px}
+  .vistoria-model-886-photos figure{margin:0;page-break-inside:avoid}
+  .vistoria-model-886-photos img{display:block;width:100%;height:42mm;object-fit:cover;border:1px solid #555}
+  .vistoria-model-886-photos figcaption{font-size:9px;text-align:center;margin-top:2px;word-break:break-word}
+  .vistoria-model-886-opinion{margin-top:18px;page-break-inside:avoid}
+  .vistoria-model-886-opinion-title{font-weight:700;font-size:13px;margin-bottom:4px}
+  .vistoria-model-886-opinion-text{min-height:58px;border-bottom:1px solid #222;white-space:pre-wrap}
+  .vistoria-model-886-videos{margin-top:12px;border-top:1px solid #777;padding-top:6px;font-size:10px}
+  .vistoria-model-886-bottom{margin-top:26px;page-break-inside:avoid}
+  .vistoria-model-886-date{margin-bottom:18px}
+  .vistoria-model-886-signatures{display:grid;grid-template-columns:1fr 1fr;gap:45px;text-align:center;margin-top:33px}
+  .vistoria-model-886-signature{border-top:1px solid #222;padding-top:4px;min-height:34px}
+  @media print{
+    @page{size:A4 portrait;margin:10mm}
+    .vistoria-model-886{max-width:none}
+    .vistoria-model-886-header h1{font-size:22px}
+    .vistoria-model-886-room{margin-top:12px}
+  }
+  @media(max-width:620px){
+    .vistoria-model-886-photos{grid-template-columns:repeat(2,1fr)}
+    .vistoria-model-886-signatures{gap:18px}
+  }
+</style>
+<script id="dormus-vistoria-model-886-script">
+(function(){
+  'use strict';
+  function D(){return window.DormusDB||{}}
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function datePt(v){if(!v)return'';var s=String(v).slice(0,10);return s.indexOf('-')>=0?s.split('-').reverse().join('/'):s}
+  function value(v,fallback){return String(v==null||v===''?fallback||'':v)}
+  function people(r){
+    var d=D(),p=(d.properties||[]).find(function(x){return String(x.id)===String(r.propertyId)})||{};
+    var c=(d.contracts||[]).find(function(x){return String(x.propertyId)===String(r.propertyId)&&String(x.status||'').toLowerCase()!=='encerrado';})||(d.contracts||[]).find(function(x){return String(x.propertyId)===String(r.propertyId);})||{};
+    var ownerId=r.ownerId??c.ownerId??c.proprietarioId??p.ownerId??p.proprietarioId;
+    var tenantId=r.tenantId??c.tenantId??r.locatarioId??c.locatarioId;
+    var owner=(d.owners||[]).find(function(x){return String(x.id)===String(ownerId)})||{};
+    var tenant=(d.tenants||[]).find(function(x){return String(x.id)===String(tenantId)})||{};
+    var address=typeof presentationAddress==='function'?presentationAddress(p):[p.address,p.number,p.complement,p.neighborhood,p.city,p.state].filter(Boolean).join(', ');
+    return {p:p,c:c,owner:owner,tenant:tenant,address:address}
+  }
+  function damage(item){
+    var text=(String(item.current||'')+' '+String(item.notes||'')).toLowerCase();
+    return /avaria|reparo|ruim|regular|não funciona|nao funciona|quebrad|danific/.test(text)
+  }
+  function stateLine(item){
+    var has=damage(item),known=String(item.current||'').trim();
+    if(!known)return '(  ) Sem Avarias &nbsp;&nbsp;&nbsp; (  ) Com Avarias';
+    return '('+(has?' ':'x')+') Sem Avarias &nbsp;&nbsp;&nbsp; ('+(has?'x':' ')+') Com Avarias'
+  }
+  function itemHtml(item){
+    var name=value(item.item,'Item não informado');
+    if(!/[:：]$/.test(name))name+=':';
+    return '<div class="vistoria-model-886-item"><div class="vistoria-model-886-item-name">'+esc(name)+'</div><div class="vistoria-model-886-state">'+stateLine(item)+'</div><div class="vistoria-model-886-explain"><b>Explique:</b> '+esc(item.notes||'')+'</div></div>'
+  }
+  function photosHtml(files){
+    var photos=(files||[]).filter(function(x){return x.includeInReport!==false&&x.type&&x.type.indexOf('image/')===0&&x.url});
+    if(!photos.length)return'';
+    return '<div class="vistoria-model-886-photos">'+photos.map(function(x){return '<figure><img src="'+esc(x.url)+'" alt="'+esc(x.name||'Foto da vistoria')+'"><figcaption>'+esc(x.name||'Foto da vistoria')+'</figcaption></figure>'}).join('')+'</div>'
+  }
+  function roomHtml(room,items,files){
+    return '<section class="vistoria-model-886-room"><h2 class="vistoria-model-886-room-title">'+esc(room)+':</h2>'+items.map(itemHtml).join('')+photosHtml(files)+'</section>'
+  }
+  function reportHtml(r,files){
+    var d=D(),info=people(r),items=Array.isArray(r.items)?r.items:[],by={},order=[];
+    items.forEach(function(item){var room=String(item.room||'Geral').trim()||'Geral';if(!by[room]){by[room]=[];order.push(room)}by[room].push(item)});
+    var facade=(files||[]).find(function(x){return x.includeInReport!==false&&x.room==='Fachada'&&x.type&&x.type.indexOf('image/')===0&&x.url});
+    var roomFiles={};(files||[]).filter(function(x){return x.includeInReport!==false&&x.type&&x.type.indexOf('image/')===0&&x.url&&x.room!=='Fachada'}).forEach(function(x){(roomFiles[x.room||'Geral']||(roomFiles[x.room||'Geral']=[])).push(x)});
+    var roomSections=order.map(function(room){return roomHtml(room,by[room],roomFiles[room]||[])}).join('');
+    var extraRooms=Object.keys(roomFiles).filter(function(room){return order.indexOf(room)<0}).map(function(room){return roomHtml(room,[],roomFiles[room])}).join('');
+    var videos=(files||[]).filter(function(x){return x.includeInReport!==false&&x.type&&x.type.indexOf('video/')===0});
+    var painted=String(r.painted||'Não informado').toUpperCase();
+    var type=String(r.type||'Entrada').toLowerCase();
+    var reportDate=r.reportDate||r.date;
+    return '<article class="vistoria-model-886 inspection-print-sheet"><header class="vistoria-model-886-header"><h1>Laudo de Vistoria</h1><div class="vistoria-model-886-identification"><p><b>Proprietário:</b> '+esc(info.owner.name||'Não informado')+'</p><p><b>Locatário:</b> '+esc(info.tenant.name||'Não informado')+'</p><p><b>Endereço do imóvel:</b> '+esc(info.address||'Não informado')+'</p><p><b>Data da vistoria:</b> '+esc(datePt(r.date)||'Não informada')+'</p></div><div class="vistoria-model-886-checkline"><b>Residencial:</b> ('+(type==='entrada'?'x':' ') +') Entrada &nbsp; ('+(type==='saída'||type==='saida'?'x':' ')+') Saída &nbsp; - &nbsp; <b>Imóvel Pintado:</b> ('+(painted==='SIM INTERNO'?'x':' ')+') SIM INTERNO &nbsp; ('+(painted==='SIM INTERNO E EXTERNO'?'x':' ')+') SIM INTERNO E EXTERNO &nbsp; ('+(painted==='NÃO'?'x':' ')+') NÃO</div></header><section class="vistoria-model-886-facade"><div class="vistoria-model-886-facade-title">Fachada:</div>'+(facade?'<img src="'+esc(facade.url)+'" alt="Foto da fachada">':'')+'</section>'+(roomSections||'<div>Nenhum cômodo ou item foi selecionado.</div>')+extraRooms+'<section class="vistoria-model-886-opinion"><div class="vistoria-model-886-opinion-title">Parecer do vistoriador:</div><div class="vistoria-model-886-opinion-text">'+esc(r.notes||'')+'</div></section>'+(videos.length?'<div class="vistoria-model-886-videos"><b>Vídeos anexados:</b> '+videos.map(function(x){return esc(x.name||'Vídeo da vistoria')}).join(' · ')+'</div>':'')+'<footer class="vistoria-model-886-bottom"><div class="vistoria-model-886-date"><b>Data:</b> '+esc(datePt(r.reportDate)||'____/____/________')+'</div><div><b>Vistoriador:</b> '+esc(r.responsible||'')+'</div><div class="vistoria-model-886-signatures"><div class="vistoria-model-886-signature">Assinatura do Locador</div><div class="vistoria-model-886-signature">Assinatura do Locatário</div></div></footer></article>'
+  }
+  window.printInspectionReport=async function(id){
+    var d=D(),r=(d.inspections||[]).find(function(x){return String(x.id)===String(id)});
+    if(!r){alert('Vistoria não encontrada.');return}
+    var sheet=document.getElementById('print-area');if(!sheet){alert('Área de impressão não encontrada.');return}
+    var files=[];
+    try{if(typeof listAttachments==='function')files=await listAttachments('inspection',r.id)}catch(error){console.warn('Não foi possível carregar as fotos da vistoria',error)}
+    sheet.innerHTML=reportHtml(r,files);
+    setTimeout(function(){window.print();setTimeout(function(){sheet.innerHTML=''},900)},80)
+  }
+  window.DormusInspectionModel886={html:reportHtml}
+})();
+</script>
 </body>
