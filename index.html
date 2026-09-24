@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.6</title>
+  <title>Dormus | Gestão imobiliária · 8.7</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -189,9 +189,9 @@ body.provider-mode #provider-receipts-view{display:block!important}
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Dormus">
-  <link rel="icon" href="./icons/dormus-classic.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="./icons/dormus-classic-192.png">
-  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./dormus-portal.svg?v=20260924" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./dormus-portal-192.png?v=20260924">
+  <link rel="manifest" href="./manifest-portal.json?v=20260924">
   <link rel="stylesheet" href="./dormus-enhancements.css">
 
 
@@ -2855,7 +2855,7 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
       state.permission=true;
       updateNotifyStatus('🔔 Push real ativado neste dispositivo. Você receberá mensagens mesmo com o DORMUS fechado.','on');
       const reg=await navigator.serviceWorker.ready;
-      reg.showNotification('DORMUS',{body:'Notificações de chat ativadas neste dispositivo.',icon:'./icon-192.png',badge:'./icon-192.png',tag:'dormus-push-test'});
+      reg.showNotification('DORMUS',{body:'Notificações de chat ativadas neste dispositivo.',icon:'./dormus-portal-192.png',badge:'./dormus-portal-192.png',tag:'dormus-push-test'});
     }catch(e){
       updateNotifyStatus('⚠️ Não foi possível ativar o Push: '+(e?.message||e),'off');
     }
@@ -8246,4 +8246,107 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
 })();
 </script>
 <script src="./dormus-enhancements.js"></script>
+<script id="dormus-pwa-icon-path-fix">
+(function(){
+  'use strict';
+  var version='20260924';
+  var choices={
+    classic:{svg:'./icons/dormus-classic.svg',png192:'./icons/dormus-classic-192.png',png512:'./icons/dormus-classic-512.png',manifest:'./manifest-classic.json'},
+    portal:{svg:'./dormus-portal.svg',png192:'./dormus-portal-192.png',png512:'./dormus-portal-512.png',manifest:'./manifest-portal.json'},
+    monogram:{svg:'./icons/dormus-monogram.svg',png192:'./icons/dormus-monogram-192.png',png512:'./icons/dormus-monogram-512.png',manifest:'./manifest-monogram.json'}
+  };
+  function choiceFromText(value){
+    var text=String(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    if(/monograma|monogram/.test(text))return 'monogram';
+    if(/classico|classic/.test(text))return 'classic';
+    if(/portal/.test(text))return 'portal';
+    return '';
+  }
+  function manifestLink(){
+    return document.querySelector('link[rel~="manifest"]');
+  }
+  function setChoice(name,save){
+    var selected=choices[name]?name:'portal',item=choices[selected],manifest=manifestLink();
+    document.querySelectorAll('link[rel~="icon"],link[rel="apple-touch-icon"]').forEach(function(link){
+      var apple=link.rel.toLowerCase().indexOf('apple-touch-icon')!==-1;
+      link.href=(apple?item.png192:item.svg)+'?v='+version;
+    });
+    if(manifest)manifest.href=item.manifest+'?v='+version;
+    document.querySelectorAll('meta[name="theme-color"]').forEach(function(meta){meta.content='#20372d'});
+    if(save!==false){try{localStorage.setItem('dormus_pwa_icon_choice',selected)}catch(e){}}
+    document.documentElement.setAttribute('data-dormus-pwa-icon',selected);
+    return selected;
+  }
+  window.setDormusPwaIcon=setChoice;
+  function inlineIcon(name){
+    var letter=name==='classic'?'D':name==='monogram'?'D':'D';
+    var bg=name==='classic'?'#20372d':name==='monogram'?'#f5f1e8':'#2e9b57';
+    var fg=name==='classic'?'#e5c277':name==='monogram'?'#20372d':'#ffffff';
+    var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="'+bg+'"/><circle cx="256" cy="256" r="158" fill="none" stroke="'+fg+'" stroke-width="18" opacity=".82"/><text x="256" y="330" text-anchor="middle" font-family="Arial,sans-serif" font-size="220" font-weight="700" fill="'+fg+'">'+letter+'</text></svg>';
+    return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+  }
+  function repairPreview(img){
+    if(!img||img.dataset.dormusPwaPathFix)return;
+    var label=img.getAttribute('alt')||'';
+    var name=choiceFromText(label);
+    if(!name||!/logo/i.test(label))return;
+    img.dataset.dormusPwaPathFix='1';
+    img.onerror=function(){
+      if(!img.dataset.dormusPwaAssetAttempted){
+        img.dataset.dormusPwaAssetAttempted='1';
+        img.src=choices[name].svg;
+        return;
+      }
+      if(img.dataset.dormusPwaInlineFallback)return;
+      img.dataset.dormusPwaInlineFallback='1';
+      img.src=inlineIcon(name);
+    };
+    if(img.complete&&img.naturalWidth===0){
+      img.dataset.dormusPwaAssetAttempted='1';
+      img.src=choices[name].svg;
+    }else if(!img.getAttribute('src')){
+      img.dataset.dormusPwaAssetAttempted='1';
+      img.src=choices[name].svg;
+    }
+  }
+  function scanPreviews(root){
+    if(!root)return;
+    if(root.matches&&root.matches('img[alt]'))repairPreview(root);
+    if(root.querySelectorAll)root.querySelectorAll('img[alt]').forEach(repairPreview);
+  }
+  function clickedChoice(target){
+    var node=target&&target.nodeType===1?target:null;
+    for(var i=0;node&&i<6;i++,node=node.parentElement){
+      var image=node.tagName==='IMG'?node:node.querySelector&&node.querySelector('img[alt]');
+      var alt=image&&image.getAttribute('alt')||'';
+      var name=choiceFromText(alt);
+      if(name&&/logo/i.test(alt))return name;
+    }
+    return '';
+  }
+  function selectedChoice(){
+    try{
+      var stored=localStorage.getItem('dormus_pwa_icon_choice');
+      if(choices[stored])return stored;
+    }catch(e){}
+    var active=document.querySelector('[aria-checked="true"],input[type="radio"]:checked,.dormus-pwa-choice.active,.dormus-pwa-choice.selected');
+    return clickedChoice(active)||'portal';
+  }
+  document.addEventListener('click',function(event){
+    var name=clickedChoice(event.target);
+    if(name)setChoice(name,true);
+  },true);
+  scanPreviews(document);
+  if('MutationObserver' in window){
+    new MutationObserver(function(records){
+      records.forEach(function(record){
+        if(record.type==='childList')record.addedNodes.forEach(function(node){if(node.nodeType===1)scanPreviews(node)});
+        else if(record.type==='attributes'&&record.target.tagName==='IMG')repairPreview(record.target);
+      });
+    }).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['src','alt']});
+  }
+  setChoice(selectedChoice(),false);
+})();
+</script>
 </body>
+</html>
