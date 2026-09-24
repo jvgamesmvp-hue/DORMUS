@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.3</title>
+  <title>Dormus | Gestão imobiliária · 8.5</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -544,6 +544,7 @@ section,article,.section,.content-card,.white-card{
         <div id="portal-chooser" class="portal-chooser">
           <div class="login-title">Bem-vindo ao DORMUS</div>
           <p class="login-sub">Escolha o portal que corresponde ao seu acesso.</p>
+          <div id="dormus-local-file-warning" class="login-note" hidden>Este arquivo foi aberto diretamente do ZIP. Para autenticar e acessar os dados, abra o DORMUS por uma página hospedada em HTTPS.</div>
           <button class="portal-choice" onclick="selectLoginPortal('imobiliaria')"><span class="portal-choice-icon">🏢</span><span><strong>Portal da Imobiliária</strong><small>Administradores e equipe</small></span><b>→</b></button>
           <button class="portal-choice" onclick="selectLoginPortal('prestador')"><span class="portal-choice-icon">🛠️</span><span><strong>Portal do Prestador</strong><small>Prestadores de serviços</small></span><b>→</b></button>
         </div>
@@ -732,7 +733,8 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
-  SUPABASE_KEY
+  SUPABASE_KEY,
+  {auth:{persistSession:false}}
 );
 
     const KEY='dormus-empty-v2';
@@ -1148,6 +1150,8 @@ function showLogin(message=''){
   const app=document.querySelector('.app');
   if(screen)screen.hidden=false;
   if(app)app.style.display='none';
+  const fileWarning=document.getElementById('dormus-local-file-warning');
+  if(fileWarning)fileWarning.hidden=location.protocol!=='file:';
   const error=document.getElementById('login-error');
   if(error)error.textContent=message||'';
   const email=document.getElementById('login-email');
@@ -1179,6 +1183,7 @@ async function handlePortalLogin(event,kind){
   if(errorEl)errorEl.textContent='';
   if(button){button.disabled=true;button.textContent='Entrando...';}
   try{
+    if(location.protocol==='file:')throw new Error('Para entrar e acessar os dados, abra o DORMUS por uma página hospedada em HTTPS; o arquivo aberto diretamente do ZIP não consegue autenticar.');
     let email='';
     let loginProfile=null;
     if(kind==='imobiliaria'){
@@ -1289,16 +1294,10 @@ async function loadDbFromSupabase(){
 
 async function initDormus(){
   showLogin();
-  try{
-    const {data:{session}}=await supabaseClient.auth.getSession();
-    if(session) await enterDormus(session);
-  }catch(error){
-    console.error('DORMUS: falha na inicialização do banco',error);
-  }
-  supabaseClient.auth.onAuthStateChange((_event,newSession)=>{
-    if(newSession){
+  supabaseClient.auth.onAuthStateChange((event,newSession)=>{
+    if(event==='SIGNED_IN'&&newSession){
       setTimeout(()=>enterDormus(newSession),0);
-    }else{
+    }else if(event==='SIGNED_OUT'){
       db=JSON.parse(JSON.stringify(blank));
       window.DormusDB=db;
       showLogin();
@@ -2432,8 +2431,6 @@ window.markOwnerTransfer=async function(chargeId){const r=(db.rentalCharges||[])
   addAccessButtons();
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(addAccessButtons,400));else setTimeout(addAccessButtons,400);
   const oldBoot=window.bootEnhancements;if(typeof oldBoot==='function')window.bootEnhancements=function(){oldBoot();addAccessButtons()};
-  // Se o script original já iniciou antes deste módulo, reavalia a sessão agora.
-  setTimeout(async()=>{try{const {data:{session}}=await supabaseClient.auth.getSession();if(session){const access=await getProviderAccess(session.user?.email||'');if(access)window.enterDormus(session)}}catch(e){console.warn(e)}},500);
 })();
 </script>
 
@@ -8622,22 +8619,6 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
     }
     return false;
   }
-  function clickedChoice(target){
-    var node=target&&target.nodeType===1?target:null;
-    for(var i=0;node&&i<7;i++,node=node.parentElement){
-      var image=node.tagName==='IMG'?node:node.querySelector&&node.querySelector('img[alt]');
-      var alt=image&&image.getAttribute('alt')||'';
-      if(choiceFromText(alt)&&/logo/i.test(alt))return true;
-    }
-    return false;
-  }
-  document.addEventListener('click',function(event){
-    if(choiceImages().length>=2&&clickedChoice(event.target)){
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      removeIconChooser();
-    }
-  },true);
   function isChoiceImage(img){
     var alt=img&&img.getAttribute&&img.getAttribute('alt')||'';
     return !!choiceFromText(alt)&&/logo/i.test(alt);
