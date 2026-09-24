@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.4</title>
+  <title>Dormus | Gestão imobiliária · 8.5</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -884,37 +884,60 @@ async function carregarDadosSupabase(){
     const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
     const val=id=>document.getElementById(id)?.value?.trim()||'';
     const selected=(value,current)=>value===current?' selected':'';
+    let dormusSavePromise=null;
+    function dormusPersistableData(){
+      const copy=JSON.parse(JSON.stringify(db));
+      // URLs assinadas são temporárias e podem aumentar muito a linha do banco.
+      // O path continua salvo para gerar uma nova URL quando os anexos forem lidos.
+      if(Array.isArray(copy.attachments)){
+        copy.attachments=copy.attachments.map(file=>{
+          const {url,signedUrl,previewUrl,...persisted}=file||{};
+          return persisted;
+        });
+      }
+      return copy;
+    }
     async function save(){
-  try{
-    const {data:{session}}=await supabaseClient.auth.getSession();
-    if(!session){
-      showLogin('Entre no Dormus para continuar.');
-      return false;
-    }
-    const { error } = await supabaseClient
-      .from('dormus_data')
-      .upsert({
-        id: 1,
-        data: db,
-        updated_at: new Date().toISOString()
-      }, { onConflict: 'id' });
+      if(dormusSavePromise)return dormusSavePromise;
+      dormusSavePromise=(async()=>{
+        try{
+          const {data:{session}}=await supabaseClient.auth.getSession();
+          if(!session){
+            showLogin('Entre no Dormus para continuar.');
+            return false;
+          }
+          const data=dormusPersistableData();
+          const updated_at=new Date().toISOString();
+          let result=await supabaseClient
+            .from('dormus_data')
+            .upsert({id:1,data,updated_at},{onConflict:'id'});
 
-    if(error){
-      console.error('Erro ao salvar no Supabase:', error);
-      const detalhe = [error.message, error.details, error.hint].filter(Boolean).join(' | ');
-      alert('Erro ao salvar no Supabase:\n\n' + detalhe);
-      return false;
+          // Um timeout transitório do Postgres não deve perder a alteração.
+          if(result.error && /statement timeout|timeout|connection/i.test(String(result.error.message||''))){
+            await new Promise(resolve=>setTimeout(resolve,900));
+            result=await supabaseClient
+              .from('dormus_data')
+              .upsert({id:1,data,updated_at},{onConflict:'id'});
+          }
+          if(result.error){
+            console.error('Erro ao salvar no Supabase:',result.error);
+            const detalhe=[result.error.message,result.error.details,result.error.hint].filter(Boolean).join(' | ');
+            alert('Erro ao salvar no Supabase:\n\n'+detalhe);
+            return false;
+          }
+          renderAll();
+          try{if(window.DormusProviderPortal?.syncProviderServices)await window.DormusProviderPortal.syncProviderServices()}catch(e){console.warn('Sincronização do portal de prestadores não disponível ainda.',e)}
+          return true;
+        }catch(error){
+          console.error('Falha inesperada ao salvar:',error);
+          alert('Falha ao salvar no sistema:\n\n'+(error?.message||error));
+          return false;
+        }finally{
+          dormusSavePromise=null;
+        }
+      })();
+      return dormusSavePromise;
     }
-
-    renderAll();
-    try{ if(window.DormusProviderPortal?.syncProviderServices) await window.DormusProviderPortal.syncProviderServices(); }catch(e){ console.warn('Sincronização do portal de prestadores não disponível ainda.',e); }
-    return true;
-  }catch(error){
-    console.error('Falha inesperada ao salvar:', error);
-    alert('Falha ao salvar no sistema:\n\n' + (error?.message || error));
-    return false;
-  }
-}
     window.renderView=function(id){
       if(id==='home')renderHome();
       if(id==='properties')renderProperties();
@@ -7603,7 +7626,7 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
      try{
         var printHtml=statementHtml(items);
         var blankRows=Array.from({length:Math.max(0,15-items.length)},function(){return '<tr class="blank-row"><td></td><td></td><td></td><td></td><td></td></tr>';}).join('');
-        printHtml=printHtml.replace('</style></head>','<style>.sheet{min-height:178mm}.blank-row td{height:7mm!important;min-height:7mm!important;padding:0!important;background:#fff}@media print{.sheet{min-height:178mm}.blank-row td{height:7mm!important}}</style></head>').replace('<tr class="total">',blankRows+'<tr class="total">');
+        printHtml=printHtml.replace('</head>','<style>.sheet{width:85%!important;max-width:85%!important;min-height:151mm!important;margin:0 auto}.title{font-size:25px!important}.owner{font-size:18px!important}.table{font-size:14px!important;line-height:1.3!important}.table th{font-size:15px!important}.table th,.table td{height:auto!important;min-height:27px!important;padding:5px 8px!important}.property{font-size:12px!important}.footer{min-height:92px!important}.blank-row td{height:7mm!important;min-height:7mm!important;padding:0!important;background:#fff}@media print{.sheet{width:85%!important;max-width:85%!important;min-height:151mm!important}.blank-row td{height:7mm!important}}</style></head>').replace('<tr class="total">',blankRows+'<tr class="total">');
         popup.document.open();popup.document.write(printHtml);popup.document.close();popup.focus();
        setTimeout(function(){popup.print();},350);
      }catch(error){try{popup.close();}catch(_){ }alert('Não foi possível abrir o demonstrativo para impressão.');}
@@ -8150,7 +8173,6 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
       d.payments=(d.rentalCharges||[]).filter(function(r){return Number(r.paidAmount||0)>0});
       if(typeof window.save!=='function'||await window.save()===false)throw new Error('Não foi possível gravar as baixas e os repasses no Supabase.');
       alert('Concluído. '+charges.length+' aluguel(is) conferido(s), '+pending.length+' baixa(s) realizada(s), '+created+' repasse(s) criado(s) e '+updated+' atualizado(s).');
-      installBulkButton();
     }catch(error){
       var restored=JSON.parse(before);
       Object.keys(d).forEach(function(key){delete d[key]});
@@ -8160,15 +8182,6 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
     }
   }
   window.dormusBatchCloseAndTransferPeriod=batchCloseAndTransfer;
-  function installBulkButton(){
-    var view=document.getElementById('repasse'),head=view&&view.querySelector('.page-head');if(!head)return;
-    var old=document.getElementById('dormus-bulk-period-action');if(old)return;
-    var actions=document.createElement('div');actions.className='dormus-bulk-period-wrap';
-    actions.innerHTML='<button id="dormus-bulk-period-action" type="button" class="button button-brass">Baixar e repassar 01/2023–08/2026</button><span class="dormus-bulk-period-note">Mantém a competência de cada aluguel<br>e grava tudo no Supabase.</span>';
-    head.appendChild(actions);
-    document.getElementById('dormus-bulk-period-action').addEventListener('click',batchCloseAndTransfer);
-  }
-
   function attentionItems(){
     var d=D(),items=[],now=new Date();
     (d.contracts||[]).forEach(function(c){if(!c.end||['Encerrado','Encerrada'].includes(String(c.status||'')))return;var end=new Date(String(c.end).slice(0,10)+'T12:00:00'),days=Math.ceil((end-now)/86400000);if(days>=0&&days<=60)items.push({kind:'contracts',title:'Contrato próximo do vencimento',detail:(d.properties||[]).find(function(p){return String(p.id)===String(c.propertyId)})?.name||'Contrato sem imóvel identificado',extra:'Vencimento em '+end.toLocaleDateString('pt-BR')+' ('+days+' dias)'})});
@@ -8215,7 +8228,6 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
 
   function install(){
     document.querySelectorAll('.notification-center-nav,#notifications-button,[data-view="notifications-center"]').forEach(function(el){el.remove()});
-    installBulkButton();
   }
   var baseEnter=window.enterDormus;
   if(typeof baseEnter==='function'){
