@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.9</title>
+  <title>Dormus | Gestão imobiliária · 8.1</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -8410,8 +8410,9 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   }
   function commonParent(nodes){
     if(!nodes.length)return null;
+    if(nodes.some(function(node){return node===document.body||node===document.documentElement}))return null;
     var parent=nodes[0].parentElement;
-    while(parent&&parent!==document.body){
+    while(parent&&parent!==document.body&&parent!==document.documentElement){
       if(nodes.every(function(node){return parent.contains(node)}))return parent;
       parent=parent.parentElement;
     }
@@ -8419,14 +8420,14 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   }
   function cardFor(img){
     var node=img;
-    while(node.parentElement&&node.parentElement!==document.body){
+    while(node.parentElement&&node.parentElement!==document.body&&node.parentElement!==document.documentElement){
       var parent=node.parentElement;
       if(parent.matches('button,label,a,[role="button"]'))return parent;
       var matching=Array.from(parent.querySelectorAll('img[alt]')).filter(function(x){return !!kind(x)});
       if(matching.length>1)return node;
       node=parent;
     }
-    return node.parentElement||node;
+    return node===document.body||node===document.documentElement?img.parentElement:node;
   }
   function markText(selector,pattern,className){
     var candidates=Array.from(document.querySelectorAll('body *')).filter(function(el){
@@ -8443,17 +8444,18 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
     if(!seen.classic||!seen.portal||!seen.monogram)return;
     var cards=imgs.map(function(img){
       var card=cardFor(img);
+      if(card.matches('body,html,.app,.main,.view,#home'))card=img.parentElement||img;
       card.classList.add('dormus-pwa-choice-card');
       return card;
     });
     var unique=Array.from(new Set(cards));
     var parent=commonParent(unique);
-    if(parent&&unique.every(function(card){return card.parentElement===parent})){
+    if(parent&&parent!==document.body&&parent!==document.documentElement&&unique.every(function(card){return card.parentElement===parent})){
       var grid=document.createElement('div');
       grid.className='dormus-pwa-choice-grid';
       parent.insertBefore(grid,unique[0]);
       unique.forEach(function(card){grid.appendChild(card)});
-    }else if(parent){
+    }else if(parent&&parent!==document.body&&parent!==document.documentElement&&!parent.matches('.app,.main,.view,#home')){
       parent.classList.add('dormus-pwa-choice-grid');
     }
     var grid=parent&&parent.querySelector('.dormus-pwa-choice-grid');
@@ -8462,7 +8464,7 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
     markText('','fica salva neste aparelho|manifest pwa','dormus-pwa-help');
     var anchors=[grid,heading].filter(Boolean);
     var panel=commonParent(anchors);
-    if(panel&&panel!==document.body&&panel.textContent.length<700&&/identidade do aplicativo/i.test(panel.textContent)){
+    if(panel&&panel!==document.body&&panel!==document.documentElement&&!panel.matches('.app,.main,.view,#home')&&panel.textContent.length<700&&/identidade do aplicativo/i.test(panel.textContent)){
       panel.classList.add('dormus-pwa-panel');
       Array.from(panel.querySelectorAll('button')).forEach(function(button){
         if(/^[×x]$/i.test(button.textContent.trim()))button.classList.add('dormus-pwa-close');
