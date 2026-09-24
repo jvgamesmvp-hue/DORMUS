@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.2</title>
+  <title>Dormus | Gestão imobiliária · 8.3</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -7599,7 +7599,10 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
      var popup=window.open('','_blank','width=1000,height=800');
      if(!popup){alert('O navegador bloqueou a janela de impressão. Permita pop-ups para o DORMUS e tente novamente.');return;}
      try{
-       popup.document.open();popup.document.write(statementHtml(items));popup.document.close();popup.focus();
+        var printHtml=statementHtml(items);
+        var blankRows=Array.from({length:Math.max(0,15-items.length)},function(){return '<tr class="blank-row"><td></td><td></td><td></td><td></td><td></td></tr>';}).join('');
+        printHtml=printHtml.replace('</style></head>','<style>.sheet{min-height:178mm}.blank-row td{height:7mm!important;min-height:7mm!important;padding:0!important;background:#fff}@media print{.sheet{min-height:178mm}.blank-row td{height:7mm!important}}</style></head>').replace('<tr class="total">',blankRows+'<tr class="total">');
+        popup.document.open();popup.document.write(printHtml);popup.document.close();popup.focus();
        setTimeout(function(){popup.print();},350);
      }catch(error){try{popup.close();}catch(_){ }alert('Não foi possível abrir o demonstrativo para impressão.');}
    }
@@ -7943,6 +7946,106 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   var oldEnter=window.enterDormus;
   if(typeof oldEnter==='function')window.enterDormus=async function(session){var result=await oldEnter.apply(this,arguments);if(!window.DormusProviderPortal?.access)setTimeout(function(){window.showView('notifications-center')},40);return result};
   setTimeout(async function(){try{var session=typeof supabaseClient!=='undefined'?(await supabaseClient.auth.getSession())?.data?.session:null;if(session&&!window.DormusProviderPortal?.access&&document.querySelector('.view.active')?.id==='home')window.showView('notifications-center')}catch(e){}},1400);
+})();
+</script>
+<style id="dormus-887-repasse-tabs-style">
+  #repasse .repasse-tabs-887{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 15px;padding:5px;border:1px solid #dce3ea;border-radius:10px;background:#f6f8fa}
+  #repasse .repasse-tab-887{border:0;border-radius:7px;padding:9px 13px;background:transparent;color:#6f7d91;font-size:12px;font-weight:700;cursor:pointer}
+  #repasse .repasse-tab-887.active{background:#0d3c43;color:#19d19c}
+  #repasse .repasse-tab-887 b{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:5px;border-radius:999px;background:#e5ebef;color:#40566a;font-size:10px}
+  #repasse .repasse-tab-887.active b{background:#19d19c;color:#0d3c43}
+  #repasse .repasse-bulk-887{margin-left:auto}
+  #repasse .repasse-bulk-887 small{display:block;margin-top:4px;color:#6f7d91;font-size:10px}
+  #repasse .repasse-status-887{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:700;white-space:nowrap}
+  #repasse .repasse-status-887.available{background:#e4f5ee;color:#087b5a}
+  #repasse .repasse-status-887.done{background:#e9eef4;color:#526b80}
+  #repasse .repasse-empty-887{text-align:center;padding:28px;color:#6f7d91}
+  @media(max-width:720px){#repasse .repasse-bulk-887{margin-left:0}.repasse-filter-881{align-items:stretch;flex-direction:column}}
+</style>
+<script id="dormus-887-repasse-tabs-script">
+(function(){
+  'use strict';
+  var tab='available';
+  function D(){return typeof db!=='undefined'?db:(window.DormusDB||{});}
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]});}
+  function money(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});}
+  function paid(r){return Number(r&&r.paidAmount||0)>0;}
+  function transfer(r){return (D().ownerTransfers||[]).find(function(x){return String(x.chargeId)===String(r.id);})||null;}
+  function isDone(t){return !!t&&!/cancel|estorn/i.test(String(t.status||''))&&(t.status==null||/repass/i.test(String(t.status)));}
+  function monthText(value){var p=String(value||'').slice(0,7).split('-');if(p.length<2||!p[0]||!p[1])return value||'';return new Date(Number(p[0]),Number(p[1])-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});}
+  function currentMonth(){var el=document.getElementById('repasse-month-887')||document.getElementById('repasse-month-881');return el&&el.value?String(el.value).slice(0,7):'';}
+  function months(){
+    var all=(D().rentalCharges||[]).filter(paid),set={};
+    all.forEach(function(r){var m=String(r.referenceMonth||'').slice(0,7);if(m)set[m]=1;});
+    var now=new Date(),today=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');if(!set[today])set[today]=1;
+    return Object.keys(set).sort().reverse();
+  }
+  function ctx(r){
+    var d=D(),c=(d.contracts||[]).find(function(x){return String(x.id)===String(r.contractId);})||{},p=(d.properties||[]).find(function(x){return String(x.id)===String(r.propertyId)||String(x.id)===String(c.propertyId);})||{},ownerId=c.ownerId??c.proprietarioId??p.ownerId??p.proprietarioId??r.ownerId,o=(d.owners||[]).find(function(x){return String(x.id)===String(ownerId);})||{},t=(d.tenants||[]).find(function(x){return String(x.id)===String(r.tenantId)||String(x.id)===String(c.tenantId);})||{},gross=Number(r.paidAmount||0),fee=gross*Number(c.adminFee||0)/100,month=String(r.referenceMonth||'').slice(0,7),deduction=typeof window.ownerMaintenanceDeduction==='function'?Number(window.ownerMaintenanceDeduction(r.propertyId,month)||0):0;
+    return {r:r,c:c,p:p,o:o,t:t,month:month,gross:gross,fee:fee,deduction:deduction,net:Math.max(gross-fee-deduction,0),tr:transfer(r)};
+  }
+  function collection(selected){
+    return (D().rentalCharges||[]).filter(paid).filter(function(r){return !selected||String(r.referenceMonth||'').slice(0,7)===selected;}).map(ctx).filter(function(x){return tab==='done'?isDone(x.tr):!isDone(x.tr);});
+  }
+  function chargeTotal(r){
+    try{if(typeof rentChargeTotal==='function')return Number(rentChargeTotal(r)||0)}catch(e){}
+    var n=function(v){return Number(String(v==null?'':v).replace(',','.'))||0};
+    return Math.max(0,n(r.rent)+n(r.condominium)+n(r.iptu)+n(r.water)+n(r.energy)+n(r.otherCharges)-n(r.discount)+n(r.fine)+n(r.interest));
+  }
+  function render(){
+    var el=document.getElementById('repasse-standalone-content');if(!el)return;
+    var ms=months(),selected=currentMonth()||ms[0]||'',allPaid=(D().rentalCharges||[]).filter(paid),available=allPaid.filter(function(r){return !isDone(transfer(r));}).length,done=allPaid.length-available,rows=collection(selected),totals=rows.reduce(function(a,x){a.gross+=x.gross;a.fee+=x.fee;a.deduction+=x.deduction;a.net+=x.net;return a;},{gross:0,fee:0,deduction:0,net:0});
+    var html='<div class="repasse-tabs-887"><button type="button" class="repasse-tab-887 '+(tab==='available'?'active':'')+'" data-repasse-tab-887="available">Disponíveis para repasse <b>'+available+'</b></button><button type="button" class="repasse-tab-887 '+(tab==='done'?'active':'')+'" data-repasse-tab-887="done">Já repassados <b>'+done+'</b></button><div class="repasse-bulk-887"><button type="button" class="button button-small button-brass" id="repasse-bulk-2023-887">Dar baixa nos aluguéis de 2023</button><small>Preenche o valor calculado e conserva a competência original.</small></div></div>';
+    html+='<div class="repasse-filter-881"><label><span>Competência</span><select id="repasse-month-887">'+ms.map(function(m){return '<option value="'+esc(m)+'" '+(m===selected?'selected':'')+'>'+esc(monthText(m))+'</option>';}).join('')+'</select></label><span class="repasse-only-paid-881">'+(tab==='done'?'Histórico de repasses já registrados':'Somente aluguéis com baixa e ainda disponíveis para repasse')+'</span></div>';
+    html+='<div class="repasse-summary"><div class="summary"><label>Recebido</label><strong>'+money(totals.gross)+'</strong></div><div class="summary"><label>Administração</label><strong>'+money(totals.fee)+'</strong></div><div class="summary"><label>Desconto manutenção</label><strong>'+money(totals.deduction)+'</strong></div><div class="summary"><label>'+ (tab==='done'?'Total repassado':'A repassar') +'</label><strong>'+money(totals.net)+'</strong></div></div>';
+    html+='<div class="table-wrap repasse-table-wrap-875"><table class="table repasse-table"><thead><tr><th>Proprietário / imóvel</th><th>Competência</th><th>Recebido</th><th>Admin.</th><th>Desconto</th><th>Repasse</th><th>Status</th><th>Ações</th></tr></thead><tbody>';
+    if(!rows.length)html+='<tr><td colspan="8" class="repasse-empty-887">'+(tab==='done'?'Nenhum repasse registrado nesta competência.':'Nenhum aluguel pago disponível para repasse nesta competência.')+'</td></tr>';
+    rows.forEach(function(x){
+      var action=tab==='available'?'<button type="button" class="button button-small button-primary" data-mark-887="'+esc(x.r.id)+'">Marcar repasse</button>':'';
+      action+='<button type="button" class="button button-small" data-print-881="'+esc(x.r.id)+'">🖨 Imprimir demonstrativo</button>';
+      html+='<tr><td><strong>'+esc(x.o.name||'Proprietário não identificado')+'</strong><div class="row-sub">'+esc(x.p.name||x.p.address||'Imóvel não informado')+'</div></td><td>'+esc(x.month||'—')+'</td><td>'+money(x.gross)+'</td><td>'+money(x.fee)+'</td><td>'+money(x.deduction)+'</td><td><strong>'+money(x.net)+'</strong></td><td><span class="repasse-status-887 '+(tab==='done'?'done':'available')+'">'+(tab==='done'?'Repassado':'Disponível para repasse')+'</span></td><td class="repasse-actions-875">'+action+'</td></tr>';
+    });
+    html+='</tbody></table></div>';el.innerHTML=html;
+    el.querySelectorAll('[data-repasse-tab-887]').forEach(function(btn){btn.onclick=function(){tab=btn.dataset.repasseTab887;render();}});
+    var select=document.getElementById('repasse-month-887');if(select)select.onchange=render;
+    el.querySelectorAll('[data-mark-887]').forEach(function(btn){btn.onclick=function(){markTransfer(btn.dataset.mark887);}});
+    var bulk=document.getElementById('repasse-bulk-2023-887');if(bulk)bulk.onclick=bulkClose2023;
+  }
+  async function markTransfer(id){
+    var d=D(),r=(d.rentalCharges||[]).find(function(x){return String(x.id)===String(id);});if(!r||!paid(r)){alert('Este aluguel precisa estar baixado na aba Aluguéis antes do repasse.');return;}
+    try{
+      d.ownerTransfers=d.ownerTransfers||[];var x=ctx(r),tr=transfer(r);
+      if(!tr){tr={id:typeof window.uid==='function'?window.uid():'ot-'+Date.now(),chargeId:r.id,contractId:r.contractId,propertyId:r.propertyId,ownerId:(x.c.ownerId??x.c.proprietarioId??x.o.id??null),referenceMonth:x.month,gross:x.gross,fee:x.fee,deduction:x.deduction,net:x.net,date:new Date().toISOString().slice(0,10),status:'Repassado'};d.ownerTransfers.push(tr);}else{tr.status='Repassado';tr.date=tr.date||new Date().toISOString().slice(0,10);}
+      if(typeof window.save==='function'&&await window.save()===false)throw new Error('Não foi possível salvar o repasse.');
+      tab='available';render();
+    }catch(e){alert(e.message||'Não foi possível marcar o repasse.');}
+  }
+  async function bulkClose2023(){
+    var d=D(),items=(d.rentalCharges||[]).filter(function(r){return /^2023-/.test(String(r.referenceMonth||''))||/^2023-/.test(String(r.dueDate||''));});
+    if(!items.length){alert('Não há aluguéis de 2023 cadastrados para dar baixa.');return;}
+    var pending=items.filter(function(r){return Number(r.paidAmount||0)<=0||String(r.statusOverride||'')!=='Pago';}),total=pending.reduce(function(sum,r){return sum+chargeTotal(r)},0);
+    if(!pending.length){alert('Todos os aluguéis de 2023 já estão baixados.');return;}
+    if(!confirm('Serão baixados '+pending.length+' aluguel(is) de 2023, no total calculado de '+money(total)+'. A competência original será mantida. Deseja continuar?'))return;
+    var before=JSON.stringify({charges:d.rentalCharges,payments:d.payments});
+    try{
+      pending.forEach(function(r){var totalCharge=chargeTotal(r);r.paidAmount=totalCharge;r.paymentDate=r.paymentDate||r.dueDate||'2023-12-31';r.paymentMethod=r.paymentMethod||'Outro';r.proof=r.proof||'Baixa em lote dos aluguéis de 2023';r.statusOverride='Pago';r.updatedAt=new Date().toISOString();});
+      d.payments=(d.rentalCharges||[]).filter(paid);
+      if(typeof window.save!=='function'||await window.save()===false)throw new Error('Não foi possível salvar as baixas.');
+      alert(pending.length+' aluguel(is) de 2023 receberam baixa.');render();
+    }catch(e){var restore=JSON.parse(before);d.rentalCharges=restore.charges;d.payments=restore.payments;alert(e.message||'Não foi possível concluir a baixa em lote.');}
+  }
+  window.renderOwnerTransfers=render;
+  window.openRepasseView=function(){
+    var view=document.getElementById('repasse');if(!view)return;
+    document.querySelectorAll('.view').forEach(function(item){item.classList.toggle('active',item===view);});
+    document.querySelectorAll('[data-view]').forEach(function(button){button.classList.toggle('active',button.dataset.view==='repasse');});
+    document.querySelectorAll('.nav button').forEach(function(button){if(button.id!=='nav-repasse-owner')button.classList.remove('active');});
+    var nav=document.getElementById('nav-repasse-owner');if(nav)nav.classList.add('active');
+    var crumb=document.getElementById('crumb');if(crumb)crumb.textContent='Repasse ao proprietário';
+    render();window.scrollTo(0,0);
+  };
+  function boot(){setTimeout(function(){if(document.getElementById('repasse-standalone-content'))render();},650);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
 </body>
