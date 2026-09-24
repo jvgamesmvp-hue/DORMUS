@@ -6790,7 +6790,8 @@ input::placeholder,textarea::placeholder {
 
   function statementHtml(data){
     const d=data;
-     const selectedCompetence=document.getElementById('repasse-month-881')?.value||d.competence;
+     const competenceSelect=document.getElementById('repasse-month-887')||document.getElementById('repasse-month-881');
+     const selectedCompetence=competenceSelect?.value||d.competence;
      const title='Prestação de Contas '+monthName(selectedCompetence);
     const issueDateLabel=datePt(d.issueDate)||datePt(todayIso());
     const ownerName=d.owner.name||'Proprietário não informado';
@@ -7571,7 +7572,8 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
    }
    function statementHtml(items){
      var first=items[0], company=companyData(first);
-     var selectedCompetence=(document.getElementById('repasse-month-881')?.value||first.month||'').slice(0,7);
+      var competenceSelect=document.getElementById('repasse-month-887')||document.getElementById('repasse-month-881');
+      var selectedCompetence=(competenceSelect?.value||first.month||'').slice(0,7);
      var title='Prestação de Contas '+monthLabel(selectedCompetence);
      var balance=0, totalEntry=0, totalExit=0;
      var rentRows=items.map(function(item){
@@ -8045,6 +8047,187 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   };
   function boot(){setTimeout(function(){if(document.getElementById('repasse-standalone-content'))render();},650);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+<style id="dormus-final-request-fixes">
+  /* As notificações ficam disponíveis somente no resumo diário de entrada. */
+  .notification-center-nav,
+  #notifications-center,
+  #notifications-button,
+  #notification-center-nav,
+  [data-view="notifications-center"]{display:none!important}
+  .dormus-daily-notification-backdrop{position:fixed;inset:0;z-index:10050;background:#17281dcc;display:grid;place-items:center;padding:18px}
+  .dormus-daily-notification-modal{width:min(620px,100%);max-height:90vh;overflow:auto;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;box-shadow:0 24px 80px #0005}
+  .dormus-daily-notification-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:18px}
+  .dormus-daily-notification-head h2{margin:0;font:26px Georgia;color:var(--ink)}
+  .dormus-daily-notification-head p{margin:6px 0 0;color:var(--muted);font-size:12px;line-height:1.45}
+  .dormus-daily-notification-list{display:grid;gap:8px}
+  .dormus-daily-notification-item{display:flex;align-items:flex-start;gap:11px;width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:#f7f4ec;color:var(--ink);text-align:left}
+  button.dormus-daily-notification-item{cursor:pointer}
+  button.dormus-daily-notification-item:hover{border-color:var(--brass);background:#fffdf8}
+  .dormus-daily-notification-item strong{display:block;font-size:12px}
+  .dormus-daily-notification-item span{display:block;margin-top:4px;color:var(--muted);font-size:11px;line-height:1.4}
+  .dormus-daily-notification-icon{width:28px;height:28px;flex:0 0 auto;display:grid;place-items:center;border-radius:8px;background:#e5c277;color:#20372d;font-weight:700}
+  .dormus-daily-notification-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+  .dormus-bulk-period-wrap{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .dormus-bulk-period-note{color:var(--muted);font-size:10px;line-height:1.35}
+  #dormus-inspection-print-choice .modal{width:min(510px,100%)}
+  .dormus-print-choice{display:flex;align-items:flex-start;gap:10px;padding:12px;border:1px solid var(--line);border-radius:9px;background:#f7f4ec;font-size:12px;line-height:1.45}
+  .dormus-print-choice input{margin-top:2px}
+  @media print{.dormus-daily-notification-backdrop,#dormus-inspection-print-choice{display:none!important}}
+  @media(max-width:620px){.dormus-daily-notification-modal{padding:18px}.dormus-daily-notification-actions{flex-direction:column}.dormus-daily-notification-actions .button{width:100%}}
+</style>
+<script id="dormus-final-request-fixes-script">
+(function(){
+  'use strict';
+  var START='2023-01',END='2026-08';
+  function D(){return window.DormusDB||{}}
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  function money(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
+  function pad(v){return String(v).padStart(2,'0')}
+  function today(){var d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+  function monthOf(r){
+    var values=[r&&r.referenceMonth,r&&r.competence,r&&r.competencia,r&&r.dueDate,r&&r.date];
+    for(var i=0;i<values.length;i++){var match=String(values[i]||'').match(/(20\d{2})-(0[1-9]|1[0-2])/);if(match)return match[1]+'-'+match[2]}
+    return '';
+  }
+  function inPeriod(r){var m=monthOf(r);return !!m&&m>=START&&m<=END}
+  function chargeTotal(r){
+    try{if(typeof window.rentChargeTotal==='function'){var total=Number(window.rentChargeTotal(r));if(Number.isFinite(total)&&total>0)return total}}catch(e){}
+    var n=function(v){return Number(String(v==null?'':v).replace(',','.'))||0};
+    var direct=n(r.total||r.amount||r.chargeTotal);
+    if(direct>0)return direct;
+    return Math.max(0,n(r.rent)+n(r.condominium)+n(r.condo)+n(r.iptu)+n(r.water)+n(r.energy)+n(r.otherCharges)-n(r.discount)+n(r.fine)+n(r.interest));
+  }
+  function paymentDateFor(r){
+    if(r.paymentDate||r.paidDate||r.dataPagamento)return r.paymentDate||r.paidDate||r.dataPagamento;
+    var m=monthOf(r);if(!m)return today();
+    var p=m.split('-');return p[0]+'-'+p[1]+'-'+pad(new Date(Number(p[0]),Number(p[1]),0).getDate());
+  }
+  function context(r){
+    var d=D(),c=(d.contracts||[]).find(function(x){return String(x.id)===String(r.contractId)})||{};
+    var p=(d.properties||[]).find(function(x){return String(x.id)===String(r.propertyId)||String(x.id)===String(c.propertyId)})||{};
+    var ownerId=r.ownerId||c.ownerId||c.proprietarioId||p.ownerId||p.proprietarioId;
+    var owner=(d.owners||[]).find(function(x){return String(x.id)===String(ownerId)})||{};
+    var gross=Number(r.paidAmount||0);
+    var feeRate=Number(r.adminFee!=null?r.adminFee:c.adminFee||0);
+    var fee=Number(r.adminFeeAmount!=null?r.adminFeeAmount:(gross*feeRate/100));
+    var deduction=0;
+    try{if(typeof window.ownerMaintenanceDeduction==='function')deduction=Number(window.ownerMaintenanceDeduction(r.propertyId,monthOf(r))||0)}catch(e){}
+    return {contract:c,property:p,owner:owner,ownerId:ownerId,gross:gross,fee:fee,deduction:deduction,net:Math.max(gross-fee-deduction,0)}
+  }
+  function findTransfer(d,r){
+    return (d.ownerTransfers||[]).find(function(x){return String(x.chargeId)===String(r.id)})||null;
+  }
+  function makeId(prefix){try{if(typeof window.uid==='function')return window.uid()}catch(e){}return prefix+'-'+Date.now()+'-'+Math.random().toString(36).slice(2,8)}
+
+  async function batchCloseAndTransfer(){
+    var d=D(),charges=(d.rentalCharges||[]).filter(inPeriod);
+    if(!charges.length){alert('Não há aluguéis com competência entre janeiro de 2023 e agosto de 2026.');return}
+    var before=JSON.stringify(d),pending=charges.filter(function(r){return Number(r.paidAmount||0)<chargeTotal(r)||String(r.statusOverride||'')!=='Pago'});
+    var existingTransfers=charges.filter(function(r){var t=findTransfer(d,r);return t&&String(t.status||'').toLowerCase()==='repassado'}).length;
+    var message='Período: janeiro de 2023 a agosto de 2026\\n\\n'+charges.length+' aluguel(is) serão conferidos. '+pending.length+' receberão baixa e '+(charges.length-existingTransfers)+' repasse(s) serão criados ou atualizados.\\n\\nA competência original de cada aluguel será mantida. Deseja continuar?';
+    if(!confirm(message))return;
+    var created=0,updated=0;
+    try{
+      if(!Array.isArray(d.ownerTransfers))d.ownerTransfers=[];
+      charges.forEach(function(r){
+        var total=chargeTotal(r);
+        r.paidAmount=total;
+        r.paymentDate=r.paymentDate||r.paidDate||paymentDateFor(r);
+        r.paymentMethod=r.paymentMethod||'Outro';
+        r.proof=r.proof||'Baixa em lote: período 01/2023 a 08/2026';
+        r.statusOverride='Pago';
+        r.updatedAt=new Date().toISOString();
+        var x=context(r),t=findTransfer(d,r);
+        if(!t){
+          t={id:makeId('owner-transfer'),chargeId:r.id,contractId:r.contractId,propertyId:r.propertyId,ownerId:x.ownerId||x.owner.id||null,referenceMonth:monthOf(r),gross:x.gross,fee:x.fee,deduction:x.deduction,net:x.net,date:r.paymentDate||today(),paymentDate:r.paymentDate||today(),status:'Repassado',updatedAt:new Date().toISOString(),source:'Baixa e repasse em lote'};
+          d.ownerTransfers.push(t);created++;
+        }else{
+          Object.assign(t,{contractId:t.contractId||r.contractId,propertyId:t.propertyId||r.propertyId,ownerId:t.ownerId||x.ownerId||x.owner.id||null,referenceMonth:t.referenceMonth||monthOf(r),gross:x.gross,fee:x.fee,deduction:x.deduction,net:x.net,date:t.date||r.paymentDate||today(),paymentDate:t.paymentDate||r.paymentDate||today(),status:'Repassado',updatedAt:new Date().toISOString(),source:t.source||'Baixa e repasse em lote'});updated++;
+        }
+      });
+      d.payments=(d.rentalCharges||[]).filter(function(r){return Number(r.paidAmount||0)>0});
+      if(typeof window.save!=='function'||await window.save()===false)throw new Error('Não foi possível gravar as baixas e os repasses no Supabase.');
+      alert('Concluído. '+charges.length+' aluguel(is) conferido(s), '+pending.length+' baixa(s) realizada(s), '+created+' repasse(s) criado(s) e '+updated+' atualizado(s).');
+      installBulkButton();
+    }catch(error){
+      var restored=JSON.parse(before);
+      Object.keys(d).forEach(function(key){delete d[key]});
+      Object.keys(restored).forEach(function(key){d[key]=restored[key]});
+      window.DormusDB=d;
+      alert(error&&error.message?error.message:'Não foi possível concluir a operação em lote.');
+    }
+  }
+  window.dormusBatchCloseAndTransferPeriod=batchCloseAndTransfer;
+  function installBulkButton(){
+    var view=document.getElementById('repasse'),head=view&&view.querySelector('.page-head');if(!head)return;
+    var old=document.getElementById('dormus-bulk-period-action');if(old)return;
+    var actions=document.createElement('div');actions.className='dormus-bulk-period-wrap';
+    actions.innerHTML='<button id="dormus-bulk-period-action" type="button" class="button button-brass">Baixar e repassar 01/2023–08/2026</button><span class="dormus-bulk-period-note">Mantém a competência de cada aluguel<br>e grava tudo no Supabase.</span>';
+    head.appendChild(actions);
+    document.getElementById('dormus-bulk-period-action').addEventListener('click',batchCloseAndTransfer);
+  }
+
+  function attentionItems(){
+    var d=D(),items=[],now=new Date();
+    (d.contracts||[]).forEach(function(c){if(!c.end||['Encerrado','Encerrada'].includes(String(c.status||'')))return;var end=new Date(String(c.end).slice(0,10)+'T12:00:00'),days=Math.ceil((end-now)/86400000);if(days>=0&&days<=60)items.push({kind:'contracts',title:'Contrato próximo do vencimento',detail:(d.properties||[]).find(function(p){return String(p.id)===String(c.propertyId)})?.name||'Contrato sem imóvel identificado',extra:'Vencimento em '+end.toLocaleDateString('pt-BR')+' ('+days+' dias)'})});
+    (d.rentalCharges||[]).forEach(function(r){var total=chargeTotal(r),paid=Number(r.paidAmount||0),due=r.dueDate?new Date(String(r.dueDate).slice(0,10)+'T12:00:00'):null;if(total>paid&&due&&due<now)items.push({kind:'rents',title:'Aluguel em atraso',detail:money(total-paid)+' em aberto',extra:'Vencimento em '+due.toLocaleDateString('pt-BR')})});
+    (d.maintenance||[]).forEach(function(m){if(!['Concluído','Concluída','Cancelado','Cancelada','Encerrado','Encerrada'].includes(String(m.status||'')))items.push({kind:'maintenance',title:'Chamado de manutenção aberto',detail:m.description||'Chamado sem descrição',extra:m.priority?'Prioridade '+m.priority:''})});
+    return items.slice(0,12);
+  }
+  function closeDaily(){document.getElementById('dormus-daily-notification-root')?.remove()}
+  function showDailyNotifications(){
+    if(window.DormusProviderPortal?.access)return;
+    var key='dormus_daily_notifications_'+today();
+    try{if(localStorage.getItem(key)==='1')return;localStorage.setItem(key,'1')}catch(e){}
+    var items=attentionItems(),root=document.createElement('div');root.id='dormus-daily-notification-root';root.className='dormus-daily-notification-backdrop';
+    var rows=items.length?items.map(function(item){return '<button type="button" class="dormus-daily-notification-item" data-target="'+esc(item.kind)+'"><b class="dormus-daily-notification-icon">!</b><span><strong>'+esc(item.title)+'</strong><span>'+esc(item.detail)+(item.extra?' · '+esc(item.extra):'')+'</span></span></button>'}).join(''):'<div class="dormus-daily-notification-item"><b class="dormus-daily-notification-icon">OK</b><span><strong>Nenhuma pendência crítica encontrada</strong><span>Você pode começar o dia pela visão geral do Dormus.</span></span></div>';
+    root.innerHTML='<div class="dormus-daily-notification-modal" role="dialog" aria-modal="true" aria-labelledby="dormus-daily-title"><div class="dormus-daily-notification-head"><div><h2 id="dormus-daily-title">Resumo do dia</h2><p>Estas notificações aparecem uma vez por dia, ao entrar no sistema.</p></div><button type="button" class="icon" aria-label="Fechar" data-daily-close>×</button></div><div class="dormus-daily-notification-list">'+rows+'</div><div class="dormus-daily-notification-actions"><button type="button" class="button button-primary" data-daily-close>Continuar no Dormus</button></div></div>';
+    document.body.appendChild(root);
+    root.querySelectorAll('[data-daily-close]').forEach(function(b){b.addEventListener('click',closeDaily)});
+    root.addEventListener('click',function(e){if(e.target===root)closeDaily()});
+    root.querySelectorAll('[data-target]').forEach(function(b){b.addEventListener('click',function(){var target=b.dataset.target;closeDaily();if(typeof window.showView==='function')window.showView(target)})});
+  }
+  var originalPrint=window.printInspectionReport;
+  function chooseInspectionPrint(id){
+    var old=document.getElementById('dormus-inspection-print-choice');if(old)old.remove();
+    var root=document.createElement('div');root.id='dormus-inspection-print-choice';root.className='modal-bg';
+    root.innerHTML='<div class="modal" role="dialog" aria-modal="true"><div class="modal-head"><h2>Imprimir laudo de vistoria</h2><button type="button" class="icon" data-close>×</button></div><p class="panel-kicker">Escolha se as fotos e vídeos da vistoria devem aparecer no documento impresso.</p><label class="dormus-print-choice"><input id="dormus-include-inspection-media" type="checkbox" checked><span><strong>Incluir fotos e vídeos no laudo</strong><br>Desmarque para imprimir somente os dados e o quadro da vistoria.</span></label><div class="modal-actions"><button type="button" class="button button-quiet" data-close>Cancelar</button><button type="button" class="button button-primary" data-confirm>Continuar para impressão</button></div></div>';
+    document.body.appendChild(root);
+    root.querySelectorAll('[data-close]').forEach(function(b){b.addEventListener('click',function(){root.remove()})});
+    root.addEventListener('click',function(e){if(e.target===root)root.remove()});
+    root.querySelector('[data-confirm]').addEventListener('click',async function(){
+      var include=root.querySelector('#dormus-include-inspection-media').checked;root.remove();
+      await printInspectionWithChoice(id,include);
+    });
+  }
+  async function printInspectionWithChoice(id,include){
+    var d=D(),r=(d.inspections||[]).find(function(x){return String(x.id)===String(id)}),sheet=document.getElementById('print-area');if(!r||!sheet)return;
+    var files=[];try{if(typeof listAttachments==='function')files=await listAttachments('inspection',r.id)}catch(e){console.warn('Não foi possível carregar as fotos da vistoria',e)}
+    if(!include)files=files.map(function(file){return Object.assign({},file,{includeInReport:false})});
+    var html=window.DormusInspectionModel886&&typeof window.DormusInspectionModel886.html==='function'?window.DormusInspectionModel886.html(r,files):'';
+    if(!html&&typeof originalPrint==='function'){return originalPrint(id)}
+    sheet.innerHTML=html;
+    setTimeout(function(){window.print();setTimeout(function(){sheet.innerHTML=''},900)},80);
+  }
+  window.printInspectionReport=chooseInspectionPrint;
+
+  function install(){
+    document.querySelectorAll('.notification-center-nav,#notifications-button,[data-view="notifications-center"]').forEach(function(el){el.remove()});
+    installBulkButton();
+  }
+  var baseEnter=window.enterDormus;
+  if(typeof baseEnter==='function'){
+    window.enterDormus=async function(session){
+      var result=await baseEnter.apply(this,arguments);
+      setTimeout(function(){if(!window.DormusProviderPortal?.access){try{window.showView('home')}catch(e){}showDailyNotifications()}},450);
+      return result;
+    };
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){install();setTimeout(install,900)});
+  else{install();setTimeout(install,900)}
+  setInterval(install,1200);
 })();
 </script>
 </body>
