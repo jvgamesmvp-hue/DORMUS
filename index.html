@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.2</title>
+  <title>Dormus | Gestão imobiliária · 8.3</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -3515,19 +3515,28 @@ html[data-dormus-theme] body.provider-mode .provider-chat-button19{background:co
 <script id="dormus-839-theme-user-settings">
 (function(){
   const palettes={
-    p1:{name:'Executivo Premium',desc:'Tradição, segurança e credibilidade com visual executivo escuro.',colors:['#0b1220', '#24324a', '#d6a84f', '#070d18']},
-    p2:{name:'Moderno Imobiliário',desc:'Verde petróleo, elegante e contemporâneo.',colors:['#082a2a', '#0f5b57', '#d6b06a', '#061919']},
-    p3:{name:'Tecnologia & Confiança',desc:'Azul profundo, tecnologia e alta confiabilidade.',colors:['#071f35', '#12548a', '#e5a23b', '#06121f']},
-    p4:{name:'Luxo Minimalista',desc:'Sobriedade, alto padrão e acabamento sofisticado.',colors:['#111815', '#29402f', '#c6a46b', '#0a0f0c']},
-    p5:{name:'DORMUS Moderno',desc:'Grafite escuro com laranja para dinamismo e destaque.',colors:['#101214', '#2b3037', '#ff7a1a', '#090a0c']}
+    p1:{name:'Sálvia',desc:'Verde sálvia, creme e um toque de terracota.',colors:['#4f776b','#6e9185','#d28b76','#f5f4ef']},
+    p2:{name:'Azul Névoa',desc:'Azul acinzentado com areia clara.',colors:['#536f86','#738fa4','#d9a882','#f1f5f7']},
+    p3:{name:'Lavanda Clara',desc:'Lavanda suave e detalhes rosados.',colors:['#716a82','#91889f','#d3a1a0','#f5f2f7']},
+    p4:{name:'Areia Natural',desc:'Tons de pedra, madeira clara e argila.',colors:['#806e5b','#a08a73','#c98570','#f7f3ec']},
+    p5:{name:'Rosa Chá',desc:'Rosa queimado equilibrado com tons neutros.',colors:['#8b626c','#ac8089','#d0a27d','#f8f2f2']}
   };
-  function applyTheme(key){if(!palettes[key])key='p1';document.documentElement.setAttribute('data-dormus-theme',key);localStorage.setItem('dormus-theme',key);document.querySelectorAll('.dormus-theme-card').forEach(x=>x.classList.toggle('active',x.dataset.theme===key));}
+  function applyTheme(key){
+    if(!palettes[key])key='p1';
+    document.documentElement.setAttribute('data-dormus-theme',key);
+    try{localStorage.setItem('dormus-theme',key)}catch(e){}
+    document.querySelectorAll('.dormus-theme-card').forEach(x=>{
+      const selected=x.dataset.theme===key;
+      x.classList.toggle('active',selected);
+      x.setAttribute('aria-pressed',selected?'true':'false');
+    });
+  }
   window.applyDormusTheme=applyTheme;
   window.openDormusThemePicker=function(){
     document.querySelector('.profile-menu')?.classList.remove('show');
     let root=document.getElementById('dormus-theme-modal-root');if(!root){root=document.createElement('div');root.id='dormus-theme-modal-root';document.body.appendChild(root)}
     const current=document.documentElement.getAttribute('data-dormus-theme')||localStorage.getItem('dormus-theme')||'p1';
-    root.innerHTML=`<div class="modal-bg" style="display:flex"><div class="modal dormus-theme-modal"><div class="modal-head"><div><h2>🎨 Personalizar o DORMUS</h2><p>Escolha a identidade visual para a Imobiliária e para o Portal do Prestador.</p></div><button class="icon" onclick="document.getElementById('dormus-theme-modal-root').innerHTML=''">×</button></div><div class="dormus-theme-grid">${Object.entries(palettes).map(([k,v])=>`<button type="button" class="dormus-theme-card ${k===current?'active':''}" data-theme="${k}" onclick="applyDormusTheme('${k}')"><span class="dormus-theme-swatches">${v.colors.map(c=>`<i style="background:${c}"></i>`).join('')}</span><strong>${v.name}</strong><small>${v.desc}</small></button>`).join('')}</div><div class="modal-actions" style="margin-top:18px"><button class="button button-primary" onclick="document.getElementById('dormus-theme-modal-root').innerHTML=''">Usar esta identidade</button><button class="button" onclick="document.getElementById('dormus-theme-modal-root').innerHTML=''">Fechar</button></div></div></div>`;
+    root.innerHTML=`<div class="modal-bg" style="display:flex"><div class="modal dormus-theme-modal"><div class="modal-head"><div><h2>Personalizar o DORMUS</h2><p>A paleta escolhida vale para o login, o Portal da Imobiliária e o Portal do Prestador.</p></div><button class="icon" aria-label="Fechar" onclick="document.getElementById('dormus-theme-modal-root').innerHTML=''">×</button></div><div class="dormus-theme-grid">${Object.entries(palettes).map(([k,v])=>`<button type="button" class="dormus-theme-card ${k===current?'active':''}" data-theme="${k}" aria-pressed="${k===current?'true':'false'}" onclick="applyDormusTheme('${k}')"><span class="dormus-theme-swatches" aria-hidden="true">${v.colors.map(c=>`<i style="background:${c}"></i>`).join('')}</span><strong>${v.name}</strong><small>${v.desc}</small></button>`).join('')}</div><div class="modal-actions" style="margin-top:18px"><button class="button button-primary" onclick="document.getElementById('dormus-theme-modal-root').innerHTML=''">Usar esta paleta</button><button class="button" onclick="document.getElementById('dormus-theme-modal-root').innerHTML=''">Fechar</button></div></div></div>`;
   };
   async function getAccess(){
     const email=(document.getElementById('auth-email')?.textContent||'').trim().toLowerCase();
@@ -8103,6 +8112,304 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   @media print{.dormus-daily-notification-backdrop,#dormus-inspection-print-choice{display:none!important}}
   @media(max-width:620px){.dormus-daily-notification-modal{padding:18px}.dormus-daily-notification-actions{flex-direction:column}.dormus-daily-notification-actions .button{width:100%}}
 </style>
+<style id="dormus-soft-palettes-global">
+/* Paletas claras aplicadas ao sistema inteiro, inclusive login e Portal do Prestador. */
+html[data-dormus-theme="p1"]{
+  --soft-bg:#f5f4ef;--soft-surface:#fffdf8;--soft-surface-2:#e9efea;--soft-line:#d8e1db;
+  --soft-primary:#4f776b;--soft-secondary:#6e9185;--soft-accent:#d28b76;
+  --soft-text:#2f443d;--soft-muted:#718078;--soft-field:#edf1ed;--soft-field-focus:#e0ebe5;
+}
+html[data-dormus-theme="p2"]{
+  --soft-bg:#f1f5f7;--soft-surface:#fcfdfd;--soft-surface-2:#e5edf1;--soft-line:#d4e0e6;
+  --soft-primary:#536f86;--soft-secondary:#738fa4;--soft-accent:#d9a882;
+  --soft-text:#324450;--soft-muted:#72838d;--soft-field:#eaf0f3;--soft-field-focus:#dce8ef;
+}
+html[data-dormus-theme="p3"]{
+  --soft-bg:#f5f2f7;--soft-surface:#fffcff;--soft-surface-2:#eee8f1;--soft-line:#ddd5e3;
+  --soft-primary:#716a82;--soft-secondary:#91889f;--soft-accent:#d3a1a0;
+  --soft-text:#443c4d;--soft-muted:#807787;--soft-field:#f1ecf4;--soft-field-focus:#e8e0ed;
+}
+html[data-dormus-theme="p4"]{
+  --soft-bg:#f7f3ec;--soft-surface:#fffdfa;--soft-surface-2:#efe9de;--soft-line:#e1d8c9;
+  --soft-primary:#806e5b;--soft-secondary:#a08a73;--soft-accent:#c98570;
+  --soft-text:#493e33;--soft-muted:#817363;--soft-field:#f2ece3;--soft-field-focus:#eae0d2;
+}
+html[data-dormus-theme="p5"]{
+  --soft-bg:#f8f2f2;--soft-surface:#fffcfb;--soft-surface-2:#f0e6e6;--soft-line:#e5d7d8;
+  --soft-primary:#8b626c;--soft-secondary:#ac8089;--soft-accent:#d0a27d;
+  --soft-text:#4a383c;--soft-muted:#88787b;--soft-field:#f3e9ea;--soft-field-focus:#eddddf;
+}
+html[data-dormus-theme]{
+  color-scheme:light!important;
+  --d-theme-primary:var(--soft-primary)!important;
+  --d-theme-secondary:var(--soft-secondary)!important;
+  --d-theme-accent:var(--soft-accent)!important;
+  --d-theme-paper:var(--soft-bg)!important;
+  --d-theme-text:var(--soft-text)!important;
+  --d-theme-muted:var(--soft-muted)!important;
+  --d-theme-panel:var(--soft-surface)!important;
+  --d-theme-panel2:var(--soft-surface-2)!important;
+  --d-theme-line:var(--soft-line)!important;
+  --ink:var(--soft-text)!important;--ink-2:var(--soft-primary)!important;
+  --paper:var(--soft-bg)!important;--card:var(--soft-surface)!important;
+  --line:var(--soft-line)!important;--muted:var(--soft-muted)!important;
+  --brass:var(--soft-accent)!important;--field:var(--soft-field)!important;
+}
+html[data-dormus-theme] body:not(.print-mode),
+html[data-dormus-theme] body:not(.print-mode) .app,
+html[data-dormus-theme] body:not(.print-mode) .main,
+html[data-dormus-theme] body:not(.print-mode) .view,
+html[data-dormus-theme] body:not(.print-mode) #root,
+html[data-dormus-theme] body:not(.print-mode) #app,
+html[data-dormus-theme] #login-screen,
+html[data-dormus-theme] .login-screen,
+html[data-dormus-theme] .portal-screen{
+  background:var(--soft-bg)!important;background-image:none!important;color:var(--soft-text)!important;
+}
+html[data-dormus-theme] body:not(.provider-mode) .side,
+html[data-dormus-theme] body.provider-mode .side,
+html[data-dormus-theme] .sidebar,
+html[data-dormus-theme] .left-sidebar,
+html[data-dormus-theme] .app-sidebar,
+html[data-dormus-theme] .nav-sidebar{
+  background:var(--soft-primary)!important;background-image:none!important;color:#fffdf8!important;border-color:var(--soft-primary)!important;
+}
+html[data-dormus-theme] body .brand-mark,
+html[data-dormus-theme] body .avatar,
+html[data-dormus-theme] body .user-avatar,
+html[data-dormus-theme] body .profile-avatar,
+html[data-dormus-theme] body .login-brand-mark{
+  background:var(--soft-accent)!important;color:var(--soft-text)!important;border-color:var(--soft-accent)!important;
+}
+html[data-dormus-theme] body .brand strong,
+html[data-dormus-theme] body .sidebar-brand,
+html[data-dormus-theme] body .sidebar-brand strong{color:#fffdf8!important}
+html[data-dormus-theme] body .brand small,
+html[data-dormus-theme] body .sidebar-brand small,
+html[data-dormus-theme] body .nav-title{color:#f2f4ef!important}
+html[data-dormus-theme] body .nav button{
+  background:transparent!important;color:#fffdf8!important;border-color:transparent!important;
+}
+html[data-dormus-theme] body .nav button:hover,
+html[data-dormus-theme] body .nav button.active{
+  background:var(--soft-secondary)!important;color:#fff!important;border-color:var(--soft-accent)!important;
+}
+html[data-dormus-theme] body .top,
+html[data-dormus-theme] body .header,
+html[data-dormus-theme] body .topbar,
+html[data-dormus-theme] body .app-header{
+  background:var(--soft-bg)!important;background-image:none!important;color:var(--soft-text)!important;border-color:var(--soft-line)!important;
+}
+html[data-dormus-theme] body .panel,
+html[data-dormus-theme] body .metric,
+html[data-dormus-theme] body .property,
+html[data-dormus-theme] body .card,
+html[data-dormus-theme] body .card-body,
+html[data-dormus-theme] body .list,
+html[data-dormus-theme] body .list-item,
+html[data-dormus-theme] body .summary,
+html[data-dormus-theme] body .row,
+html[data-dormus-theme] body .modal,
+html[data-dormus-theme] body .drawer,
+html[data-dormus-theme] body .dashboard-card,
+html[data-dormus-theme] body .maintenance-panel,
+html[data-dormus-theme] body .crm-card,
+html[data-dormus-theme] body .finance-card,
+html[data-dormus-theme] body .report-card,
+html[data-dormus-theme] body .chat-card,
+html[data-dormus-theme] body .list-card,
+html[data-dormus-theme] body .contract360-card,
+html[data-dormus-theme] body .dash-stat,
+html[data-dormus-theme] body .provider-service-card,
+html[data-dormus-theme] body .provider-service-location,
+html[data-dormus-theme] body .provider-service-meta>div,
+html[data-dormus-theme] body .provider-admin-banner,
+html[data-dormus-theme] body .provider-detail-section,
+html[data-dormus-theme] body .provider-detail-grid>div,
+html[data-dormus-theme] body .attachments-block,
+html[data-dormus-theme] body .attachment-item,
+html[data-dormus-theme] body .photo-room,
+html[data-dormus-theme] body .photo-gallery,
+html[data-dormus-theme] body .documents-list,
+html[data-dormus-theme] body .person-contact-actions,
+html[data-dormus-theme] body .selected-file-row,
+html[data-dormus-theme] body .image-viewer,
+html[data-dormus-theme] body .filters,
+html[data-dormus-theme] body .filter-bar,
+html[data-dormus-theme] body .presentation-body,
+html[data-dormus-theme] body .presentation-item,
+html[data-dormus-theme] body .presentation-file,
+html[data-dormus-theme] body .property-showcase,
+html[data-dormus-theme] body .showcase-info,
+html[data-dormus-theme] body .empty,
+html[data-dormus-theme] #login-screen .login-card,
+html[data-dormus-theme] #login-screen .portal-login-card,
+html[data-dormus-theme] #login-screen .portal-choice,
+html[data-dormus-theme] .profile-menu,
+html[data-dormus-theme] .notifications-panel{
+  background:var(--soft-surface)!important;background-image:none!important;
+  color:var(--soft-text)!important;border-color:var(--soft-line)!important;
+}
+html[data-dormus-theme] body .provider-service-location,
+html[data-dormus-theme] body .provider-service-meta>div,
+html[data-dormus-theme] body .provider-admin-banner,
+html[data-dormus-theme] body .summary,
+html[data-dormus-theme] body .presentation-item,
+html[data-dormus-theme] body .photo-room,
+html[data-dormus-theme] body .empty,
+html[data-dormus-theme] body .chat19-message,
+html[data-dormus-theme] body .chat-hub-message,
+html[data-dormus-theme] body .chat-notify-box,
+html[data-dormus-theme] #login-screen .portal-choice{
+  background:var(--soft-surface-2)!important;color:var(--soft-text)!important;border-color:var(--soft-line)!important;
+}
+html[data-dormus-theme] body input,
+html[data-dormus-theme] body select,
+html[data-dormus-theme] body textarea,
+html[data-dormus-theme] body .form-control,
+html[data-dormus-theme] body .form-field input,
+html[data-dormus-theme] body .form-field select,
+html[data-dormus-theme] body .form-field textarea,
+html[data-dormus-theme] body .login-field input,
+html[data-dormus-theme] body .portal-login-form input,
+html[data-dormus-theme] body .modal input,
+html[data-dormus-theme] body .modal select,
+html[data-dormus-theme] body .modal textarea,
+html[data-dormus-theme] body .drawer input,
+html[data-dormus-theme] body .drawer select,
+html[data-dormus-theme] body .drawer textarea,
+html[data-dormus-theme] body .searchbar input,
+html[data-dormus-theme] body .toolbar-search,
+html[data-dormus-theme] body .global-search input,
+html[data-dormus-theme] #login-screen input{
+  background:var(--soft-field)!important;background-image:none!important;color:var(--soft-text)!important;
+  -webkit-text-fill-color:var(--soft-text)!important;border-color:var(--soft-line)!important;
+}
+html[data-dormus-theme] body input:focus,
+html[data-dormus-theme] body select:focus,
+html[data-dormus-theme] body textarea:focus{
+  background:var(--soft-field-focus)!important;border-color:var(--soft-secondary)!important;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--soft-secondary) 18%,transparent)!important;
+}
+html[data-dormus-theme] body input::placeholder,
+html[data-dormus-theme] body textarea::placeholder,
+html[data-dormus-theme] body select::placeholder{color:var(--soft-muted)!important;-webkit-text-fill-color:var(--soft-muted)!important;opacity:1!important}
+html[data-dormus-theme] body button:not(.nav button):not(.icon):not(.dormus-theme-card),
+html[data-dormus-theme] body .button,
+html[data-dormus-theme] body .btn,
+html[data-dormus-theme] body .button-primary,
+html[data-dormus-theme] body .btn-primary,
+html[data-dormus-theme] body .login-button,
+html[data-dormus-theme] body .save-btn{
+  background:var(--soft-primary)!important;background-image:none!important;color:#fffdf8!important;border-color:var(--soft-primary)!important;
+}
+html[data-dormus-theme] body button:not(.nav button):not(.icon):not(.dormus-theme-card):hover,
+html[data-dormus-theme] body .button:hover,
+html[data-dormus-theme] body .button-primary:hover,
+html[data-dormus-theme] body .btn-primary:hover,
+html[data-dormus-theme] body .login-button:hover{
+  background:var(--soft-secondary)!important;border-color:var(--soft-secondary)!important;
+}
+html[data-dormus-theme] body .button-quiet,
+html[data-dormus-theme] body .icon,
+html[data-dormus-theme] body .top-icon{
+  background:var(--soft-surface)!important;color:var(--soft-primary)!important;border-color:var(--soft-line)!important;
+}
+html[data-dormus-theme] body .hero,
+html[data-dormus-theme] body .hero-card,
+html[data-dormus-theme] body .welcome-card,
+html[data-dormus-theme] body .dashboard-hero,
+html[data-dormus-theme] body .presentation-head{
+  background:var(--soft-primary)!important;background-image:none!important;color:#fffdf8!important;border-color:var(--soft-primary)!important;
+}
+html[data-dormus-theme] body .hero *,
+html[data-dormus-theme] body .hero-card *,
+html[data-dormus-theme] body .welcome-card *,
+html[data-dormus-theme] body .dashboard-hero *,
+html[data-dormus-theme] body .presentation-head *{color:#fffdf8!important}
+html[data-dormus-theme] body .page-head h1,
+html[data-dormus-theme] body .panel-title,
+html[data-dormus-theme] body .metric-value,
+html[data-dormus-theme] body .property-name,
+html[data-dormus-theme] body .showcase-info h1,
+html[data-dormus-theme] body .showcase-section h3,
+html[data-dormus-theme] body .modal h2,
+html[data-dormus-theme] body .auth-user-display strong,
+html[data-dormus-theme] body .user-name,
+html[data-dormus-theme] body .profile-name{color:var(--soft-text)!important}
+html[data-dormus-theme] body .page-head .eyebrow,
+html[data-dormus-theme] body .eyebrow,
+html[data-dormus-theme] body a,
+html[data-dormus-theme] body .money,
+html[data-dormus-theme] body .showcase-price{color:var(--soft-primary)!important}
+html[data-dormus-theme] body .lead,
+html[data-dormus-theme] body .panel-kicker,
+html[data-dormus-theme] body .metric-label,
+html[data-dormus-theme] body .metric-meta,
+html[data-dormus-theme] body .property-address,
+html[data-dormus-theme] body .row-sub,
+html[data-dormus-theme] body .attachments-help,
+html[data-dormus-theme] body .selected-files,
+html[data-dormus-theme] body .auth-user-display small,
+html[data-dormus-theme] body .user-role,
+html[data-dormus-theme] body .profile-role{color:var(--soft-muted)!important}
+html[data-dormus-theme] body .brand-mark,
+html[data-dormus-theme] body .accent,
+html[data-dormus-theme] body .highlight,
+html[data-dormus-theme] body .status-dot{background:var(--soft-accent)!important;border-color:var(--soft-accent)!important}
+html[data-dormus-theme] body .table,
+html[data-dormus-theme] body .table-wrap,
+html[data-dormus-theme] body .table-wrap table,
+html[data-dormus-theme] body .table td,
+html[data-dormus-theme] body .table-wrap td{
+  background:var(--soft-surface)!important;color:var(--soft-text)!important;border-color:var(--soft-line)!important;
+}
+html[data-dormus-theme] body .table th,
+html[data-dormus-theme] body .table-wrap th{background:var(--soft-surface-2)!important;color:var(--soft-text)!important;border-color:var(--soft-line)!important}
+html[data-dormus-theme] body .chat19-list,
+html[data-dormus-theme] body .chat-hub-list,
+html[data-dormus-theme] body .chat-hub-main,
+html[data-dormus-theme] body .chat-hub-messages,
+html[data-dormus-theme] body .chat19-compose,
+html[data-dormus-theme] body .chat-hub-compose{
+  background:var(--soft-bg)!important;color:var(--soft-text)!important;border-color:var(--soft-line)!important;
+}
+html[data-dormus-theme] body .chat19-message.mine,
+html[data-dormus-theme] body .chat-hub-message.mine,
+html[data-dormus-theme] body .chat-thread.active,
+html[data-dormus-theme] body .chat-thread:hover,
+html[data-dormus-theme] body .dormus-theme-card.active,
+html[data-dormus-theme] body .dormus-theme-card:hover{
+  background:var(--soft-surface-2)!important;color:var(--soft-text)!important;border-color:var(--soft-secondary)!important;
+}
+html[data-dormus-theme] body .dormus-theme-modal{background:var(--soft-surface)!important;color:var(--soft-text)!important;border-color:var(--soft-line)!important}
+html[data-dormus-theme] body .dormus-theme-card{background:var(--soft-surface-2)!important;color:var(--soft-text)!important;border-color:var(--soft-line)!important}
+html[data-dormus-theme] body .dormus-theme-card strong{color:var(--soft-text)!important}
+html[data-dormus-theme] body .dormus-theme-card small,
+html[data-dormus-theme] body .dormus-theme-modal p{color:var(--soft-muted)!important}
+html[data-dormus-theme] #login-screen .portal-choice:hover,
+html[data-dormus-theme] #login-screen .portal-choice:focus-visible{background:var(--soft-surface-2)!important;border-color:var(--soft-secondary)!important}
+html[data-dormus-theme] #login-screen .login-title,
+html[data-dormus-theme] #login-screen .login-brand strong,
+html[data-dormus-theme] #login-screen .portal-choice strong,
+html[data-dormus-theme] #login-screen .login-field label{color:var(--soft-text)!important}
+html[data-dormus-theme] #login-screen .login-sub,
+html[data-dormus-theme] #login-screen .portal-choice small,
+html[data-dormus-theme] #login-screen .login-note{color:var(--soft-muted)!important}
+html[data-dormus-theme] #login-screen .portal-choice b,
+html[data-dormus-theme] #login-screen .portal-kicker{color:var(--soft-primary)!important}
+html[data-dormus-theme] #login-screen .portal-choice-icon{background:var(--soft-surface-2)!important;color:var(--soft-primary)!important}
+html[data-dormus-theme] body .badge,
+html[data-dormus-theme] body .chip,
+html[data-dormus-theme] body .tag{background:var(--soft-surface-2)!important;color:var(--soft-primary)!important;border-color:var(--soft-line)!important}
+html[data-dormus-theme] body .badge.red{background:#f5e3df!important;color:#875044!important;border-color:#e7c6bd!important}
+html[data-dormus-theme] body .badge.green,
+html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!important;color:var(--soft-primary)!important}
+@media(max-width:760px){
+  html[data-dormus-theme] body .top{background:var(--soft-bg)!important}
+  .dormus-theme-grid{grid-template-columns:1fr 1fr!important}
+}
+</style>
 <script id="dormus-final-request-fixes-script">
 (function(){
   'use strict';
@@ -8250,102 +8557,108 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
 (function(){
   'use strict';
   var version='20260924';
-  var choices={
-    classic:{svg:'./icons/dormus-classic.svg',png192:'./icons/dormus-classic-192.png',png512:'./icons/dormus-classic-512.png',manifest:'./manifest-classic.json'},
-    portal:{svg:'./dormus-portal.svg',png192:'./dormus-portal-192.png',png512:'./dormus-portal-512.png',manifest:'./manifest-portal.json'},
-    monogram:{svg:'./icons/dormus-monogram.svg',png192:'./icons/dormus-monogram-192.png',png512:'./icons/dormus-monogram-512.png',manifest:'./manifest-monogram.json'}
-  };
+  var fixedIcon='./dormus-portal.svg?v='+version;
+  var fixedAppleIcon='./dormus-portal-192.png?v='+version;
+  var fixedManifest='./manifest-portal.json?v='+version;
+  var removedLegacyChoice=false;
+  function setFixedIdentity(){
+    document.querySelectorAll('link[rel~="icon"],link[rel="apple-touch-icon"]').forEach(function(link){
+      var apple=link.rel.toLowerCase().indexOf('apple-touch-icon')!==-1;
+      var href=apple?fixedAppleIcon:fixedIcon;
+      if(link.getAttribute('href')!==href)link.setAttribute('href',href);
+    });
+    var manifest=document.querySelector('link[rel~="manifest"]');
+    if(manifest&&manifest.getAttribute('href')!==fixedManifest)manifest.setAttribute('href',fixedManifest);
+    document.querySelectorAll('meta[name="theme-color"]').forEach(function(meta){meta.content='#20372d'});
+    document.documentElement.removeAttribute('data-dormus-pwa-icon');
+    try{
+      if(!removedLegacyChoice)localStorage.removeItem('dormus_pwa_icon_choice');
+      removedLegacyChoice=true;
+    }catch(e){}
+    try{delete window.setDormusPwaIcon}catch(e){window.setDormusPwaIcon=undefined}
+  }
+  function normalize(value){
+    return String(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  }
   function choiceFromText(value){
-    var text=String(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+    var text=normalize(value);
     if(/monograma|monogram/.test(text))return 'monogram';
     if(/classico|classic/.test(text))return 'classic';
     if(/portal/.test(text))return 'portal';
     return '';
   }
-  function manifestLink(){
-    return document.querySelector('link[rel~="manifest"]');
-  }
-  function setChoice(name,save){
-    var selected=choices[name]?name:'portal',item=choices[selected],manifest=manifestLink();
-    document.querySelectorAll('link[rel~="icon"],link[rel="apple-touch-icon"]').forEach(function(link){
-      var apple=link.rel.toLowerCase().indexOf('apple-touch-icon')!==-1;
-      link.href=(apple?item.png192:item.svg)+'?v='+version;
+  function choiceImages(){
+    return Array.from(document.querySelectorAll('img[alt]')).filter(function(img){
+      return !!choiceFromText(img.getAttribute('alt'))&&/logo/i.test(img.getAttribute('alt')||'');
     });
-    if(manifest)manifest.href=item.manifest+'?v='+version;
-    document.querySelectorAll('meta[name="theme-color"]').forEach(function(meta){meta.content='#20372d'});
-    if(save!==false){try{localStorage.setItem('dormus_pwa_icon_choice',selected)}catch(e){}}
-    document.documentElement.setAttribute('data-dormus-pwa-icon',selected);
-    return selected;
   }
-  window.setDormusPwaIcon=setChoice;
-  function inlineIcon(name){
-    var letter=name==='classic'?'D':name==='monogram'?'D':'D';
-    var bg=name==='classic'?'#20372d':name==='monogram'?'#f5f1e8':'#2e9b57';
-    var fg=name==='classic'?'#e5c277':name==='monogram'?'#20372d':'#ffffff';
-    var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="112" fill="'+bg+'"/><circle cx="256" cy="256" r="158" fill="none" stroke="'+fg+'" stroke-width="18" opacity=".82"/><text x="256" y="330" text-anchor="middle" font-family="Arial,sans-serif" font-size="220" font-weight="700" fill="'+fg+'">'+letter+'</text></svg>';
-    return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
-  }
-  function repairPreview(img){
-    if(!img||img.dataset.dormusPwaPathFix)return;
-    var label=img.getAttribute('alt')||'';
-    var name=choiceFromText(label);
-    if(!name||!/logo/i.test(label))return;
-    img.dataset.dormusPwaPathFix='1';
-    img.onerror=function(){
-      if(!img.dataset.dormusPwaAssetAttempted){
-        img.dataset.dormusPwaAssetAttempted='1';
-        img.src=choices[name].svg;
-        return;
-      }
-      if(img.dataset.dormusPwaInlineFallback)return;
-      img.dataset.dormusPwaInlineFallback='1';
-      img.src=inlineIcon(name);
-    };
-    if(img.complete&&img.naturalWidth===0){
-      img.dataset.dormusPwaAssetAttempted='1';
-      img.src=choices[name].svg;
-    }else if(!img.getAttribute('src')){
-      img.dataset.dormusPwaAssetAttempted='1';
-      img.src=choices[name].svg;
+  function cardFor(img){
+    var node=img;
+    for(var i=0;node&&node.parentElement&&i<6;i++,node=node.parentElement){
+      if(node.parentElement.matches('button,label,a,[role="button"]'))return node.parentElement;
     }
+    return img.parentElement||img;
   }
-  function scanPreviews(root){
-    if(!root)return;
-    if(root.matches&&root.matches('img[alt]'))repairPreview(root);
-    if(root.querySelectorAll)root.querySelectorAll('img[alt]').forEach(repairPreview);
+  function removeIconChooser(){
+    var images=choiceImages();
+    var kinds=new Set(images.map(function(img){return choiceFromText(img.getAttribute('alt'))}));
+    if(kinds.size<2)return false;
+    var cards=Array.from(new Set(images.map(cardFor)));
+    var headings=Array.from(document.querySelectorAll('body *')).filter(function(el){
+      return el.children.length===0&&/identidade do aplicativo|trocar o icone|trocar o logo/.test(normalize(el.textContent));
+    });
+    var anchors=cards.concat(headings);
+    if(!anchors.length)return false;
+    var panel=anchors[0].parentElement;
+    while(panel&&panel!==document.body&&panel!==document.documentElement){
+      if(anchors.every(function(node){return panel.contains(node)})){
+        var excluded=panel.matches('.app,.main,.view,#home,#login-screen');
+        if(!excluded&&panel.textContent.length<1600){
+          panel.remove();
+          return true;
+        }
+      }
+      panel=panel.parentElement;
+    }
+    return false;
   }
   function clickedChoice(target){
     var node=target&&target.nodeType===1?target:null;
-    for(var i=0;node&&i<6;i++,node=node.parentElement){
+    for(var i=0;node&&i<7;i++,node=node.parentElement){
       var image=node.tagName==='IMG'?node:node.querySelector&&node.querySelector('img[alt]');
       var alt=image&&image.getAttribute('alt')||'';
-      var name=choiceFromText(alt);
-      if(name&&/logo/i.test(alt))return name;
+      if(choiceFromText(alt)&&/logo/i.test(alt))return true;
     }
-    return '';
-  }
-  function selectedChoice(){
-    try{
-      var stored=localStorage.getItem('dormus_pwa_icon_choice');
-      if(choices[stored])return stored;
-    }catch(e){}
-    var active=document.querySelector('[aria-checked="true"],input[type="radio"]:checked,.dormus-pwa-choice.active,.dormus-pwa-choice.selected');
-    return clickedChoice(active)||'portal';
+    return false;
   }
   document.addEventListener('click',function(event){
-    var name=clickedChoice(event.target);
-    if(name)setChoice(name,true);
+    if(choiceImages().length>=2&&clickedChoice(event.target)){
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      removeIconChooser();
+    }
   },true);
-  scanPreviews(document);
+  function isChoiceImage(img){
+    var alt=img&&img.getAttribute&&img.getAttribute('alt')||'';
+    return !!choiceFromText(alt)&&/logo/i.test(alt);
+  }
+  function nodeAddsChoice(node){
+    if(!node||node.nodeType!==1)return false;
+    if(node.matches&&node.matches('img[alt]')&&isChoiceImage(node))return true;
+    return !!(node.querySelectorAll&&Array.from(node.querySelectorAll('img[alt]')).some(isChoiceImage));
+  }
+  setFixedIdentity();
+  removeIconChooser();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);
+  function install(){setFixedIdentity();removeIconChooser()}
   if('MutationObserver' in window){
     new MutationObserver(function(records){
-      records.forEach(function(record){
-        if(record.type==='childList')record.addedNodes.forEach(function(node){if(node.nodeType===1)scanPreviews(node)});
-        else if(record.type==='attributes'&&record.target.tagName==='IMG')repairPreview(record.target);
-      });
-    }).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['src','alt']});
+      if(records.some(function(record){
+        if(record.type==='attributes')return isChoiceImage(record.target);
+        return Array.from(record.addedNodes).some(nodeAddsChoice);
+      }))removeIconChooser();
+    }).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['alt']});
   }
-  setChoice(selectedChoice(),false);
 })();
 </script>
 <!-- PWA layout enhancement disabled: it was too invasive for this page structure.
