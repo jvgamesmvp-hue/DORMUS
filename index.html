@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.7</title>
+  <title>Dormus | Gestão imobiliária · 8.9</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -8346,6 +8346,137 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
     }).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['src','alt']});
   }
   setChoice(selectedChoice(),false);
+})();
+</script>
+<style id="dormus-pwa-choice-layout">
+  .dormus-pwa-panel{
+    position:relative!important;
+    box-sizing:border-box!important;
+    max-width:900px!important;
+    margin:18px auto!important;
+    padding:18px!important;
+    border:1px solid #dce3dc!important;
+    border-radius:14px!important;
+    background:#fffdf8!important;
+    box-shadow:0 8px 24px #20372d12!important;
+    color:#20372d!important;
+  }
+  .dormus-pwa-heading{display:block!important;color:#20372d!important;font-size:15px!important;font-weight:700!important;margin:0 0 4px!important}
+  .dormus-pwa-help{display:block!important;color:#778278!important;font-size:12px!important;line-height:1.5!important;margin:0 0 14px!important}
+  .dormus-pwa-choice-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;width:100%!important}
+  .dormus-pwa-choice-card{
+    box-sizing:border-box!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;
+    gap:8px!important;min-width:0!important;width:100%!important;padding:12px!important;
+    border:1px solid #d9e0d8!important;border-radius:12px!important;background:#f8f8f3!important;
+    color:#20372d!important;text-align:left!important;white-space:normal!important;cursor:pointer!important;
+    transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease!important;
+  }
+  .dormus-pwa-choice-card:hover,.dormus-pwa-choice-card:focus-visible{
+    border-color:#2e9b57!important;box-shadow:0 5px 16px #20372d18!important;transform:translateY(-1px)!important;outline:none!important
+  }
+  .dormus-pwa-choice-card img{
+    display:block!important;width:72px!important;height:72px!important;max-width:100%!important;
+    object-fit:contain!important;align-self:center!important;margin:0 auto 2px!important;
+    border-radius:10px!important;background:#f0f1eb!important;padding:5px!important;
+  }
+  .dormus-pwa-choice-card strong{display:block!important;font-size:13px!important;line-height:1.35!important;color:#20372d!important}
+  .dormus-pwa-choice-card small,.dormus-pwa-choice-card span{display:block!important;color:#778278!important;font-size:11px!important;line-height:1.4!important;white-space:normal!important}
+  .dormus-pwa-close{
+    display:inline-flex!important;align-items:center!important;justify-content:center!important;
+    width:32px!important;height:32px!important;padding:0!important;border:1px solid #d9e0d8!important;
+    border-radius:8px!important;background:#f4f5ef!important;color:#20372d!important;font-size:18px!important;
+  }
+  @media(max-width:600px){
+    .dormus-pwa-panel{margin:12px 0!important;padding:13px!important}
+    .dormus-pwa-choice-grid{gap:7px!important}
+    .dormus-pwa-choice-card{padding:8px!important;gap:6px!important}
+    .dormus-pwa-choice-card img{width:54px!important;height:54px!important}
+    .dormus-pwa-choice-card strong{font-size:11px!important}
+    .dormus-pwa-choice-card small,.dormus-pwa-choice-card span{font-size:10px!important}
+  }
+</style>
+<script id="dormus-pwa-choice-layout-fix">
+(function(){
+  'use strict';
+  var done=false;
+  function normalize(text){return String(text||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+  function kind(img){
+    var alt=normalize(img.getAttribute('alt')||'');
+    if(!alt.includes('logo'))return '';
+    if(alt.includes('classico')||alt.includes('classic'))return 'classic';
+    if(alt.includes('monograma')||alt.includes('monogram'))return 'monogram';
+    if(alt.includes('portal'))return 'portal';
+    return '';
+  }
+  function commonParent(nodes){
+    if(!nodes.length)return null;
+    var parent=nodes[0].parentElement;
+    while(parent&&parent!==document.body){
+      if(nodes.every(function(node){return parent.contains(node)}))return parent;
+      parent=parent.parentElement;
+    }
+    return null;
+  }
+  function cardFor(img){
+    var node=img;
+    while(node.parentElement&&node.parentElement!==document.body){
+      var parent=node.parentElement;
+      if(parent.matches('button,label,a,[role="button"]'))return parent;
+      var matching=Array.from(parent.querySelectorAll('img[alt]')).filter(function(x){return !!kind(x)});
+      if(matching.length>1)return node;
+      node=parent;
+    }
+    return node.parentElement||node;
+  }
+  function markText(selector,pattern,className){
+    var candidates=Array.from(document.querySelectorAll('body *')).filter(function(el){
+      return el.children.length===0&&pattern.test(normalize(el.textContent));
+    });
+    candidates.forEach(function(el){el.classList.add(className)});
+    return candidates[0]||null;
+  }
+  function apply(){
+    if(done)return;
+    var imgs=Array.from(document.querySelectorAll('img[alt]')).filter(function(img){return !!kind(img)});
+    var seen={};
+    imgs.forEach(function(img){seen[kind(img)]=true});
+    if(!seen.classic||!seen.portal||!seen.monogram)return;
+    var cards=imgs.map(function(img){
+      var card=cardFor(img);
+      card.classList.add('dormus-pwa-choice-card');
+      return card;
+    });
+    var unique=Array.from(new Set(cards));
+    var parent=commonParent(unique);
+    if(parent&&unique.every(function(card){return card.parentElement===parent})){
+      var grid=document.createElement('div');
+      grid.className='dormus-pwa-choice-grid';
+      parent.insertBefore(grid,unique[0]);
+      unique.forEach(function(card){grid.appendChild(card)});
+    }else if(parent){
+      parent.classList.add('dormus-pwa-choice-grid');
+    }
+    var grid=parent&&parent.querySelector('.dormus-pwa-choice-grid');
+    if(!grid&&parent&&parent.classList.contains('dormus-pwa-choice-grid'))grid=parent;
+    var heading=markText('','identidade do aplicativo','dormus-pwa-heading');
+    markText('','fica salva neste aparelho|manifest pwa','dormus-pwa-help');
+    var anchors=[grid,heading].filter(Boolean);
+    var panel=commonParent(anchors);
+    if(panel&&panel!==document.body&&panel.textContent.length<700&&/identidade do aplicativo/i.test(panel.textContent)){
+      panel.classList.add('dormus-pwa-panel');
+      Array.from(panel.querySelectorAll('button')).forEach(function(button){
+        if(/^[×x]$/i.test(button.textContent.trim()))button.classList.add('dormus-pwa-close');
+      });
+    }
+    done=true;
+    if(observer)observer.disconnect();
+  }
+  var observer=null;
+  apply();
+  if(!done&&'MutationObserver' in window){
+    observer=new MutationObserver(function(){apply()});
+    observer.observe(document.body,{childList:true,subtree:true});
+  }
 })();
 </script>
 </body>
