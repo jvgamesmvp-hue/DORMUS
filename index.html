@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.7</title>
+  <title>Dormus | Gestão imobiliária · 9.1</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -8900,5 +8900,138 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
 })();
 </script>
 -->
+<style id="dormus-property-contract-history-style">
+  .property-contract-history{margin-top:18px}
+  .property-contract-history .history-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:11px;margin-top:12px}
+  .property-contract-history .history-card{border:1px solid var(--ui-line,#dce3ea);border-radius:10px;padding:13px;background:#f8fafc}
+  .property-contract-history .history-card.current{background:#f0fbf7;border-color:#b8e6d5}
+  .property-contract-history .history-card h4{margin:0 0 5px;color:var(--ui-text,#0d172a);font-size:13px}
+  .property-contract-history .history-card p{margin:4px 0;color:var(--ui-muted,#6f7d91);font-size:11px;line-height:1.45}
+  .property-contract-history .history-card .history-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+  .property-contract-history .history-empty{padding:13px;border:1px dashed var(--ui-line,#dce3ea);border-radius:10px;color:var(--ui-muted,#6f7d91);font-size:12px}
+  .property-history-note{margin:0 0 12px;padding:10px 12px;border:1px solid #b8e6d5;border-radius:9px;background:#f0fbf7;color:#315d4d;font-size:11px}
+  @media(max-width:620px){.property-contract-history .history-grid{grid-template-columns:1fr}}
+</style>
+<script id="dormus-property-rescission-history">
+(function(){
+  const D=()=>window.DormusDB||{};
+  const normalize=v=>String(v||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+  const isCurrentContract=c=>['ativo','vencendo'].includes(normalize(c?.status));
+  const isHistoricalContract=c=>['encerrado','rescindido'].includes(normalize(c?.status))||!!c?.terminationId||!!c?.closedAt||!!c?.rescindedAt;
+  const propertyContracts=propertyId=>(D().contracts||[]).filter(c=>String(c.propertyId)===String(propertyId)).sort((a,b)=>String(b.start||b.updatedAt||'').localeCompare(String(a.start||a.updatedAt||'')));
+  const contractLabel=c=>`${nameOf('tenants',c.tenantId)||'Locatário não informado'} · ${c.start?formatDatePt(c.start):'sem início'}${c.end?' até '+formatDatePt(c.end):''}`;
+  const terminationForContract=contractId=>(D().terminations||[]).find(t=>String(t.contractId)===String(contractId));
+  const esc0=v=>typeof esc==='function'?esc(v):String(v??'');
+
+  window.openTerminationForContract=function(contractId){
+    if(typeof window.openTerminationModal!=='function'){alert('O módulo de encerramento ainda não está disponível.');return}
+    window.openTerminationModal();
+    setTimeout(function(){
+      const select=document.getElementById('e-contract');
+      if(!select)return;
+      select.value=contractId;
+      select.dispatchEvent(new Event('change',{bubbles:true}));
+    },0);
+  };
+
+  window.rescindContractFromProperty=async function(propertyId){
+    const d=D(),property=(d.properties||[]).find(p=>String(p.id)===String(propertyId));
+    if(!property)return;
+    const contract=propertyContracts(propertyId).find(isCurrentContract);
+    if(!contract){
+      const pending=propertyContracts(propertyId).find(c=>normalize(c.status)==='rescindido'&&!terminationForContract(c.id));
+      if(pending){window.openTerminationForContract(pending.id);return}
+      alert('Não há contrato ativo para rescindir neste imóvel.');
+      return;
+    }
+    const tenant=nameOf('tenants',contract.tenantId)||'locatário não informado';
+    if(!confirm(`Rescindir o contrato deste imóvel com ${tenant}?\n\nO contrato ficará como RESCINDIDO, o imóvel será marcado como DISPONÍVEL e o encerramento poderá ser preenchido em seguida.`))return;
+    const contractBefore=Object.assign({},contract),propertyBefore=Object.assign({},property);
+    contract.status='Rescindido';
+    contract.rescindedAt=new Date().toISOString().slice(0,10);
+    contract.rescissionDate=contract.rescindedAt;
+    contract.terminationPending=true;
+    contract.updatedAt=new Date().toISOString();
+    property.status='Disponível';
+    property.updatedAt=new Date().toISOString();
+    const saved=await save();
+    if(!saved){
+      Object.assign(contract,contractBefore);
+      Object.assign(property,propertyBefore);
+      return;
+    }
+    if(typeof window.dormusToast==='function')window.dormusToast('Contrato rescindido. O imóvel já está disponível.');
+    setTimeout(()=>window.openTerminationForContract(contract.id),180);
+  };
+
+  function addPropertyContractActions(){
+    document.querySelectorAll('#properties .property').forEach(card=>{
+      const cover=card.querySelector('[data-property-cover]'),actions=card.querySelector('.card-actions');
+      const propertyId=cover?.dataset.propertyCover;
+      if(!propertyId||!actions||actions.querySelector('[data-property-contract-action]'))return;
+      const contracts=propertyContracts(propertyId),current=contracts.find(isCurrentContract),pending=contracts.find(c=>normalize(c.status)==='rescindido'&&!terminationForContract(c.id));
+      if(current){
+        const button=document.createElement('button');
+        button.type='button';button.className='button button-small button-danger';button.dataset.propertyContractAction='1';button.textContent='Rescindir';
+        button.onclick=()=>window.rescindContractFromProperty(propertyId);actions.appendChild(button);
+      }else if(pending){
+        const button=document.createElement('button');
+        button.type='button';button.className='button button-small button-brass';button.dataset.propertyContractAction='1';button.textContent='Fazer encerramento';
+        button.onclick=()=>window.openTerminationForContract(pending.id);actions.appendChild(button);
+      }
+    });
+  }
+
+  const oldRenderProperties=window.renderProperties;
+  if(typeof oldRenderProperties==='function'){
+    window.renderProperties=function(){oldRenderProperties();setTimeout(addPropertyContractActions,35)};
+  }
+
+  function historySection(property){
+    const contracts=propertyContracts(property.id),historical=contracts.filter(isHistoricalContract),current=contracts.filter(c=>!isHistoricalContract(c));
+    const card=c=>{
+      const term=terminationForContract(c.id),pending=normalize(c.status)==='rescindido'&&!term;
+      return `<article class="history-card ${isCurrentContract(c)?'current':''}">
+        <h4>${esc0(c.status||'Contrato')} · ${esc0(c.contractType||'Locação')}</h4>
+        <p><strong>Locatário:</strong> ${esc0(nameOf('tenants',c.tenantId)||'Não informado')}</p>
+        <p><strong>Vigência:</strong> ${esc0(c.start?formatDatePt(c.start):'Sem início')} ${c.end?'→ '+esc0(formatDatePt(c.end)):''}</p>
+        <p><strong>Aluguel:</strong> ${c.rent?money(c.rent):'Não informado'}${c.rescindedAt?' · Rescindido em '+esc0(formatDatePt(c.rescindedAt)):''}</p>
+        <div class="history-actions"><button class="button button-small" type="button" onclick="openPresentation('contract','${esc0(c.id)}')">Ver contrato</button>${pending?`<button class="button button-small button-brass" type="button" onclick="openTerminationForContract('${esc0(c.id)}')">Fazer encerramento</button>`:''}${term?`<button class="button button-small" type="button" onclick="openTerminationModal('${esc0(term.id)}')">Ver encerramento</button>`:''}</div>
+      </article>`;
+    };
+    return `<section class="showcase-section property-contract-history"><div class="panel-head"><div><h3>Histórico de contratos do imóvel</h3><div class="panel-kicker">Contratos antigos permanecem vinculados a este imóvel e não aparecem na lista corrente de contratos.</div></div><span class="badge">${contracts.length} registro(s)</span></div>${current.length?`<div class="history-grid">${current.map(card).join('')}</div>`:''}${historical.length?`<div class="history-grid">${historical.map(card).join('')}</div>`:'<div class="history-empty">Nenhum contrato antigo ou rescindido está registrado para este imóvel.</div>'}</section>`;
+  }
+
+  const oldPropertyPresentation=window.propertyPresentation;
+  if(typeof oldPropertyPresentation==='function'){
+    window.propertyPresentation=function(property,files){return oldPropertyPresentation(property,files)+historySection(property)};
+  }
+
+  const oldRenderContracts=window.renderContracts;
+  if(typeof oldRenderContracts==='function'){
+    window.renderContracts=function(){
+      const d=D(),all=d.contracts||[],visible=all.filter(c=>!isHistoricalContract(c)),archived=all.length-visible.length;
+      d.contracts=visible;
+      try{oldRenderContracts()}finally{d.contracts=all}
+      const host=document.getElementById('contracts-list');
+      if(host&&archived){
+        host.insertAdjacentHTML('afterbegin',`<div class="property-history-note">📚 ${archived} contrato(s) antigo(s), encerrado(s) ou rescindido(s) estão disponíveis somente no <strong>Histórico de contratos do respectivo imóvel</strong>.</div>`);
+      }
+      const count=document.getElementById('contracts-count');
+      if(count&&archived)count.textContent=`${visible.length} contrato(s) atual(is) · ${archived} no histórico dos imóveis`;
+    };
+  }
+
+  const oldShowView=window.showView;
+  if(typeof oldShowView==='function'){
+    window.showView=function(id){const result=oldShowView(id);if(id==='properties')setTimeout(addPropertyContractActions,50);return result};
+  }
+  const propertyList=document.getElementById('property-list');
+  if(propertyList&&window.MutationObserver){
+    new MutationObserver(()=>setTimeout(addPropertyContractActions,0)).observe(propertyList,{childList:true});
+  }
+  setTimeout(addPropertyContractActions,500);
+})();
+</script>
 </body>
 </html>
