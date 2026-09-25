@@ -9133,5 +9133,127 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
   setTimeout(()=>cinematicEnter(document.querySelector('.view.active')?.id),160);
 })();
 </script>
+<style id="dormus-product-film-style">
+  .dormus-product-film{position:relative;display:grid;grid-template-columns:minmax(230px,.78fr) minmax(430px,1.22fr);gap:30px;align-items:center;min-height:390px;margin:0 0 24px;padding:34px;border:1px solid rgba(198,147,65,.28);border-radius:22px;overflow:hidden;background:radial-gradient(circle at 86% 12%,rgba(198,147,65,.22),transparent 30%),linear-gradient(125deg,#07131d 0%,#0d2929 52%,#10251f 100%);box-shadow:0 26px 70px rgba(8,25,27,.22);color:#f7f5ed}
+  .dormus-product-film::before{content:"";position:absolute;inset:-40%;pointer-events:none;background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.06) 49%,transparent 56%);transform:translateX(-35%);animation:dormus-film-sweep 7s ease-in-out infinite}
+  .dormus-film-copy,.dormus-film-screen{position:relative;z-index:1}
+  .dormus-film-copy{max-width:360px}
+  .dormus-film-kicker{display:flex;align-items:center;gap:8px;color:#d7b66d;font:700 10px Consolas,monospace;letter-spacing:1.7px;text-transform:uppercase}
+  .dormus-film-kicker::before{content:"";width:25px;height:1px;background:#d7b66d}
+  .dormus-film-copy h2{margin:15px 0 13px;font:clamp(30px,3.5vw,48px)/.98 Georgia,serif;letter-spacing:-1.5px}
+  .dormus-film-copy h2 em{color:#d7b66d;font-style:normal}
+  .dormus-film-copy p{max-width:330px;margin:0;color:#afc3bd;font-size:13px;line-height:1.65}
+  .dormus-film-signature{display:flex;align-items:center;gap:9px;margin-top:24px;color:#e5eee7;font-size:11px;font-weight:700;letter-spacing:.4px}
+  .dormus-film-signature i{display:block;width:8px;height:8px;border-radius:50%;background:#56d39b;box-shadow:0 0 0 5px rgba(86,211,155,.13),0 0 18px #56d39b;animation:dormus-film-pulse 1.8s ease-in-out infinite}
+  .dormus-film-screen{min-width:0;aspect-ratio:16/10;padding:13px;border:1px solid rgba(255,255,255,.18);border-radius:15px;background:rgba(2,9,14,.7);box-shadow:0 20px 44px rgba(0,0,0,.32),inset 0 1px rgba(255,255,255,.1);transform:perspective(1000px) rotateY(-4deg) rotateX(2deg);animation:dormus-film-screen-in 1.1s cubic-bezier(.16,1,.3,1) both}
+  .dormus-film-screen::after{content:"";position:absolute;inset:0;pointer-events:none;border-radius:15px;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.08) 48%,transparent 61%);mix-blend-mode:screen;animation:dormus-film-glint 5.5s ease-in-out infinite}
+  .dormus-film-chrome{height:19px;display:flex;align-items:center;justify-content:space-between;padding:0 4px 9px;color:#78978f;font:9px Consolas,monospace}
+  .dormus-film-dots{display:flex;gap:4px}.dormus-film-dots i{width:5px;height:5px;border-radius:50%;background:#c8796d}.dormus-film-dots i:nth-child(2){background:#d5ad54}.dormus-film-dots i:nth-child(3){background:#4bc69b}
+  .dormus-film-stage{position:relative;height:calc(100% - 19px);min-height:280px;overflow:hidden;border:1px solid rgba(255,255,255,.08);border-radius:9px;background:linear-gradient(145deg,#102b2d,#0b1a24 70%)}
+  .dormus-film-scene{position:absolute;inset:0;padding:22px;opacity:0;transform:scale(1.035);animation:dormus-film-scene 15s ease-in-out infinite}
+  .dormus-film-scene:nth-child(2){animation-delay:5s}.dormus-film-scene:nth-child(3){animation-delay:10s}
+  .dormus-film-scene-title{color:#eaf1e9;font-size:14px;font-weight:800}.dormus-film-scene-sub{margin-top:4px;color:#789b91;font-size:9px}
+  .dormus-film-mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:20px}
+  .dormus-film-mini-card{padding:11px;border:1px solid rgba(255,255,255,.09);border-radius:8px;background:rgba(255,255,255,.045)}
+  .dormus-film-mini-card small{display:block;color:#75958e;font-size:8px}.dormus-film-mini-card strong{display:block;margin-top:8px;color:#f5f0df;font:700 20px Georgia}.dormus-film-mini-card b{display:block;margin-top:5px;color:#55d19a;font-size:8px;font-weight:600}
+  .dormus-film-bars{display:flex;align-items:end;gap:8px;height:86px;margin-top:17px;padding:12px 14px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:rgba(0,0,0,.13)}
+  .dormus-film-bars i{display:block;flex:1;height:var(--h);border-radius:4px 4px 1px 1px;background:linear-gradient(#d8b668,#4aa98d);transform-origin:bottom;animation:dormus-film-bar 1.4s ease-in-out infinite alternate}
+  .dormus-film-bars i:nth-child(2){animation-delay:.12s}.dormus-film-bars i:nth-child(3){animation-delay:.24s}.dormus-film-bars i:nth-child(4){animation-delay:.36s}.dormus-film-bars i:nth-child(5){animation-delay:.48s}.dormus-film-bars i:nth-child(6){animation-delay:.6s}
+  .dormus-film-properties{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:19px}.dormus-film-property{height:105px;padding:10px;border-radius:8px;background:linear-gradient(145deg,#274d4b,#162b33);box-shadow:inset 0 0 0 1px rgba(255,255,255,.09)}.dormus-film-property::before{content:"";display:block;height:47px;margin:-1px -1px 9px;border-radius:6px;background:linear-gradient(135deg,#c5a86a,#47746b 55%,#192d35)}.dormus-film-property strong{display:block;color:#e5eee7;font-size:9px}.dormus-film-property small{display:block;margin-top:4px;color:#7ca398;font-size:8px}
+  .dormus-film-timeline{margin-top:22px;padding:16px 14px;border:1px solid rgba(255,255,255,.09);border-radius:8px;background:rgba(255,255,255,.045)}.dormus-film-timeline-line{display:flex;align-items:center;gap:0}.dormus-film-timeline-line i{width:12px;height:12px;border:3px solid #d8b668;border-radius:50%;background:#102b2d;box-shadow:0 0 0 4px rgba(216,182,104,.1)}.dormus-film-timeline-line span{height:2px;flex:1;background:linear-gradient(90deg,#d8b668,#4ab38f)}.dormus-film-timeline-labels{display:flex;justify-content:space-between;margin-top:10px;color:#9bb6ab;font-size:8px}
+  @keyframes dormus-film-sweep{0%,15%{transform:translateX(-35%)}55%,100%{transform:translateX(45%)}}
+  @keyframes dormus-film-pulse{0%,100%{opacity:.65;transform:scale(.85)}50%{opacity:1;transform:scale(1.15)}}
+  @keyframes dormus-film-screen-in{from{opacity:0;transform:perspective(1000px) rotateY(-9deg) rotateX(5deg) translateX(24px) scale(.96)}to{opacity:1;transform:perspective(1000px) rotateY(-4deg) rotateX(2deg) translateX(0) scale(1)}}
+  @keyframes dormus-film-glint{0%,30%{transform:translateX(-100%)}65%,100%{transform:translateX(100%)}}
+  @keyframes dormus-film-scene{0%,7%{opacity:0;transform:scale(1.035)}13%,28%{opacity:1;transform:scale(1)}34%,100%{opacity:0;transform:scale(.985)}}
+  @keyframes dormus-film-bar{from{transform:scaleY(.78)}to{transform:scaleY(1.04)}}
+  @media(max-width:850px){.dormus-product-film{grid-template-columns:1fr;padding:26px;gap:22px}.dormus-film-copy{max-width:none}.dormus-film-copy p{max-width:520px}.dormus-film-screen{transform:none}.dormus-film-screen-in{transform:none}}
+  @media(max-width:560px){.dormus-product-film{padding:21px;border-radius:16px}.dormus-film-copy h2{font-size:34px}.dormus-film-scene{padding:14px}.dormus-film-mini-card strong{font-size:15px}.dormus-film-properties{gap:5px}.dormus-film-property{height:92px;padding:7px}.dormus-film-property::before{height:40px;margin:-1px -1px 7px}}
+  @media(prefers-reduced-motion:reduce){.dormus-product-film::before,.dormus-film-signature i,.dormus-film-screen,.dormus-film-screen::after,.dormus-film-scene,.dormus-film-bars i{animation:none!important}.dormus-film-scene:first-child{opacity:1;transform:none}}
+</style>
+<script id="dormus-product-film-script">
+(function(){
+  function mountProductFilm(){
+    const home=document.getElementById('home');
+    if(!home||document.getElementById('dormus-product-film'))return;
+    const head=home.querySelector('.dormus-home-head');
+    if(!head)return;
+    head.insertAdjacentHTML('afterend',`<section id="dormus-product-film" class="dormus-product-film" aria-label="Demonstração cinematográfica do sistema DORMUS">
+      <div class="dormus-film-copy">
+        <div class="dormus-film-kicker">O futuro da gestão imobiliária</div>
+        <h2>Menos operação.<br><em>Mais visão.</em></h2>
+        <p>O DORMUS conecta imóveis, contratos, pessoas e financeiro em uma experiência criada para quem quer operar em outro nível.</p>
+        <div class="dormus-film-signature"><i></i><span>Uma nova era para a sua imobiliária</span></div>
+      </div>
+      <div class="dormus-film-screen">
+        <div class="dormus-film-chrome"><span class="dormus-film-dots"><i></i><i></i><i></i></span><span>DORMUS / LIVE OPERATIONS</span></div>
+        <div class="dormus-film-stage">
+          <div class="dormus-film-scene">
+            <div class="dormus-film-scene-title">Tudo sob controle.</div><div class="dormus-film-scene-sub">Uma visão clara da sua operação.</div>
+            <div class="dormus-film-mini-grid"><div class="dormus-film-mini-card"><small>Imóveis ativos</small><strong>128</strong><b>↑ 12,4%</b></div><div class="dormus-film-mini-card"><small>Contratos</small><strong>94</strong><b>↑ 8,2%</b></div><div class="dormus-film-mini-card"><small>Receita mensal</small><strong>R$ 84k</strong><b>↑ 16,8%</b></div></div>
+            <div class="dormus-film-bars"><i style="--h:36%"></i><i style="--h:58%"></i><i style="--h:45%"></i><i style="--h:72%"></i><i style="--h:65%"></i><i style="--h:92%"></i></div>
+          </div>
+          <div class="dormus-film-scene">
+            <div class="dormus-film-scene-title">Cada imóvel, uma história.</div><div class="dormus-film-scene-sub">Informação organizada para decisões melhores.</div>
+            <div class="dormus-film-properties"><div class="dormus-film-property"><strong>Residencial Aurora</strong><small>Ocupado · R$ 3.850</small></div><div class="dormus-film-property"><strong>Casa Jardim</strong><small>Disponível · R$ 4.200</small></div><div class="dormus-film-property"><strong>Edifício Central</strong><small>Ocupado · R$ 6.100</small></div></div>
+          </div>
+          <div class="dormus-film-scene">
+            <div class="dormus-film-scene-title">Do contrato ao resultado.</div><div class="dormus-film-scene-sub">Uma operação que acompanha o ritmo do seu negócio.</div>
+            <div class="dormus-film-timeline"><div class="dormus-film-timeline-line"><i></i><span></span><i></i><span></span><i></i><span></span><i></i></div><div class="dormus-film-timeline-labels"><b>Contrato</b><b>Financeiro</b><b>Manutenção</b><b>Resultado</b></div></div>
+            <div class="dormus-film-mini-grid"><div class="dormus-film-mini-card"><small>Inadimplência</small><strong>0,8%</strong><b>↓ Mais eficiência</b></div><div class="dormus-film-mini-card"><small>Tempo poupado</small><strong>32h</strong><b>↑ por mês</b></div><div class="dormus-film-mini-card"><small>Visão da equipe</small><strong>360°</strong><b>● Sempre ativa</b></div></div>
+          </div>
+        </div>
+      </div>
+    </section>`);
+  }
+  mountProductFilm();
+  const originalShowView=window.showView;
+  if(typeof originalShowView==='function'){
+    window.showView=function(id){
+      const result=originalShowView.apply(this,arguments);
+      if(id==='home')setTimeout(mountProductFilm,30);
+      return result;
+    };
+  }
+})();
+</script>
+<style id="dormus-p360-close-fix">
+  #dormus-p360[hidden]{display:none!important}
+</style>
+<script id="dormus-p360-close-fix-script">
+(function(){
+  const originalClose=window.closeP360;
+  window.closeP360=function(){
+    const modal=document.getElementById('dormus-p360');
+    if(!modal)return;
+    modal.hidden=true;
+    modal.setAttribute('aria-hidden','true');
+    modal.style.setProperty('display','none','important');
+    document.body.classList.remove('p360-is-open');
+  };
+  const originalOpen=window.openProperty360;
+  if(typeof originalOpen==='function'){
+    window.openProperty360=function(){
+      const result=originalOpen.apply(this,arguments);
+      requestAnimationFrame(()=>{
+        const modal=document.getElementById('dormus-p360');
+        if(!modal)return;
+        modal.hidden=false;
+        modal.removeAttribute('aria-hidden');
+        modal.style.removeProperty('display');
+        document.body.classList.add('p360-is-open');
+      });
+      return result;
+    };
+  }
+  document.addEventListener('click',function(event){
+    const button=event.target.closest?.('#dormus-p360 .doc-actions button');
+    if(!button||button.textContent.trim()!=='Fechar')return;
+    event.preventDefault();
+    event.stopPropagation();
+    window.closeP360();
+  },true);
+})();
+</script>
 </body>
 </html>
