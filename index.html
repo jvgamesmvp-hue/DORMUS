@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 9.2</title>
+  <title>Dormus | Gestão imobiliária · 9.1</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -9015,6 +9015,122 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
   }
 
   setTimeout(addContractActions,500);
+})();
+</script>
+<style id="dormus-professional-motion">
+  @keyframes dormus-page-enter{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes dormus-content-enter{from{opacity:0;transform:translateY(10px) scale(.992)}to{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes dormus-modal-bg-enter{from{opacity:0}to{opacity:1}}
+  @keyframes dormus-modal-enter{from{opacity:0;transform:translateY(18px) scale(.975)}to{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes dormus-row-enter{from{opacity:0;transform:translateX(-7px)}to{opacity:1;transform:translateX(0)}}
+  .view.dormus-page-enter{animation:dormus-page-enter .42s cubic-bezier(.22,.75,.25,1) both}
+  .view.dormus-page-enter>*.dormus-content-enter{animation:dormus-content-enter .48s cubic-bezier(.22,.75,.25,1) var(--dormus-delay,0ms) both}
+  #modal-root .modal-bg{animation:dormus-modal-bg-enter .24s ease-out both}
+  #modal-root .modal-bg>.modal{animation:dormus-modal-enter .38s cubic-bezier(.22,.75,.25,1) .03s both;transform-origin:center top}
+  .view.dormus-page-enter .dormus-motion-card{animation:dormus-content-enter .46s cubic-bezier(.22,.75,.25,1) var(--dormus-delay,0ms) both}
+  .view.dormus-page-enter .dormus-motion-row{animation:dormus-row-enter .38s ease-out var(--dormus-delay,0ms) both}
+  .property,.summary,.metric,.dash-stat,.contract-card,.maintenance-card,.financial-card,.chart-card,.report-card{transition:transform .26s ease,box-shadow .26s ease}
+  @media (hover:hover) and (pointer:fine){
+    .property:hover,.summary:hover,.metric:hover,.dash-stat:hover,.contract-card:hover,.maintenance-card:hover,.financial-card:hover,.chart-card:hover,.report-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(20,43,66,.11)}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .view.dormus-page-enter,.view.dormus-page-enter>*.dormus-content-enter,#modal-root .modal-bg,#modal-root .modal-bg>.modal,.view.dormus-page-enter .dormus-motion-card,.view.dormus-page-enter .dormus-motion-row{animation:none!important}
+    .property,.summary,.metric,.dash-stat,.contract-card,.maintenance-card,.financial-card,.chart-card,.report-card{transition:none!important}
+  }
+</style>
+<script id="dormus-professional-motion-script">
+(function(){
+  const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function restart(element,className){
+    if(!element)return;
+    element.classList.remove(className);
+    void element.offsetWidth;
+    element.classList.add(className);
+  }
+  function animateView(id){
+    const view=document.getElementById(id)||document.querySelector('.view.active');
+    if(!view)return;
+    if(reduced){view.classList.remove('dormus-page-enter');return}
+    restart(view,'dormus-page-enter');
+    const topChildren=[...view.children];
+    topChildren.forEach((element,index)=>{
+      element.style.setProperty('--dormus-delay',`${Math.min(index,8)*55}ms`);
+      restart(element,'dormus-content-enter');
+    });
+    const cards=[...view.querySelectorAll('.property,.summary,.metric,.dash-stat,.contract-card,.maintenance-card,.financial-card,.chart-card,.report-card')];
+    cards.forEach((element,index)=>{
+      element.style.setProperty('--dormus-delay',`${Math.min(index,12)*38}ms`);
+      restart(element,'dormus-motion-card');
+    });
+    const rows=[...view.querySelectorAll('tbody tr,.row,.list-card')];
+    rows.forEach((element,index)=>{
+      element.style.setProperty('--dormus-delay',`${Math.min(index,14)*28}ms`);
+      restart(element,'dormus-motion-row');
+    });
+  }
+  const originalShowView=window.showView;
+  if(typeof originalShowView==='function'){
+    window.showView=function(id){
+      const result=originalShowView.apply(this,arguments);
+      requestAnimationFrame(()=>animateView(id));
+      return result;
+    };
+  }
+  const modalRoot=document.getElementById('modal-root');
+  if(modalRoot&&window.MutationObserver&&!reduced){
+    new MutationObserver(()=>modalRoot.querySelectorAll('.modal-bg:not(.dormus-modal-seen)').forEach(element=>{
+      element.classList.add('dormus-modal-seen');
+    })).observe(modalRoot,{childList:true,subtree:true});
+  }
+  setTimeout(()=>animateView(document.querySelector('.view.active')?.id),120);
+})();
+</script>
+<style id="dormus-cinematic-motion">
+  @keyframes dormus-cinematic-page{0%{opacity:0;filter:blur(9px);transform:scale(1.018) translateY(16px)}55%{opacity:1;filter:blur(1px)}100%{opacity:1;filter:blur(0);transform:scale(1) translateY(0)}}
+  @keyframes dormus-cinematic-heading{0%{opacity:0;clip-path:inset(0 100% 0 0);transform:translateX(-20px)}100%{opacity:1;clip-path:inset(0 0 0 0);transform:translateX(0)}}
+  @keyframes dormus-cinematic-line{0%{opacity:0;transform:scaleX(0);transform-origin:left center}100%{opacity:1;transform:scaleX(1);transform-origin:left center}}
+  @keyframes dormus-cinematic-card{0%{opacity:0;filter:blur(5px);transform:translateY(24px) scale(.965)}65%{opacity:1;filter:blur(0);transform:translateY(-2px) scale(1.004)}100%{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes dormus-cinematic-row{0%{opacity:0;transform:translateX(-18px)}100%{opacity:1;transform:translateX(0)}}
+  @keyframes dormus-cinematic-modal{0%{opacity:0;filter:blur(10px);transform:translateY(28px) scale(.94)}100%{opacity:1;filter:blur(0);transform:translateY(0) scale(1)}}
+  @keyframes dormus-cinematic-glow{0%,100%{opacity:.24;transform:translate3d(-4%,0,0) scale(1)}50%{opacity:.42;transform:translate3d(4%,2%,0) scale(1.08)}}
+  .view.dormus-cinematic-enter{animation:dormus-cinematic-page .72s cubic-bezier(.16,1,.3,1) both}
+  .view.dormus-cinematic-enter .page-head h1{animation:dormus-cinematic-heading .7s cubic-bezier(.16,1,.3,1) .08s both}
+  .view.dormus-cinematic-enter .page-head .eyebrow{animation:dormus-cinematic-line .55s cubic-bezier(.16,1,.3,1) both}
+  .view.dormus-cinematic-enter .page-head .lead{animation:dormus-cinematic-heading .6s cubic-bezier(.16,1,.3,1) .18s both}
+  .view.dormus-cinematic-enter .dormus-motion-card{animation:dormus-cinematic-card .7s cubic-bezier(.16,1,.3,1) var(--dormus-delay,0ms) both}
+  .view.dormus-cinematic-enter .dormus-motion-row{animation:dormus-cinematic-row .5s cubic-bezier(.16,1,.3,1) var(--dormus-delay,0ms) both}
+  #modal-root .modal-bg>.modal{animation:dormus-cinematic-modal .6s cubic-bezier(.16,1,.3,1) .04s both}
+  @media (min-width:760px){
+    .view.dormus-cinematic-enter>.panel,.view.dormus-cinematic-enter>.grid,.view.dormus-cinematic-enter>.summary-grid{position:relative}
+    .view.dormus-cinematic-enter>.panel::before,.view.dormus-cinematic-enter>.grid::before,.view.dormus-cinematic-enter>.summary-grid::before{content:"";position:absolute;inset:-28px -18px;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at 25% 0%,rgba(198,147,65,.13),transparent 56%);filter:blur(18px);animation:dormus-cinematic-glow 2.8s ease-in-out both}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .view.dormus-cinematic-enter,.view.dormus-cinematic-enter .page-head h1,.view.dormus-cinematic-enter .page-head .eyebrow,.view.dormus-cinematic-enter .page-head .lead,.view.dormus-cinematic-enter .dormus-motion-card,.view.dormus-cinematic-enter .dormus-motion-row,#modal-root .modal-bg>.modal{animation:none!important;filter:none!important}
+  }
+</style>
+<script id="dormus-cinematic-motion-script">
+(function(){
+  const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function restart(element,className){
+    if(!element)return;
+    element.classList.remove(className);
+    void element.offsetWidth;
+    element.classList.add(className);
+  }
+  function cinematicEnter(id){
+    const view=document.getElementById(id)||document.querySelector('.view.active');
+    if(!view||reduced)return;
+    restart(view,'dormus-cinematic-enter');
+  }
+  const originalShowView=window.showView;
+  if(typeof originalShowView==='function'){
+    window.showView=function(id){
+      const result=originalShowView.apply(this,arguments);
+      requestAnimationFrame(()=>cinematicEnter(id));
+      return result;
+    };
+  }
+  setTimeout(()=>cinematicEnter(document.querySelector('.view.active')?.id),160);
 })();
 </script>
 </body>
