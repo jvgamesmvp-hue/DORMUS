@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.4</title>
+  <title>Dormus | Gestão imobiliária · 8.5</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -61,6 +61,17 @@
     @media(max-width:620px){.auth-email{display:none}.login-card{padding:24px}}
   
 .inspection-media-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:10px 0}.media-capture-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;min-height:105px;padding:13px;border:1px solid var(--line);border-radius:12px;background:#eef2ec;color:var(--ink);cursor:pointer}.media-capture-card span{font-size:22px}.media-capture-card strong{font-size:12px}.media-capture-card small{font-size:9px;color:var(--muted)}.media-capture-card input{position:absolute;inset:0;opacity:0;cursor:pointer}.media-record-button{font:inherit;text-align:left}.inspection-recorder{margin:10px 0;padding:10px;border:1px solid var(--line);border-radius:12px;background:#15251c}.inspection-recorder-video{display:block;width:100%;max-height:360px;object-fit:cover;border-radius:9px}.inspection-recorder-controls{display:flex;justify-content:center;padding-top:9px}.inspection-capture-preview{display:grid;gap:6px;margin:8px 0}.inspection-capture-chip{display:flex;justify-content:space-between;gap:12px;padding:8px 10px;border-radius:8px;background:#f0ede4;border:1px solid var(--line);font-size:10px}.inspection-capture-chip span{color:var(--muted)}.inspection-media-divider{margin:12px 0 6px;font:10px Consolas,monospace;text-transform:uppercase;color:var(--muted)}.inspection-report-facade{margin:0 0 18px}.inspection-report-facade img{display:block;width:100%;max-height:90mm;object-fit:cover;border:1px solid #d5d8d0}.inspection-report-facade div{font-size:9px;color:#657067;margin-top:4px}.inspection-report-videos{font-size:10px;line-height:1.6;border:1px solid #d5d8d0;padding:8px}.inspection-media-block{grid-column:1/-1}
+</style>
+
+<style id="dormus-save-loading-style">
+  .dormus-save-loading{position:fixed;inset:0;z-index:2147483000;display:grid;place-items:center;padding:20px;background:rgba(24,39,30,.42);backdrop-filter:blur(3px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .18s ease,visibility .18s ease}
+  .dormus-save-loading.is-visible{opacity:1;visibility:visible;pointer-events:auto}
+  .dormus-save-loading-card{display:flex;align-items:center;gap:14px;width:min(360px,calc(100vw - 36px));padding:20px 22px;border:1px solid #ddd8ca;border-radius:14px;background:#fffdf8;box-shadow:0 16px 48px #0003;color:#20372d}
+  .dormus-save-spinner{width:30px;height:30px;flex:none;border:3px solid #dcebdc;border-top-color:#c48e3c;border-radius:50%;animation:dormus-save-spin .8s linear infinite}
+  .dormus-save-copy strong{display:block;font:18px Georgia}
+  .dormus-save-copy span{display:block;margin-top:4px;color:#778278;font-size:12px}
+  @keyframes dormus-save-spin{to{transform:rotate(360deg)}}
+  @media(prefers-reduced-motion:reduce){.dormus-save-spinner{animation-duration:1.8s}.dormus-save-loading{transition:none}}
 </style>
 
 <style id="dormus-provider-restricted-style">
@@ -889,6 +900,26 @@ async function carregarDadosSupabase(){
     const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
     const val=id=>document.getElementById(id)?.value?.trim()||'';
     const selected=(value,current)=>value===current?' selected':'';
+    function setDormusSavingState(active){
+      let overlay=document.getElementById('dormus-save-loading');
+      if(active){
+        if(!overlay){
+          overlay=document.createElement('div');
+          overlay.id='dormus-save-loading';
+          overlay.className='dormus-save-loading';
+          overlay.setAttribute('role','status');
+          overlay.setAttribute('aria-live','polite');
+          overlay.innerHTML='<div class="dormus-save-loading-card"><span class="dormus-save-spinner" aria-hidden="true"></span><div class="dormus-save-copy"><strong>Salvando alterações...</strong><span>Aguarde um instante. Estamos gravando seus dados.</span></div></div>';
+          document.body.appendChild(overlay);
+        }
+        if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>overlay.classList.add('is-visible'));
+        else setTimeout(()=>overlay.classList.add('is-visible'),0);
+        return;
+      }
+      if(!overlay)return;
+      overlay.classList.remove('is-visible');
+      setTimeout(()=>{if(overlay.isConnected&&!overlay.classList.contains('is-visible'))overlay.remove()},220);
+    }
     let dormusSavePromise=null;
     let dormusSaveRequested=false;
     function dormusPersistableData(){
@@ -904,6 +935,7 @@ async function carregarDadosSupabase(){
       return copy;
     }
     async function save(){
+      setDormusSavingState(true);
       dormusSaveRequested=true;
       if(dormusSavePromise)return dormusSavePromise;
       dormusSavePromise=(async()=>{
@@ -955,6 +987,7 @@ async function carregarDadosSupabase(){
           return false;
         }finally{
           dormusSavePromise=null;
+          setDormusSavingState(false);
         }
       })();
       return dormusSavePromise;
@@ -1149,7 +1182,7 @@ async function carregarDadosSupabase(){
      function genericPresentation(kind,r,files){let pairs=[];if(['owner','tenant','guarantor'].includes(kind))pairs=[['Tipo de pessoa',r.personType],['CPF/CNPJ',r.document],['RG / inscrição estadual',r.identity],['Telefone',r.phone],['WhatsApp',r.whatsapp],['E-mail',r.email],['Profissão / atividade',r.profession],['Empresa / empregador',r.company],['Renda mensal',r.income?money(r.income):''],['Endereço',presentationAddress(r)],['Banco',r.bank],['Agência',r.agency],['Conta',r.account],['PIX',r.pix],['Contato de emergência',r.emergency],['Referências pessoais / profissionais',r.references],['Patrimônio / imóvel de garantia',r.assets],['Observações',r.notes]];else if(kind==='contract')pairs=[['Imóvel',nameOf('properties',r.propertyId)],['Proprietário',nameOf('owners',r.ownerId)],['Locatário',nameOf('tenants',r.tenantId)],['Fiador',nameOf('guarantors',r.guarantorId)],['Tipo de contrato',r.contractType],['Vigência',`${r.start||'—'} até ${r.end||'—'}`],['Aluguel vigente',r.rent?money(r.rent):''],['Vencimento',r.dueDay&&`Dia ${r.dueDay}`],['Índice de reajuste',r.index],['Próximo reajuste',r.adjustment],['Taxa de administração',r.adminFee],['Garantia',r.guarantee],['Status',r.status],['Observações',r.notes]];else if(kind==='deposit')pairs=[['Contrato',nameOf('contracts',r.contractId)],['Imóvel',nameOf('properties',r.propertyId)],['Tipo',r.type],['Valor',r.amount?money(r.amount):''],['Recebimento',r.receivedDate],['Status',r.status],['Valor devolvido',r.returnedAmount?money(r.returnedAmount):''],['Data da devolução',r.returnDate],['Correção / rendimentos',r.yield],['Observações',r.notes]];else if(kind==='task')pairs=[['Imóvel',nameOf('properties',r.propertyId)],['Responsável',r.assignee],['Documento do prestador',r.assigneeDocument],['Prazo',r.due],['Prioridade',r.priority],['Status',r.status],['Observações',r.notes]];else if(kind==='inspection')pairs=[['Imóvel',nameOf('properties',r.propertyId)],['Tipo',r.type],['Data',r.date],['Responsável',r.responsible],['Status',r.status],['Observações',r.notes]];else if(kind==='maintenance')pairs=[['Imóvel',nameOf('properties',r.propertyId)],['Fornecedor',r.provider],['Custo',r.cost?money(r.cost):''],['Data de abertura',r.date],['Prioridade',r.priority],['Status',r.status],['Descrição',r.description],['Observações',r.notes]];else if(kind==='document')pairs=[['Categoria',r.category],['Vinculado a',r.linked],['Data',r.date],['Referência do arquivo',r.reference],['Observações',r.notes]];else if(kind==='note')pairs=[['Data',r.date],['Texto',r.content],['Observações',r.notes]];else if(kind==='agenda')pairs=[['Data',r.date],['Horário',r.time],['Categoria',r.category],['Relacionado a',r.linked],['Status',r.status],['Observações',r.notes]];return `${['owner','tenant','guarantor'].includes(kind)?personContactActions(r):''}<div class="presentation-grid">${pairs.filter(x=>x[1]).map(x=>presentationItem(x[0],x[1])).join('')}</div><div class="showcase-section"><h3>Arquivos e fotos</h3>${presentationFiles(files)}</div>`}
     async function openPresentation(kind,id){const map={owner:'owners',tenant:'tenants',guarantor:'guarantors',property:'properties',contract:'contracts',deposit:'deposits',task:'tasks',inspection:'inspections',maintenance:'maintenance',note:'notes',agenda:'agenda'},r=db[map[kind]]?.find(x=>x.id===id);if(!r)return;const title=r.name||r.title||presentationLabels[kind];document.getElementById('modal-root').innerHTML=`<div class="modal-bg" onclick="closeModal(event)"><div class="modal presentation-modal" onclick="event.stopPropagation()"><div class="presentation-head"><button class="icon" style="float:right;background:#ffffff12;border-color:#ffffff30;color:#fff" onclick="closeModal()">×</button><div class="eyebrow">Visualização do cadastro</div><h2>${esc(title)}</h2><p>Apresentação completa · ${esc(presentationLabels[kind])}</p></div><div id="presentation-body" class="presentation-body"><div class="empty">Carregando informações...</div></div></div></div>`;const files=await listAttachments(kind,id),body=document.getElementById('presentation-body');if(!body)return;const content=kind==='property'?propertyPresentation(r,files):genericPresentation(kind,r,files);body.innerHTML=content+`<div class="presentation-actions"><button class="button button-primary" onclick="openModal('${kind}','${id}')">Editar cadastro</button>${kind==='contract'?`<button class="button button-brass" onclick="printContract('${esc(id)}')">📄 Gerar PDF / Imprimir contrato</button>`:''}<button class="button button-quiet" onclick="closeModal()">Fechar</button></div>`}
     function openModal(kind,id=''){if(kind==='inspection'){inspectionRecordedMedia=[]}const map={owner:'owners',tenant:'tenants',guarantor:'guarantors',property:'properties',contract:'contracts',deposit:'deposits',task:'tasks',inspection:'inspections',maintenance:'maintenance',note:'notes',agenda:'agenda'},list=map[kind],r=id?db[list].find(x=>x.id===id)||{}:{};const labels={owner:'Proprietário',tenant:'Locatário',guarantor:'Fiador',property:'Imóvel',contract:'Contrato',deposit:'Caução',task:'Tarefa',inspection:'Vistoria',maintenance:'Manutenção',note:'Anotação',agenda:'Compromisso'};document.getElementById('modal-root').innerHTML=`<div class="modal-bg" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()"><div class="modal-head"><h2>${id?'Editar':'Cadastrar'} ${labels[kind]}</h2><button class="icon" onclick="closeModal()">×</button></div>${formFor(kind,r)}${attachmentField(r,kind)}<div class="modal-actions"><button class="button button-quiet" onclick="closeModal()">Cancelar</button><button class="button button-primary" onclick="submitModal('${kind}','${id}')">Salvar cadastro</button></div></div></div>`;loadModalAttachments(kind,id)}
-    async function submitModal(kind,id){const r=collect(kind),map={owner:'owners',tenant:'tenants',guarantor:'guarantors',property:'properties',contract:'contracts',deposit:'deposits',task:'tasks',inspection:'inspections',maintenance:'maintenance',note:'notes',agenda:'agenda'},list=map[kind];if(!list){alert('Módulo não encontrado.');return}if(!r.name&&['owner','tenant','guarantor','property','document'].includes(kind)){alert('Preencha o nome do cadastro.');return}if(['task','note','agenda'].includes(kind)&&!r.title){alert('Preencha o título.');return}if(kind==='note'&&!r.content){alert('Preencha o texto da anotação.');return}if(kind==='maintenance'&&!r.description){alert('Preencha a descrição do chamado.');return}const before=JSON.stringify(db[list]),beforeAttachments=JSON.stringify(db.attachments||[]);if(id){r.id=id;const i=db[list].findIndex(x=>x.id===id);if(i<0){alert('Registro não encontrado.');return}db[list][i]=r}else db[list].push(r);try{await syncAttachments(kind,r.id)}catch(e){alert('O cadastro foi atualizado, mas não foi possível salvar um anexo neste navegador.')}const saved=await save();if(saved){closeModal()}else{db[list]=JSON.parse(before);db.attachments=JSON.parse(beforeAttachments);renderAll()}}
+    async function submitModal(kind,id){const r=collect(kind),map={owner:'owners',tenant:'tenants',guarantor:'guarantors',property:'properties',contract:'contracts',deposit:'deposits',task:'tasks',inspection:'inspections',maintenance:'maintenance',note:'notes',agenda:'agenda'},list=map[kind];if(!list){alert('Módulo não encontrado.');return}if(!r.name&&['owner','tenant','guarantor','property','document'].includes(kind)){alert('Preencha o nome do cadastro.');return}if(['task','note','agenda'].includes(kind)&&!r.title){alert('Preencha o título.');return}if(kind==='note'&&!r.content){alert('Preencha o texto da anotação.');return}if(kind==='maintenance'&&!r.description){alert('Preencha a descrição do chamado.');return}const before=JSON.stringify(db[list]),beforeAttachments=JSON.stringify(db.attachments||[]);if(id){r.id=id;const i=db[list].findIndex(x=>x.id===id);if(i<0){alert('Registro não encontrado.');return}db[list][i]=r}else db[list].push(r);setDormusSavingState(true);try{await syncAttachments(kind,r.id)}catch(e){alert('O cadastro foi atualizado, mas não foi possível salvar um anexo neste navegador.')}const saved=await save();if(saved){closeModal()}else{db[list]=JSON.parse(before);db.attachments=JSON.parse(beforeAttachments);renderAll()}}
     function closeModal(e){if(!e||e.target===e.currentTarget)document.getElementById('modal-root').innerHTML=''}
     async function removeRecord(kind,id){if(!confirm('Excluir este cadastro? Esta ação não pode ser desfeita.'))return;const map={owner:'owners',tenant:'tenants',guarantor:'guarantors',property:'properties',contract:'contracts',deposit:'deposits',task:'tasks',inspection:'inspections',maintenance:'maintenance',note:'notes',agenda:'agenda'},list=map[kind];if(!list)return;const before=JSON.stringify(db[list]),beforeAttachments=JSON.stringify(db.attachments||[]);db[list]=db[list].filter(x=>x.id!==id);const saved=await save();if(saved){try{await deleteAttachments(kind,id)}catch(e){console.warn(e)}}else{db[list]=JSON.parse(before);db.attachments=JSON.parse(beforeAttachments);renderAll()}}
     function toggleTask(id){const t=db.tasks.find(x=>x.id===id);if(t)t.status=t.status==='Concluída'?'Aberta':'Concluída';save()}
