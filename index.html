@@ -890,6 +890,7 @@ async function carregarDadosSupabase(){
     const val=id=>document.getElementById(id)?.value?.trim()||'';
     const selected=(value,current)=>value===current?' selected':'';
     let dormusSavePromise=null;
+    let dormusSaveRequested=false;
     function dormusPersistableData(){
       const copy=JSON.parse(JSON.stringify(db));
       // URLs assinadas são temporárias e podem aumentar muito a linha do banco.
@@ -903,6 +904,7 @@ async function carregarDadosSupabase(){
       return copy;
     }
     async function save(){
+      dormusSaveRequested=true;
       if(dormusSavePromise)return dormusSavePromise;
       dormusSavePromise=(async()=>{
         try{
@@ -911,9 +913,13 @@ async function carregarDadosSupabase(){
             showLogin('Entre no Dormus para continuar.');
             return false;
           }
-          const data=dormusPersistableData();
-          const updated_at=new Date().toISOString();
-          let result=await supabaseClient
+          let result;
+          do{
+            // Registra saves concorrentes e grava o snapshot mais recente.
+            dormusSaveRequested=false;
+            const data=dormusPersistableData();
+            const updated_at=new Date().toISOString();
+            result=await supabaseClient
             .from('dormus_data')
             .upsert({id:1,data,updated_at},{onConflict:'id'});
 
@@ -930,8 +936,12 @@ async function carregarDadosSupabase(){
             alert('Erro ao salvar no Supabase:\n\n'+detalhe);
             return false;
           }
+          }while(dormusSaveRequested);
           renderAll();
-          try{if(window.DormusProviderPortal?.syncProviderServices)await window.DormusProviderPortal.syncProviderServices()}catch(e){console.warn('Sincronização do portal de prestadores não disponível ainda.',e)}
+          try{
+            const sync=window.DormusProviderPortal?.syncProviderServices;
+            if(typeof sync==='function')void sync().catch(e=>console.warn('Sincronização do portal de prestadores não disponível ainda.',e));
+          }catch(e){console.warn('Sincronização do portal de prestadores não disponível ainda.',e)}
           return true;
         }catch(error){
           console.error('Falha inesperada ao salvar:',error);
