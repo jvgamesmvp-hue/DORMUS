@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.5</title>
+  <title>Dormus | Gestão imobiliária · 8.2</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -3502,7 +3502,7 @@ html[data-dormus-theme] body.provider-mode .page-head .eyebrow,html[data-dormus-
 html[data-dormus-theme] body.provider-mode .provider-chat-button19{background:color-mix(in srgb,var(--d-theme-secondary) 45%,#000)!important;border-color:var(--d-theme-secondary)!important;color:var(--d-theme-paper)!important}
 /* Seletor */
 .dormus-theme-modal{width:min(760px,96vw)!important;background:#fff!important;color:#172033!important}
-.dormus-theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:14px}
+ .dormus-theme-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
 .dormus-theme-card{border:2px solid #d8dee8;border-radius:14px;padding:10px;background:#fff;cursor:pointer;text-align:left;transition:.15s}
 .dormus-theme-card:hover,.dormus-theme-card.active{border-color:#4f46e5;transform:translateY(-2px)}
 .dormus-theme-swatches{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:9px}.dormus-theme-swatches i{height:38px;border-radius:7px;border:1px solid #ddd;display:block}.dormus-theme-card strong{font-size:12px;display:block;color:#182338}.dormus-theme-card small{display:block;color:#718096;font-size:9px;line-height:1.35;margin-top:3px}
@@ -3512,15 +3512,32 @@ html[data-dormus-theme] body.provider-mode .provider-chat-button19{background:co
 <script id="dormus-839-theme-user-settings">
 (function(){
   const palettes={
-    p1:{name:'Sálvia',desc:'Verde sálvia, creme e um toque de terracota.',colors:['#4f776b','#6e9185','#d28b76','#f5f4ef']},
-    p2:{name:'Azul Névoa',desc:'Azul acinzentado com areia clara.',colors:['#536f86','#738fa4','#d9a882','#f1f5f7']},
-    p3:{name:'Lavanda Clara',desc:'Lavanda suave e detalhes rosados.',colors:['#716a82','#91889f','#d3a1a0','#f5f2f7']},
-    p4:{name:'Areia Natural',desc:'Tons de pedra, madeira clara e argila.',colors:['#806e5b','#a08a73','#c98570','#f7f3ec']},
-    p5:{name:'Rosa Chá',desc:'Rosa queimado equilibrado com tons neutros.',colors:['#8b626c','#ac8089','#d0a27d','#f8f2f2']}
+    system:{name:'Padrão do sistema',desc:'Cores originais do DORMUS, sem personalização.',colors:['#2f6f5e','#3b7868','#e5a07f','#f6f4ec']},
+    p1:{name:'Sálvia',desc:'Verde sálvia, creme e um toque de terracota.',colors:['#4f776b','#6e9185','#d28b76','#f5f4ef'],values:['#f5f4ef','#fffdf8','#e9efea','#d8e1db','#4f776b','#6e9185','#d28b76','#2f443d','#718078','#edf1ed','#e0ebe5']},
+    p2:{name:'Azul Névoa',desc:'Azul acinzentado com areia clara.',colors:['#536f86','#738fa4','#d9a882','#f1f5f7'],values:['#f1f5f7','#fcfdfd','#e5edf1','#d4e0e6','#536f86','#738fa4','#d9a882','#324450','#72838d','#eaf0f3','#dce8ef']},
+    p3:{name:'Lavanda Clara',desc:'Lavanda suave e detalhes rosados.',colors:['#716a82','#91889f','#d3a1a0','#f5f2f7'],values:['#f5f2f7','#fffcff','#eee8f1','#ddd5e3','#716a82','#91889f','#d3a1a0','#443c4d','#807787','#f1ecf4','#e8e0ed']},
+    p4:{name:'Areia Natural',desc:'Tons de pedra, madeira clara e argila.',colors:['#806e5b','#a08a73','#c98570','#f7f3ec'],values:['#f7f3ec','#fffdfa','#efe9de','#e1d8c9','#806e5b','#a08a73','#c98570','#493e33','#817363','#f2ece3','#eae0d2']},
+    p5:{name:'Rosa Chá',desc:'Rosa queimado equilibrado com tons neutros.',colors:['#8b626c','#ac8089','#d0a27d','#f8f2f2'],values:['#f8f2f2','#fffcfb','#f0e6e6','#e5d7d8','#8b626c','#ac8089','#d0a27d','#4a383c','#88787b','#f3e9ea','#eddddf']},
+    p6:{name:'Menta Serena',desc:'Verde menta, folhas claras e detalhes quentes.',colors:['#527965','#739783','#c8a477','#f1f7f3'],values:['#f1f7f3','#fcfffd','#e5f0e8','#d1e2d7','#527965','#739783','#c8a477','#34483c','#78867c','#eaf2ec','#dcebe0']},
+    p7:{name:'Azul Céu',desc:'Azul suave com nuvens claras e areia.',colors:['#567897','#7796b0','#d1a879','#f1f6fb'],values:['#f1f6fb','#fcfdff','#e4edf6','#d2dfec','#567897','#7796b0','#d1a879','#354756','#788994','#e9f0f7','#dce8f2']},
+    p8:{name:'Pêssego',desc:'Pêssego delicado com tons de argila.',colors:['#a26f5d','#bd8974','#d6a66f','#fbf3ee'],values:['#fbf3ee','#fffdfa','#f4e7de','#ead7cb','#a26f5d','#bd8974','#d6a66f','#514139','#8f7d72','#f7ece5','#f1dfd3']},
+    p9:{name:'Lilás Neblina',desc:'Lilás acinzentado e rosé discreto.',colors:['#78658b','#9581a7','#d0a0af','#f6f2fa'],values:['#f6f2fa','#fffdfd','#ede6f3','#ded4e8','#78658b','#9581a7','#d0a0af','#473d50','#85788d','#f0eaf4','#e5dbed']},
+    p10:{name:'Aqua Brisa',desc:'Verde-água fresco com detalhes dourados.',colors:['#4e7d7c','#709997','#d0ad7c','#eff7f7'],values:['#eff7f7','#fcffff','#e3efef','#d0e2e1','#4e7d7c','#709997','#d0ad7c','#314a49','#718786','#e9f2f2','#d9eaea']},
+    p11:{name:'Baunilha',desc:'Amarelo suave, creme e tons de madeira.',colors:['#8c7c4e','#aa9963','#cc9b6a','#faf7eb'],values:['#faf7eb','#fffef9','#f2eddb','#e5dcc0','#8c7c4e','#aa9963','#cc9b6a','#4c4635','#89806d','#f4efdf','#ece4c9']},
+    p12:{name:'Coral Suave',desc:'Coral discreto com fundos rosados claros.',colors:['#a66e69','#c18b83','#d8a36b','#fbf1ee'],values:['#fbf1ee','#fffdfb','#f3e4df','#e8d3cd','#a66e69','#c18b83','#d8a36b','#4f3d3a','#8f7a76','#f6eae6','#efddd8']},
+    p13:{name:'Cinza Azul',desc:'Cinza azulado, claro e tranquilo.',colors:['#647987','#8298a5','#c4a47d','#f2f5f8'],values:['#f2f5f8','#fdfefe','#e7edf2','#d5e0e8','#647987','#8298a5','#c4a47d','#39464d','#7b8a91','#eaf0f4','#dce6ec']}
   };
+  const softVarNames=['--soft-bg','--soft-surface','--soft-surface-2','--soft-line','--soft-primary','--soft-secondary','--soft-accent','--soft-text','--soft-muted','--soft-field','--soft-field-focus'];
   function applyTheme(key){
-    if(!palettes[key])key='p1';
-    document.documentElement.setAttribute('data-dormus-theme',key);
+    if(!Object.prototype.hasOwnProperty.call(palettes,key))key='system';
+    const root=document.documentElement;
+    if(key==='system'){
+      root.removeAttribute('data-dormus-theme');
+      softVarNames.forEach(name=>root.style.removeProperty(name));
+    }else{
+      root.setAttribute('data-dormus-theme',key);
+      palettes[key].values.forEach((value,index)=>root.style.setProperty(softVarNames[index],value));
+    }
     try{localStorage.setItem('dormus-theme',key)}catch(e){}
     document.querySelectorAll('.dormus-theme-card').forEach(x=>{
       const selected=x.dataset.theme===key;
@@ -3532,7 +3549,7 @@ html[data-dormus-theme] body.provider-mode .provider-chat-button19{background:co
   window.openDormusThemePicker=function(){
     document.querySelector('.profile-menu')?.classList.remove('show');
     let root=document.getElementById('dormus-theme-modal-root');if(!root){root=document.createElement('div');root.id='dormus-theme-modal-root';document.body.appendChild(root)}
-    const current=document.documentElement.getAttribute('data-dormus-theme')||localStorage.getItem('dormus-theme')||'p1';
+    let current=document.documentElement.getAttribute('data-dormus-theme')||'';try{current=current||localStorage.getItem('dormus-theme')}catch(e){}current=current||'system';
     root.innerHTML=`<div class="modal-bg" style="display:flex"><div class="modal dormus-theme-modal"><div class="modal-head"><div><h2>Personalizar o DORMUS</h2><p>A paleta escolhida vale para o login, o Portal da Imobiliária e o Portal do Prestador.</p></div><button class="icon" aria-label="Fechar" onclick="document.getElementById('dormus-theme-modal-root').innerHTML=''">×</button></div><div class="dormus-theme-grid">${Object.entries(palettes).map(([k,v])=>`<button type="button" class="dormus-theme-card ${k===current?'active':''}" data-theme="${k}" aria-pressed="${k===current?'true':'false'}" onclick="applyDormusTheme('${k}')"><span class="dormus-theme-swatches" aria-hidden="true">${v.colors.map(c=>`<i style="background:${c}"></i>`).join('')}</span><strong>${v.name}</strong><small>${v.desc}</small></button>`).join('')}</div><div class="modal-actions" style="margin-top:18px"><button class="button button-primary" onclick="document.getElementById('dormus-theme-modal-root').innerHTML=''">Usar esta paleta</button><button class="button" onclick="document.getElementById('dormus-theme-modal-root').innerHTML=''">Fechar</button></div></div></div>`;
   };
   async function getAccess(){
@@ -3564,7 +3581,7 @@ html[data-dormus-theme] body.provider-mode .provider-chat-button19{background:co
       document.getElementById('dormus-username-modal-root').innerHTML='';dormusToast('Nome de usuário atualizado. Use o novo nome no próximo login.','success');
     }catch(e){console.error('DORMUS 8.40 username',e);dormusToast(e.message||'Não foi possível salvar o usuário.','error')}
   };
-  const saved=localStorage.getItem('dormus-theme')||'p1';applyTheme(saved);
+  let saved='system';try{saved=localStorage.getItem('dormus-theme')||'system'}catch(e){}applyTheme(saved);
   document.addEventListener('click',()=>{
     const btn=document.getElementById('profile-username-action');if(btn)btn.style.display=document.body.classList.contains('provider-mode')?'none':'';
   });
@@ -8589,6 +8606,26 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
       return !!choiceFromText(img.getAttribute('alt'))&&/logo/i.test(img.getAttribute('alt')||'');
     });
   }
+  function removeTextIdentityChooser(){
+    var headings=Array.from(document.querySelectorAll('body *')).filter(function(el){
+      return el.children.length===0&&normalize(el.textContent).trim()==='identidade do aplicativo';
+    });
+    for(var i=0;i<headings.length;i++){
+      var panel=headings[i].parentElement;
+      while(panel&&panel!==document.body&&panel!==document.documentElement){
+        var text=normalize(panel.innerText||panel.textContent);
+        var isChooser=/identidade do aplicativo/.test(text)&&/manifesto? pwa/.test(text)&&/classico/.test(text)&&/portal/.test(text)&&/monograma/.test(text);
+        if(isChooser){
+          var target=panel;
+          if(target.parentElement&&target.parentElement.matches('.modal-bg')&&/identidade do aplicativo/.test(normalize(target.parentElement.textContent)))target=target.parentElement;
+          target.remove();
+          return true;
+        }
+        panel=panel.parentElement;
+      }
+    }
+    return false;
+  }
   function cardFor(img){
     var node=img;
     for(var i=0;node&&node.parentElement&&i<6;i++,node=node.parentElement){
@@ -8597,6 +8634,7 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
     return img.parentElement||img;
   }
   function removeIconChooser(){
+    if(removeTextIdentityChooser())return true;
     var images=choiceImages();
     var kinds=new Set(images.map(function(img){return choiceFromText(img.getAttribute('alt'))}));
     if(kinds.size<2)return false;
@@ -8628,17 +8666,32 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
     if(node.matches&&node.matches('img[alt]')&&isChoiceImage(node))return true;
     return !!(node.querySelectorAll&&Array.from(node.querySelectorAll('img[alt]')).some(isChoiceImage));
   }
+  function nodeAddsIdentityText(node){
+    return !!(node&&normalize(node.textContent||'').indexOf('identidade do aplicativo')!==-1);
+  }
+  var identityPending=false;
   setFixedIdentity();
   removeIconChooser();
+  identityPending=normalize(document.body.textContent||'').indexOf('identidade do aplicativo')!==-1;
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);
   function install(){setFixedIdentity();removeIconChooser()}
   if('MutationObserver' in window){
     new MutationObserver(function(records){
-      if(records.some(function(record){
+      var identityChanged=records.some(function(record){
+        if(record.type==='characterData')return nodeAddsIdentityText(record.target);
+        return Array.from(record.addedNodes||[]).some(nodeAddsIdentityText);
+      });
+      if(identityChanged)identityPending=true;
+      var iconChanged=records.some(function(record){
         if(record.type==='attributes')return isChoiceImage(record.target);
-        return Array.from(record.addedNodes).some(nodeAddsChoice);
-      }))removeIconChooser();
-    }).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['alt']});
+        if(record.type==='characterData')return false;
+        return Array.from(record.addedNodes||[]).some(nodeAddsChoice);
+      });
+      if(identityPending||iconChanged){
+        removeIconChooser();
+        identityPending=normalize(document.body.textContent||'').indexOf('identidade do aplicativo')!==-1;
+      }
+    }).observe(document.documentElement,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['alt']});
   }
 })();
 </script>
