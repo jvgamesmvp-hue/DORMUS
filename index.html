@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 9.1</title>
+  <title>Dormus | Gestão imobiliária · 9.2</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -8934,10 +8934,10 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
     },0);
   };
 
-  window.rescindContractFromProperty=async function(propertyId){
+  window.rescindContractFromProperty=async function(propertyId,contractId=''){
     const d=D(),property=(d.properties||[]).find(p=>String(p.id)===String(propertyId));
     if(!property)return;
-    const contract=propertyContracts(propertyId).find(isCurrentContract);
+    const contract=contractId?(d.contracts||[]).find(c=>String(c.id)===String(contractId)):propertyContracts(propertyId).find(isCurrentContract);
     if(!contract){
       const pending=propertyContracts(propertyId).find(c=>normalize(c.status)==='rescindido'&&!terminationForContract(c.id));
       if(pending){window.openTerminationForContract(pending.id);return}
@@ -8964,27 +8964,18 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
     setTimeout(()=>window.openTerminationForContract(contract.id),180);
   };
 
-  function addPropertyContractActions(){
-    document.querySelectorAll('#properties .property').forEach(card=>{
-      const cover=card.querySelector('[data-property-cover]'),actions=card.querySelector('.card-actions');
-      const propertyId=cover?.dataset.propertyCover;
-      if(!propertyId||!actions||actions.querySelector('[data-property-contract-action]'))return;
-      const contracts=propertyContracts(propertyId),current=contracts.find(isCurrentContract),pending=contracts.find(c=>normalize(c.status)==='rescindido'&&!terminationForContract(c.id));
-      if(current){
+  function addContractActions(){
+    document.querySelectorAll('#contracts-list tbody tr').forEach(row=>{
+      const actions=row.querySelector('td.actions'),source=[...row.querySelectorAll('button')].map(button=>button.getAttribute('onclick')||'').find(value=>/openPresentation\(['"]contract['"]/.test(value));
+      const match=source?.match(/openPresentation\(['"]contract['"]\s*,\s*['"]([^'"]+)['"]/);
+      const contractId=match?.[1],record=contractId?(D().contracts||[]).find(c=>String(c.id)===String(contractId)):null;
+      if(!actions||!record||actions.querySelector('[data-contract-rescission-action]'))return;
+      if(isCurrentContract(record)){
         const button=document.createElement('button');
-        button.type='button';button.className='button button-small button-danger';button.dataset.propertyContractAction='1';button.textContent='Rescindir';
-        button.onclick=()=>window.rescindContractFromProperty(propertyId);actions.appendChild(button);
-      }else if(pending){
-        const button=document.createElement('button');
-        button.type='button';button.className='button button-small button-brass';button.dataset.propertyContractAction='1';button.textContent='Fazer encerramento';
-        button.onclick=()=>window.openTerminationForContract(pending.id);actions.appendChild(button);
+        button.type='button';button.className='button button-small button-danger';button.dataset.contractRescissionAction='1';button.textContent='Rescindir';
+        button.onclick=()=>window.rescindContractFromProperty(record.propertyId,record.id);actions.appendChild(button);
       }
     });
-  }
-
-  const oldRenderProperties=window.renderProperties;
-  if(typeof oldRenderProperties==='function'){
-    window.renderProperties=function(){oldRenderProperties();setTimeout(addPropertyContractActions,35)};
   }
 
   function historySection(property){
@@ -9019,18 +9010,11 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
       }
       const count=document.getElementById('contracts-count');
       if(count&&archived)count.textContent=`${visible.length} contrato(s) atual(is) · ${archived} no histórico dos imóveis`;
+      setTimeout(addContractActions,0);
     };
   }
 
-  const oldShowView=window.showView;
-  if(typeof oldShowView==='function'){
-    window.showView=function(id){const result=oldShowView(id);if(id==='properties')setTimeout(addPropertyContractActions,50);return result};
-  }
-  const propertyList=document.getElementById('property-list');
-  if(propertyList&&window.MutationObserver){
-    new MutationObserver(()=>setTimeout(addPropertyContractActions,0)).observe(propertyList,{childList:true});
-  }
-  setTimeout(addPropertyContractActions,500);
+  setTimeout(addContractActions,500);
 })();
 </script>
 </body>
