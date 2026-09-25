@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 8.2</title>
+  <title>Dormus | Gestão imobiliária · 8.4</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -913,35 +913,41 @@ async function carregarDadosSupabase(){
             showLogin('Entre no Dormus para continuar.');
             return false;
           }
-          let result;
           do{
-            // Registra saves concorrentes e grava o snapshot mais recente.
+            // Se outra alteração acontecer durante o upsert, grave também o estado mais recente.
             dormusSaveRequested=false;
             const data=dormusPersistableData();
             const updated_at=new Date().toISOString();
-            result=await supabaseClient
-            .from('dormus_data')
-            .upsert({id:1,data,updated_at},{onConflict:'id'});
-
-          // Um timeout transitório do Postgres não deve perder a alteração.
-          if(result.error && /statement timeout|timeout|connection/i.test(String(result.error.message||''))){
-            await new Promise(resolve=>setTimeout(resolve,900));
-            result=await supabaseClient
+            let result=await supabaseClient
               .from('dormus_data')
               .upsert({id:1,data,updated_at},{onConflict:'id'});
-          }
-          if(result.error){
-            console.error('Erro ao salvar no Supabase:',result.error);
-            const detalhe=[result.error.message,result.error.details,result.error.hint].filter(Boolean).join(' | ');
-            alert('Erro ao salvar no Supabase:\n\n'+detalhe);
-            return false;
-          }
+
+            // Um timeout transitório do Postgres não deve perder a alteração.
+            if(result.error && /statement timeout|timeout|connection/i.test(String(result.error.message||''))){
+              await new Promise(resolve=>setTimeout(resolve,900));
+              result=await supabaseClient
+                .from('dormus_data')
+                .upsert({id:1,data,updated_at},{onConflict:'id'});
+            }
+            if(result.error){
+              console.error('Erro ao salvar no Supabase:',result.error);
+              const detalhe=[result.error.message,result.error.details,result.error.hint].filter(Boolean).join(' | ');
+              alert('Erro ao salvar no Supabase:\n\n'+detalhe);
+              return false;
+            }
           }while(dormusSaveRequested);
-          renderAll();
-          try{
-            const sync=window.DormusProviderPortal?.syncProviderServices;
-            if(typeof sync==='function')void sync().catch(e=>console.warn('Sincronização do portal de prestadores não disponível ainda.',e));
-          }catch(e){console.warn('Sincronização do portal de prestadores não disponível ainda.',e)}
+
+          // A gravação já foi confirmada; renderização e integração não devem atrasar o formulário
+          // nem transformar uma gravação bem-sucedida em uma mensagem de erro.
+          setTimeout(()=>{
+            try{renderAll()}catch(error){console.error('Erro ao atualizar a interface após salvar:',error)}
+            try{
+              const portal=window.DormusProviderPortal;
+              if(portal?.syncProviderServices){
+                Promise.resolve(portal.syncProviderServices()).catch(e=>console.warn('Sincronização do portal de prestadores não disponível ainda.',e));
+              }
+            }catch(e){console.warn('Sincronização do portal de prestadores não disponível ainda.',e)}
+          },0);
           return true;
         }catch(error){
           console.error('Falha inesperada ao salvar:',error);
