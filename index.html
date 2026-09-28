@@ -9684,6 +9684,54 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
   .dormus-enhanced-empty{padding:28px;text-align:center;color:var(--muted)}
   .dormus-audit-action{font-weight:700;white-space:nowrap}
   .dormus-audit-action.create{color:#198754}.dormus-audit-action.update{color:#2f6f9f}.dormus-audit-action.delete{color:#b54a4a}.dormus-audit-action.restore{color:#805ca8}.dormus-audit-action.purge{color:#8d2525}
+  .dormus-audit-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:0 0 16px}
+  .dormus-audit-summary-card{padding:15px 16px;border:1px solid var(--line);border-radius:13px;background:var(--card)}
+  .dormus-audit-summary-card span{display:block;color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.07em}
+  .dormus-audit-summary-card strong{display:block;margin-top:6px;font:25px Georgia;color:var(--ink)}
+  .dormus-audit-summary-card small{display:block;margin-top:4px;color:var(--muted);font-size:11px}
+  .dormus-audit-toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:13px 15px;border:1px solid var(--line);border-radius:13px;background:var(--card);margin-bottom:14px}
+  .dormus-audit-toolbar strong{margin-right:auto;font-size:13px}
+  .dormus-audit-toolbar input,.dormus-audit-toolbar select{min-width:145px;padding:8px 9px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font:inherit;font-size:11px}
+  .dormus-audit-toolbar input{min-width:215px}
+  .dormus-audit-links{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px;margin-bottom:14px}
+  .dormus-audit-link-panel{min-width:0}
+  .dormus-audit-link-list{display:grid;gap:8px}
+  .dormus-audit-link-card{display:flex;align-items:center;gap:10px;width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);text-align:left;cursor:pointer}
+  .dormus-audit-link-card:hover{border-color:var(--brass);background:var(--card)}
+  .dormus-audit-link-avatar{width:30px;height:30px;display:grid;place-items:center;flex:0 0 auto;border-radius:50%;background:#dcece3;color:#27604c;font-weight:800;font-size:11px}
+  .dormus-audit-link-copy{min-width:0;flex:1}
+  .dormus-audit-link-copy strong,.dormus-audit-link-copy small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dormus-audit-link-copy strong{font-size:11px}.dormus-audit-link-copy small{margin-top:3px;color:var(--muted);font-size:10px}
+  .dormus-audit-link-count{font-weight:800;font-size:12px}
+  .dormus-audit-module-grid{display:flex;gap:7px;flex-wrap:wrap}
+  .dormus-audit-module-chip{display:inline-flex;align-items:center;gap:6px;padding:8px 10px;border:1px solid var(--line);border-radius:99px;background:var(--paper);color:var(--ink);cursor:pointer;font-size:10px}
+  .dormus-audit-module-chip:hover{border-color:var(--brass);background:var(--card)}
+  .dormus-audit-module-chip b{font-size:11px}
+  .dormus-audit-stream{display:grid;gap:10px}
+  .dormus-audit-event{position:relative;display:grid;grid-template-columns:13px minmax(0,1fr);gap:11px;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+  .dormus-audit-event:before{content:"";position:absolute;left:19px;top:31px;bottom:-12px;width:1px;background:var(--line)}
+  .dormus-audit-event:last-child:before{display:none}
+  .dormus-audit-event-dot{position:relative;z-index:1;width:11px;height:11px;margin-top:4px;border:3px solid var(--card);border-radius:50%;background:var(--brass);box-shadow:0 0 0 1px var(--brass)}
+  .dormus-audit-event-dot.create{background:#198754;box-shadow:0 0 0 1px #198754}.dormus-audit-event-dot.update{background:#2f6f9f;box-shadow:0 0 0 1px #2f6f9f}.dormus-audit-event-dot.delete,.dormus-audit-event-dot.purge{background:#b54a4a;box-shadow:0 0 0 1px #b54a4a}.dormus-audit-event-dot.restore{background:#805ca8;box-shadow:0 0 0 1px #805ca8}
+  .dormus-audit-event-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .dormus-audit-event-head time{margin-left:auto;color:var(--muted);font-size:10px}
+  .dormus-audit-event h3{margin:6px 0 4px;font-size:13px}
+  .dormus-audit-event-copy{margin:0;color:var(--muted);font-size:11px;line-height:1.45}
+  .dormus-audit-event-meta{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-top:9px}
+  .dormus-audit-event-meta button,.dormus-audit-related{padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:var(--paper);color:var(--muted);font:inherit;font-size:10px;cursor:pointer}
+  .dormus-audit-event-meta button:hover{border-color:var(--brass);color:var(--ink)}
+  .dormus-audit-related{cursor:default}
+  .dormus-audit-related b{color:var(--ink)}
+  .dormus-audit-filter-note{margin:0 0 10px;color:var(--muted);font-size:11px}
+  .dormus-context-audit{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+  .dormus-context-audit-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+  .dormus-context-audit-head h3{margin:0;font:18px Georgia;color:var(--ink)}
+  .dormus-context-audit-head p{margin:4px 0 0;color:var(--muted);font-size:11px}
+  .dormus-context-audit-list{display:grid;gap:7px}
+  .dormus-context-audit-item{display:flex;align-items:flex-start;gap:9px;padding:9px 10px;border:1px solid var(--line);border-radius:9px;background:var(--paper)}
+  .dormus-context-audit-item i{width:8px;height:8px;flex:0 0 auto;margin-top:4px;border-radius:50%;background:var(--brass)}
+  .dormus-context-audit-item strong{font-size:11px}.dormus-context-audit-item small{display:block;margin-top:3px;color:var(--muted);font-size:10px}
+  .dormus-context-audit-actions{display:flex;gap:7px;flex-wrap:wrap}
   .dormus-trash-expiry{font-size:11px;color:#a5681d}.dormus-trash-name{font-weight:700}.dormus-trash-kind{font-size:11px;color:var(--muted)}
   .dormus-analytics{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:16px 0}
   .dormus-chart-card{min-height:250px}.dormus-chart-card .panel-head{margin-bottom:12px}
@@ -9695,8 +9743,8 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
   .dormus-legend{display:grid;gap:7px;font-size:11px;flex:1}.dormus-legend span{display:flex;align-items:center;gap:7px;justify-content:space-between}.dormus-legend i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:4px}
   .dormus-mini-bars{display:grid;gap:11px;padding:8px 0}.dormus-mini-bar-row{display:grid;grid-template-columns:88px 1fr 28px;gap:8px;align-items:center;font-size:11px}.dormus-mini-bar-track{height:9px;border-radius:99px;background:var(--line);overflow:hidden}.dormus-mini-bar-track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--brass),#d68c55)}
   .dormus-mini-bar-row strong{text-align:right}.dormus-chart-note{color:var(--muted);font-size:11px;margin-top:10px}
-  @media(max-width:900px){.dormus-analytics{grid-template-columns:1fr}.dormus-enhanced-kpis{grid-template-columns:1fr 1fr}}
-  @media(max-width:560px){.dormus-enhanced-kpis{grid-template-columns:1fr}.dormus-donut-wrap{justify-content:center}.dormus-donut{width:124px;height:124px}}
+  @media(max-width:900px){.dormus-analytics{grid-template-columns:1fr}.dormus-enhanced-kpis{grid-template-columns:1fr 1fr}.dormus-audit-summary{grid-template-columns:repeat(2,1fr)}.dormus-audit-links{grid-template-columns:1fr}}
+  @media(max-width:560px){.dormus-enhanced-kpis{grid-template-columns:1fr}.dormus-donut-wrap{justify-content:center}.dormus-donut{width:124px;height:124px}.dormus-audit-summary{grid-template-columns:1fr}.dormus-audit-toolbar input,.dormus-audit-toolbar select{width:100%;min-width:0}.dormus-audit-toolbar strong{width:100%;margin-right:0}.dormus-audit-event-head time{width:100%;margin-left:0}}
 </style>
 <script id="dormus-trash-audit-charts">
 (function(){
@@ -9715,7 +9763,25 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
   function attachmentKeys(item){return (item?.attachments||[]).map(function(x){return x.key}).filter(Boolean)}
   async function removeStorage(paths){if(!paths.length||!window.DormusSupabase)return;try{await window.DormusSupabase.storage.from('dormus').remove(paths)}catch(e){console.warn('Não foi possível remover anexos expirados.',e)}}
   function cleanupExpired(){var d=ensure(),cut=Date.now(),expired=d.trash.filter(function(x){return x.purgeAt&&new Date(x.purgeAt).getTime()<=cut});if(!expired.length)return false;expired.forEach(function(item){var keys=attachmentKeys(item);var files=(d.attachments||[]).filter(function(x){return keys.indexOf(x.key)>=0||((x.kind===item.kind)&&(x.recordId===item.record?.id))});removeStorage(files.map(function(x){return x.path}).filter(Boolean));d.attachments=(d.attachments||[]).filter(function(x){return files.indexOf(x)<0});});d.trash=d.trash.filter(function(x){return !expired.includes(x)});return true}
-  function audit(action,kind,record,extra){var d=ensure(),a=actor();d.auditLog.unshift({id:uid(),action,actionLabel:actionLabels[action]||action,kind,kindLabel:moduleLabels[kind]||kind,recordId:record?.id||extra?.recordId||'',recordName:recordName(kind,record),timestamp:now(),actorName:a.name,actorEmail:a.email,details:extra?.details||''});d.auditLog=d.auditLog.slice(0,1000)}
+  function relationFor(kind,record){
+    var d=D(),relations=[],push=function(type,id){
+      if(!id)return;
+      var list=listMap[type],item=list&&(d[list]||[]).find(function(x){return String(x.id)===String(id)});
+      relations.push({kind:type,id:String(id),label:moduleLabels[type]||type,name:item?recordName(type,item):String(id)});
+    };
+    if(!record)return relations;
+    if(kind!=='property'&&record.propertyId)push('property',record.propertyId);
+    if(kind!=='owner'&&record.ownerId)push('owner',record.ownerId);
+    if(kind!=='tenant'&&record.tenantId)push('tenant',record.tenantId);
+    if(kind!=='contract'&&record.contractId)push('contract',record.contractId);
+    if(kind!=='guarantor'&&record.guarantorId)push('guarantor',record.guarantorId);
+    return relations.slice(0,4);
+  }
+  function audit(action,kind,record,extra){
+    var d=ensure(),a=actor(),relations=relationFor(kind,record);
+    d.auditLog.unshift({id:uid(),action,actionLabel:actionLabels[action]||action,kind,kindLabel:moduleLabels[kind]||kind,recordId:record?.id||extra?.recordId||'',recordName:recordName(kind,record),timestamp:now(),actorName:a.name,actorEmail:a.email,actorKey:a.email||a.name||'Usuário',details:extra?.details||'',relations});
+    d.auditLog=d.auditLog.slice(0,1000);
+  }
   window.DormusAudit=function(action,kind,record,extra){audit(action,kind,record,extra)}
   function save(){return typeof window.save==='function'?window.save():Promise.resolve(false)}
   function confirmDelete(name){return window.confirm('Enviar “'+name+'” para a lixeira? O item ficará disponível para restauração por 30 dias.')}
@@ -9754,9 +9820,65 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
     if(kpi)kpi.innerHTML='<div class="dormus-enhanced-kpi"><span>Na lixeira</span><strong>'+items.length+'</strong><small>aguardando decisão</small></div><div class="dormus-enhanced-kpi"><span>Próximo vencimento</span><strong>'+(items.length?daysLeft(items[items.length-1].purgeAt)+' dias':'—')+'</strong><small>retenção máxima de 30 dias</small></div><div class="dormus-enhanced-kpi"><span>Política</span><strong>30 dias</strong><small>após esse prazo a exclusão é automática</small></div>';
     el.innerHTML=items.length?'<div class="table-wrap"><table class="table"><thead><tr><th>Cadastro</th><th>Módulo</th><th>Excluído em</th><th>Expira em</th><th>Ações</th></tr></thead><tbody>'+items.map(function(x){return '<tr><td><div class="dormus-trash-name">'+E(recordName(x.kind,x.record))+'</div><div class="dormus-trash-kind">'+E(x.record?.id||'')+'</div></td><td>'+E(label(x.kind))+'</td><td>'+E(dateTime(x.deletedAt))+'</td><td><span class="dormus-trash-expiry">'+E(daysLeft(x.purgeAt)+' dia(s) restantes')+'</span><br><small>'+E(dateTime(x.purgeAt))+'</small></td><td class="actions"><button class="button button-small" onclick="restoreTrashItem(\''+E(x.id)+'\')">Restaurar</button><button class="button button-small button-danger" onclick="purgeTrashItem(\''+E(x.id)+'\')">Excluir agora</button></td></tr>'}).join('')+'</tbody></table></div>':'<div class="dormus-enhanced-empty"><strong>A lixeira está vazia</strong><br>Cadastros excluídos ficarão aqui por 30 dias antes da remoção definitiva.</div>';
   }
+  var auditFilterState={module:'',actor:'',action:'',query:''};
+  function auditRows(){return ensure().auditLog.slice().sort(function(a,b){return String(b.timestamp).localeCompare(String(a.timestamp))})}
+  function auditInitials(name){return String(name||'U').trim().split(/\s+/).slice(0,2).map(function(x){return x.charAt(0)}).join('').toUpperCase()}
+  function auditFilterModule(kind){auditFilterState.module=kind||'';auditFilterState.actor='';renderAudit()}
+  function auditFilterActor(actorKey){auditFilterState.actor=actorKey||'';renderAudit()}
+  function auditFilterAction(action){auditFilterState.action=action||'';renderAudit()}
+  function auditClearFilters(){auditFilterState.module='';auditFilterState.actor='';auditFilterState.action='';auditFilterState.query='';renderAudit()}
+  function auditViewForKind(kind){return {owner:'owners',tenant:'tenants',guarantor:'guarantors',property:'properties',contract:'contracts',deposit:'deposits',task:'home',inspection:'inspections',maintenance:'maintenance',note:'notes',agenda:'agenda',receipt:'receipts',rental:'rents',crmLead:'crm'}[kind]||'audit'}
+  function auditOpenRecord(kind,id){
+    var view=auditViewForKind(kind);
+    if(typeof window.showView==='function')window.showView(view);
+    if(['owner','tenant','guarantor','property','contract','deposit','inspection','maintenance','note','agenda'].includes(kind)&&typeof window.openPresentation==='function')setTimeout(function(){window.openPresentation(kind,id)},80);
+  }
+  function auditRelationsHtml(item){
+    return (item.relations||[]).map(function(relation){
+      return '<span class="dormus-audit-related"><b>'+E(relation.label)+'</b> · '+E(relation.name)+'</span>';
+    }).join('');
+  }
+  function auditEventHtml(item){
+    var actorKey=item.actorKey||item.actorEmail||item.actorName||'Usuário',action=item.action||'update',canOpen=item.recordId&&auditViewForKind(item.kind)!=='audit';
+    return '<article class="dormus-audit-event"><span class="dormus-audit-event-dot '+E(action)+'"></span><div><div class="dormus-audit-event-head"><span class="dormus-audit-action '+E(action)+'">'+E(item.actionLabel||action)+'</span><span class="dormus-audit-related"><b>'+E(item.kindLabel||label(item.kind))+'</b></span><time>'+E(dateTime(item.timestamp))+'</time></div><h3>'+E(item.recordName||'Cadastro sem nome')+'</h3><p class="dormus-audit-event-copy">Responsável: <strong>'+E(item.actorName||'Usuário')+'</strong>'+(item.actorEmail?' · '+E(item.actorEmail):'')+(item.details?' · '+E(item.details):'')+'</p><div class="dormus-audit-event-meta"><button type="button" onclick="auditFilterModule(\''+E(item.kind)+'\')">Ver módulo</button><button type="button" onclick="auditFilterActor(\''+E(actorKey)+'\')">Ver atividade do usuário</button>'+(canOpen?'<button type="button" onclick="auditOpenRecord(\''+E(item.kind)+'\',\''+E(item.recordId)+'\')">Abrir cadastro →</button>':'')+auditRelationsHtml(item)+'</div></div></article>';
+  }
   function renderAudit(){
-    var d=ensure(),el=document.getElementById('audit-list');if(!el)return;var rows=d.auditLog.slice().sort(function(a,b){return String(b.timestamp).localeCompare(String(a.timestamp))});
-    el.innerHTML=rows.length?'<div class="table-wrap"><table class="table"><thead><tr><th>Data e hora</th><th>Ação</th><th>Módulo</th><th>Cadastro</th><th>Usuário</th><th>Detalhes</th></tr></thead><tbody>'+rows.map(function(x){return '<tr><td>'+E(dateTime(x.timestamp))+'</td><td><span class="dormus-audit-action '+E(x.action)+'">'+E(x.actionLabel||x.action)+'</span></td><td>'+E(x.kindLabel||label(x.kind))+'</td><td><strong>'+E(x.recordName||'—')+'</strong><br><small>'+E(x.recordId||'')+'</small></td><td>'+E(x.actorName||'Usuário')+(x.actorEmail?'<br><small>'+E(x.actorEmail)+'</small>':'')+'</td><td>'+E(x.details||'—')+'</td></tr>'}).join('')+'</tbody></table></div>':'<div class="dormus-enhanced-empty"><strong>Nenhuma movimentação registrada</strong><br>Criações, edições, exclusões, restaurações e expurgos aparecerão aqui.</div>';
+    var d=ensure(),el=document.getElementById('audit-list');if(!el)return;
+    var all=auditRows(),query=String(auditFilterState.query||'').toLowerCase().trim(),rows=all.filter(function(x){
+      var text=[x.recordName,x.recordId,x.actorName,x.actorEmail,x.kindLabel,label(x.kind),x.actionLabel,x.details].join(' ').toLowerCase();
+      return (!auditFilterState.module||x.kind===auditFilterState.module)&&(!auditFilterState.actor||(x.actorKey||x.actorEmail||x.actorName)===auditFilterState.actor)&&(!auditFilterState.action||x.action===auditFilterState.action)&&(!query||text.indexOf(query)>=0);
+    });
+    var modules={},users={};all.forEach(function(x){
+      modules[x.kind]=modules[x.kind]||{kind:x.kind,label:x.kindLabel||label(x.kind),count:0};modules[x.kind].count++;
+      var key=x.actorKey||x.actorEmail||x.actorName||'Usuário';users[key]=users[key]||{key:key,name:x.actorName||'Usuário',email:x.actorEmail||'',count:0,last:x.timestamp};users[key].count++;if(String(x.timestamp)>String(users[key].last))users[key].last=x.timestamp;
+    });
+    var moduleCards=Object.keys(modules).sort(function(a,b){return modules[b].count-modules[a].count}).map(function(key){var m=modules[key];return '<button type="button" class="dormus-audit-module-chip" onclick="auditFilterModule(\''+E(key)+'\')"><span>'+E(m.label)+'</span><b>'+m.count+'</b></button>'}).join('')||'<span class="dormus-audit-filter-note">Os módulos aparecerão após a primeira movimentação.</span>';
+    var userCards=Object.keys(users).sort(function(a,b){return users[b].count-users[a].count}).slice(0,8).map(function(key){var u=users[key];return '<button type="button" class="dormus-audit-link-card" onclick="auditFilterActor(\''+E(u.key)+'\')"><span class="dormus-audit-link-avatar">'+E(auditInitials(u.name))+'</span><span class="dormus-audit-link-copy"><strong>'+E(u.name)+'</strong><small>'+E(u.email||'Usuário do DORMUS')+'</small></span><span class="dormus-audit-link-count">'+u.count+'</span></button>'}).join('')||'<div class="dormus-enhanced-empty">Nenhum usuário com atividade registrada.</div>';
+    var moduleOptions=Object.keys(modules).sort(function(a,b){return modules[a].label.localeCompare(modules[b].label,'pt-BR')}).map(function(key){return '<option value="'+E(key)+'"'+(auditFilterState.module===key?' selected':'')+'>'+E(modules[key].label)+'</option>'}).join('');
+    var userOptions=Object.keys(users).sort(function(a,b){return users[a].name.localeCompare(users[b].name,'pt-BR')}).map(function(key){return '<option value="'+E(key)+'"'+(auditFilterState.actor===key?' selected':'')+'>'+E(users[key].name)+'</option>'}).join('');
+    var actions=['create','update','delete','restore','purge'].map(function(action){return '<option value="'+action+'"'+(auditFilterState.action===action?' selected':'')+'>'+E(actionLabels[action])+'</option>'}).join('');
+    var activeFilters=[auditFilterState.module&&label(auditFilterState.module),auditFilterState.actor&&((users[auditFilterState.actor]||{}).name||auditFilterState.actor),auditFilterState.action&&actionLabels[auditFilterState.action],auditFilterState.query&&'busca: '+auditFilterState.query].filter(Boolean);
+    el.innerHTML='<div class="dormus-audit-summary"><div class="dormus-audit-summary-card"><span>Eventos registrados</span><strong>'+all.length+'</strong><small>últimos 1.000 eventos</small></div><div class="dormus-audit-summary-card"><span>Usuários envolvidos</span><strong>'+Object.keys(users).length+'</strong><small>atividade identificada</small></div><div class="dormus-audit-summary-card"><span>Módulos relacionados</span><strong>'+Object.keys(modules).length+'</strong><small>com histórico disponível</small></div><div class="dormus-audit-summary-card"><span>Exibindo agora</span><strong>'+rows.length+'</strong><small>'+(activeFilters.length?'com filtros aplicados':'toda a atividade')+'</small></div></div><div class="dormus-audit-toolbar"><strong>Filtrar a trilha</strong><input type="search" placeholder="Buscar cadastro, usuário ou detalhe..." value="'+E(auditFilterState.query)+'" oninput="auditFilterState.query=this.value;renderAudit()"><select onchange="auditFilterModule(this.value)"><option value="">Todos os módulos</option>'+moduleOptions+'</select><select onchange="auditFilterActor(this.value)"><option value="">Todos os usuários</option>'+userOptions+'</select><select onchange="auditFilterAction(this.value)"><option value="">Todas as ações</option>'+actions+'</select><button type="button" class="button button-small" onclick="auditClearFilters()">Limpar</button></div><div class="dormus-audit-links"><section class="panel dormus-audit-link-panel"><div class="panel-head"><div><div class="panel-title">Atividade entre usuários</div><div class="panel-kicker">Selecione uma pessoa para acompanhar tudo que ela alterou.</div></div></div><div class="dormus-audit-link-list">'+userCards+'</div></section><section class="panel dormus-audit-link-panel"><div class="panel-head"><div><div class="panel-title">Atividade por módulo</div><div class="panel-kicker">O histórico acompanha a operação de cada área.</div></div></div><div class="dormus-audit-module-grid">'+moduleCards+'</div></section></div><section class="panel"><div class="dormus-enhanced-toolbar"><strong>Linha do tempo operacional</strong><span class="toolbar-copy">'+(rows.length?'Clique em um usuário, módulo ou cadastro para seguir o vínculo.':'Nenhum evento corresponde aos filtros.')+'</span></div>'+(activeFilters.length?'<p class="dormus-audit-filter-note">Filtros ativos: '+E(activeFilters.join(' · '))+'</p>':'')+'<div class="dormus-audit-stream">'+(rows.length?rows.slice(0,100).map(auditEventHtml).join(''):'<div class="dormus-enhanced-empty"><strong>Nenhuma movimentação encontrada</strong><br>Criações, edições, exclusões, restaurações e expurgos aparecerão aqui.</div>')+'</div></section>';
+  }
+  window.auditFilterState=auditFilterState;window.auditFilterModule=auditFilterModule;window.auditFilterActor=auditFilterActor;window.auditFilterAction=auditFilterAction;window.auditClearFilters=auditClearFilters;window.auditOpenRecord=auditOpenRecord;window.renderAudit=renderAudit;
+  function auditFocusRecord(kind,id){auditFilterState.module=kind||'';auditFilterState.actor='';auditFilterState.action='';auditFilterState.query=id||'';if(typeof window.showView==='function')window.showView('audit');else renderAudit()}
+  window.auditFocusRecord=auditFocusRecord;
+  function contextAuditHtml(kind,id){
+    var rows=auditRows().filter(function(x){return String(x.recordId)===String(id)}).slice(0,8);
+    return '<section class="dormus-context-audit"><div class="dormus-context-audit-head"><div><h3>Linha do tempo deste cadastro</h3><p>'+E(rows.length?rows.length+' movimentação(ões) · vinculada ao módulo e aos usuários':'Nenhuma movimentação registrada para este cadastro ainda.')+'</p></div><div class="dormus-context-audit-actions"><button type="button" class="button button-small" onclick="auditFocusRecord(\''+E(kind)+'\',\''+E(id)+'\')">Ver no log completo →</button></div></div>'+(rows.length?'<div class="dormus-context-audit-list">'+rows.map(function(x){return '<div class="dormus-context-audit-item"><i class="'+E(x.action||'update')+'"></i><div><strong>'+E(x.actionLabel||x.action)+'</strong> · '+E(x.actorName||'Usuário')+'<small>'+E(dateTime(x.timestamp))+(x.details?' · '+E(x.details):'')+'</small></div></div>'}).join('')+'</div>':'<div class="dormus-enhanced-empty">As próximas criações, edições ou exclusões aparecerão aqui.</div>')+'</section>';
+  }
+  function appendContextAudit(kind,id){
+    var body=document.getElementById('presentation-body');if(!body||body.querySelector('.dormus-context-audit'))return;
+    var actions=body.querySelector('.presentation-actions');if(actions)actions.insertAdjacentHTML('beforebegin',contextAuditHtml(kind,id));else body.insertAdjacentHTML('beforeend',contextAuditHtml(kind,id));
+  }
+  var previousOpenPresentationAudit=window.openPresentation;
+  if(previousOpenPresentationAudit&&!previousOpenPresentationAudit.__dormusAuditContext){
+    var contextualOpenPresentation=function(kind,id){
+      var result=previousOpenPresentationAudit.apply(this,arguments);
+      Promise.resolve(result).then(function(){setTimeout(function(){appendContextAudit(kind,id)},40)}).catch(function(){setTimeout(function(){appendContextAudit(kind,id)},80)});
+      return result;
+    };
+    contextualOpenPresentation.__dormusAuditContext=true;window.openPresentation=contextualOpenPresentation;
   }
   function chartShell(){var home=document.getElementById('home');if(!home||document.getElementById('dormus-analytics'))return;var anchor=home.querySelector('.dashboard-columns.lower')||home.querySelector('.dashboard-columns');if(!anchor)return;var wrap=document.createElement('div');wrap.id='dormus-analytics';wrap.className='dormus-analytics';wrap.innerHTML='<section class="panel dormus-chart-card"><div class="panel-head"><div><div class="panel-title">Ocupação da carteira</div><div class="panel-kicker">Imóveis por situação atual.</div></div></div><div id="dormus-occupancy-chart"></div></section><section class="panel dormus-chart-card"><div class="panel-head"><div><div class="panel-title">Agenda dos próximos 7 dias</div><div class="panel-kicker">Compromissos vinculados aos módulos.</div></div></div><div id="dormus-agenda-chart"></div></section><section class="panel dormus-chart-card"><div class="panel-head"><div><div class="panel-title">Manutenções por status</div><div class="panel-kicker">Distribuição dos chamados atuais.</div></div></div><div id="dormus-maint-chart"></div></section>';anchor.insertAdjacentElement('afterend',wrap)}
   function renderCharts(){
@@ -9765,7 +9887,7 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
     var today=new Date(),agenda=d.agenda||[],days=[];for(var i=0;i<7;i++){var dt=new Date(today);dt.setHours(0,0,0,0);dt.setDate(dt.getDate()+i);var iso=dt.toISOString().slice(0,10),count=agenda.filter(function(x){return x.date===iso&&!/cancel/i.test(x.status||'')}).length;days.push({label:i===0?'Hoje':dt.toLocaleDateString('pt-BR',{weekday:'short'}).replace('.',''),count})}var max=Math.max(1,...days.map(function(x){return x.count})),ag=document.getElementById('dormus-agenda-chart');if(ag)ag.innerHTML='<div class="dormus-mini-bars">'+days.map(function(x){return '<div class="dormus-mini-bar-row"><span>'+E(x.label)+'</span><div class="dormus-mini-bar-track"><i style="width:'+Math.round(x.count/max*100)+'%"></i></div><strong>'+x.count+'</strong></div>'}).join('')+'</div><div class="dormus-chart-note">Inclui somente compromissos não cancelados.</div>';
     var ms=d.maintenance||[],mg=[['Aberto',ms.filter(function(x){return /^aberto$/i.test(x.status||'')}).length],['Em andamento',ms.filter(function(x){return /andamento/i.test(x.status||'')}).length],['Concluído',ms.filter(function(x){return /conclu/i.test(x.status||'')}).length],['Cancelado',ms.filter(function(x){return /cancel/i.test(x.status||'')}).length]],mm=Math.max(1,...mg.map(function(x){return x[1]})),mc=document.getElementById('dormus-maint-chart');if(mc)mc.innerHTML='<div class="dormus-mini-bars">'+mg.map(function(x){return '<div class="dormus-mini-bar-row"><span>'+E(x[0])+'</span><div class="dormus-mini-bar-track"><i style="width:'+Math.round(x[1]/mm*100)+'%"></i></div><strong>'+x[1]+'</strong></div>'}).join('')+'</div>';
   }
-  function ensureViews(){ensureNav('trash','Lixeira','▱');ensureNav('audit','Auditoria','◌');ensureView('trash','<div class="page-head"><div><div class="eyebrow">Governança de dados</div><h1>Lixeira</h1><p class="lead">Itens excluídos ficam disponíveis para restauração durante 30 dias.</p></div></div><div id="trash-kpis" class="dormus-enhanced-kpis"></div><section class="panel"><div class="dormus-enhanced-toolbar"><strong>Cadastros excluídos</strong><span class="toolbar-copy">A exclusão definitiva acontece automaticamente ao fim do prazo.</span></div><div id="trash-list"></div></section>');ensureView('audit','<div class="page-head"><div><div class="eyebrow">Governança de dados</div><h1>Log de auditoria</h1><p class="lead">Histórico de alterações realizadas no DORMUS.</p></div></div><section class="panel"><div class="dormus-enhanced-toolbar"><strong>Atividades recentes</strong><span class="toolbar-copy">Retenção dos últimos 1.000 eventos.</span></div><div id="audit-list"></div></section>')}
+  function ensureViews(){ensureNav('trash','Lixeira','▱');ensureNav('audit','Auditoria','◌');ensureView('trash','<div class="page-head"><div><div class="eyebrow">Governança de dados</div><h1>Lixeira</h1><p class="lead">Itens excluídos ficam disponíveis para restauração durante 30 dias.</p></div></div><div id="trash-kpis" class="dormus-enhanced-kpis"></div><section class="panel"><div class="dormus-enhanced-toolbar"><strong>Cadastros excluídos</strong><span class="toolbar-copy">A exclusão definitiva acontece automaticamente ao fim do prazo.</span></div><div id="trash-list"></div></section>');ensureView('audit','<div class="page-head"><div><div class="eyebrow">Governança conectada</div><h1>Atividade da operação</h1><p class="lead">Siga cada alteração pelo módulo, cadastro e usuário que participou dela.</p></div></div><div id="audit-list"></div>')}
   function renderCurrent(){var id=document.querySelector('.view.active')?.id||'home';if(id==='trash')renderTrash();else if(id==='audit')renderAudit();else if(id==='home'){renderCharts()}else if(typeof window.renderView==='function')window.renderView(id)}
   var trackedLists=Object.keys(listMap),auditSnapshot=null,auditSnapshotDb=null;
   function takeAuditSnapshot(d){var out={};trackedLists.forEach(function(list){out[list]=JSON.parse(JSON.stringify(d[list]||[]))});return out}
@@ -9928,5 +10050,65 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
   },400);
 })();
 </script>
+<style id="dormus-mobile-presentation-actions-fix">
+  /* As ações da ficha não ficam mais presas em uma única linha no celular. */
+  .presentation-actions{
+    display:grid!important;
+    grid-template-columns:repeat(auto-fit,minmax(132px,1fr));
+    align-items:stretch;
+    justify-content:stretch;
+    width:100%;
+    max-width:100%;
+    gap:8px;
+    overflow:visible;
+  }
+  .presentation-actions .button{
+    min-width:0;
+    max-width:100%;
+    width:100%;
+    min-height:44px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    line-height:1.2;
+  }
+  @media(max-width:620px){
+    .modal-bg{padding:8px;align-items:center;overflow:hidden}
+    .presentation-modal{
+      width:100%;
+      max-width:100%;
+      max-height:calc(100dvh - 16px);
+      display:flex;
+      flex-direction:column;
+    }
+    .presentation-head{flex:0 0 auto;padding:18px 16px 14px}
+    .presentation-head h2{font-size:26px;line-height:1.12;word-break:break-word}
+    .presentation-body{
+      min-width:0;
+      min-height:0;
+      max-height:none;
+      flex:1 1 auto;
+      overflow-x:hidden;
+      overflow-y:auto;
+      padding:16px;
+    }
+    .presentation-actions{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      padding:12px 0 2px;
+      margin-top:16px;
+      background:#fbfaf5!important;
+      position:sticky;
+      bottom:0;
+      z-index:3;
+    }
+    .presentation-actions .button{min-height:48px;padding:9px 7px;font-size:11px}
+  }
+  @media(max-width:340px){
+    .presentation-actions{grid-template-columns:1fr}
+  }
+</style>
 </body>
 </html>
