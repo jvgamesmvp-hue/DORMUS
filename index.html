@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 9.1</title>
+  <title>Dormus | Gestão imobiliária · 9.4</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -592,6 +592,23 @@ section,article,.section,.content-card,.white-card{
       </div>
     </div>
   </section>
+  <div id="dormus-system-loading" hidden aria-hidden="true">
+    <div class="dormus-system-loading-card" role="status" aria-live="polite">
+      <div class="dormus-system-loading-media">
+        <video id="dormus-system-loading-video" muted playsinline loop preload="auto" aria-hidden="true">
+          <source src="dormus-loading.mp4" type="video/mp4">
+        </video>
+        <div class="dormus-system-loading-fallback" aria-hidden="true"><span>D</span><i></i></div>
+        <div class="dormus-system-loading-vignette"></div>
+      </div>
+      <div class="dormus-system-loading-copy">
+        <span class="dormus-system-loading-kicker">DORMUS · SISTEMA</span>
+        <strong>Preparando seu ambiente</strong>
+        <span>Carregando imóveis, contratos e indicadores...</span>
+      </div>
+      <div class="dormus-system-loading-progress"><i></i></div>
+    </div>
+  </div>
   <div class="app">
     <aside class="side">
       <a class="brand" href="#" onclick="showView('home');return false"><span class="brand-mark">D</span><span><strong>Dormus</strong><small>GESTÃO IMOBILIÁRIA</small></span></a><div class="provider-only-brand-note">Portal do Prestador<br>Você possui acesso limitado aos serviços atribuídos a você.</div>
@@ -1246,12 +1263,49 @@ function selectLoginPortal(kind){
   document.getElementById('portal-login-prestador')?.toggleAttribute('hidden',kind!=='prestador');
   setTimeout(()=>document.getElementById(kind==='imobiliaria'?'login-username':'login-email')?.focus(),50);
 }
+function showDormusSystemLoading(){
+  const overlay=document.getElementById('dormus-system-loading');
+  if(!overlay)return 0;
+  if(!overlay.classList.contains('is-visible')){
+    window.dormusSystemLoadingStartedAt=Date.now();
+    overlay.hidden=false;
+    overlay.setAttribute('aria-hidden','false');
+    requestAnimationFrame(()=>overlay.classList.add('is-visible'));
+    const video=document.getElementById('dormus-system-loading-video');
+    if(video){
+      const fallback=document.querySelector('.dormus-system-loading-fallback');
+      if(fallback&&!video.dataset.fallbackReady){
+        video.dataset.fallbackReady='true';
+        video.addEventListener('error',()=>{fallback.style.opacity='1'}, {once:true});
+      }
+      if(video.error&&fallback)fallback.style.opacity='1';
+      try{video.currentTime=0}catch(e){}
+      video.play?.().catch(()=>{});
+    }
+  }
+  return window.dormusSystemLoadingStartedAt||Date.now();
+}
+function hideDormusSystemLoading(){
+  const overlay=document.getElementById('dormus-system-loading');
+  if(!overlay)return;
+  overlay.classList.remove('is-visible');
+  overlay.setAttribute('aria-hidden','true');
+  clearTimeout(window.dormusSystemLoadingHideTimer);
+  window.dormusSystemLoadingHideTimer=setTimeout(()=>{if(!overlay.classList.contains('is-visible'))overlay.hidden=true},280);
+}
+async function finishDormusSystemLoading(){
+  const started=Number(window.dormusSystemLoadingStartedAt||Date.now());
+  const remaining=Math.max(0,2200-(Date.now()-started));
+  if(remaining)await new Promise(resolve=>setTimeout(resolve,remaining));
+  hideDormusSystemLoading();
+}
 async function handlePortalLogin(event,kind){
   event.preventDefault();
   const button=document.getElementById(kind==='imobiliaria'?'login-button-imob':'login-button');
   const errorEl=document.getElementById(kind==='imobiliaria'?'login-error-imob':'login-error');
   if(errorEl)errorEl.textContent='';
   if(button){button.disabled=true;button.textContent='Entrando...';}
+  showDormusSystemLoading();
   try{
     if(location.protocol==='file:')throw new Error('Para entrar e acessar os dados, abra o DORMUS por uma página hospedada em HTTPS; o arquivo aberto diretamente do ZIP não consegue autenticar.');
     let email='';
@@ -1295,6 +1349,7 @@ async function handlePortalLogin(event,kind){
     }
   }catch(error){
     console.error('Erro no login:',error);
+    hideDormusSystemLoading();
     if(errorEl)errorEl.textContent=error?.message||'Não foi possível entrar. Confira os dados e tente novamente.';
     if(button){button.disabled=false;button.textContent=kind==='imobiliaria'?'Entrar na imobiliária':'Entrar como prestador';}
   }
@@ -1302,6 +1357,7 @@ async function handlePortalLogin(event,kind){
 async function handleLogin(event){return handlePortalLogin(event,'prestador')}
 
 async function logoutDormus(){
+  hideDormusSystemLoading();
   const {error}=await supabaseClient.auth.signOut();
   if(error){
     alert('Não foi possível sair agora. Tente novamente.');
@@ -1377,6 +1433,7 @@ async function initDormus(){
 
 async function enterDormus(session){
   if(!session)return;
+   showDormusSystemLoading();
   window.DormusCurrentUser=session.user;
   let profile=window.DormusLoginProfile||null;
   if(!profile){
@@ -1403,6 +1460,7 @@ async function enterDormus(session){
     if(msg) msg.textContent='Banco temporariamente indisponível. '+detalhe;
   }
   renderAll();
+   await finishDormusSystemLoading();
 }
 
 async function saveMaintenance828(record){
@@ -9255,5 +9313,123 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
   },true);
 })();
 </script>
+<style id="dormus-brand-navigation-polish">
+  :root{
+    --dormus-active-color:var(--soft-primary,var(--j-green,#2f6f5e));
+    --dormus-active-soft:var(--soft-field,var(--j-green-soft,#e5eee8));
+    --dormus-active-dark:var(--soft-text,var(--j-green-dark,#244a40));
+  }
+  .nav button.active{
+    background:var(--dormus-active-soft)!important;
+    border-color:transparent!important;
+    color:var(--dormus-active-color)!important;
+    box-shadow:inset 3px 0 0 var(--dormus-active-color),0 5px 16px color-mix(in srgb,var(--dormus-active-color) 16%,transparent);
+  }
+  .nav button.active .nav-icon{color:var(--dormus-active-color)!important}
+  #profile-button.avatar{
+    position:relative;isolation:isolate;display:grid;place-items:center;width:42px;height:42px;padding:0;
+    overflow:hidden;border:1px solid color-mix(in srgb,var(--dormus-active-color) 35%,white);
+    border-radius:14px;background:linear-gradient(145deg,var(--dormus-active-color),var(--dormus-active-dark))!important;
+    color:#fff!important;font-size:12px;font-weight:900;letter-spacing:.4px;
+    box-shadow:0 7px 18px color-mix(in srgb,var(--dormus-active-color) 24%,transparent),inset 0 1px rgba(255,255,255,.3);
+    transition:transform .24s ease,box-shadow .24s ease;
+  }
+  #profile-button.avatar::before{content:"";position:absolute;inset:-45% 25% 35% -35%;z-index:-1;transform:rotate(-25deg);background:linear-gradient(110deg,transparent,rgba(255,255,255,.32),transparent);pointer-events:none}
+  #profile-button.avatar:hover{transform:translateY(-2px) scale(1.035);box-shadow:0 11px 25px color-mix(in srgb,var(--dormus-active-color) 30%,transparent),inset 0 1px rgba(255,255,255,.36)}
+  .login-back,.dormus-back-button{
+    display:inline-flex!important;align-items:center;gap:9px;width:max-content;
+    border:1px solid color-mix(in srgb,var(--dormus-active-color) 28%,var(--line))!important;
+    border-radius:12px!important;padding:9px 13px!important;
+    background:linear-gradient(135deg,var(--dormus-active-soft),rgba(255,255,255,.7))!important;
+    color:var(--dormus-active-dark)!important;font-weight:800;letter-spacing:.1px;
+    box-shadow:0 5px 15px color-mix(in srgb,var(--dormus-active-color) 12%,transparent);
+    transition:transform .22s ease,box-shadow .22s ease,background .22s ease;
+  }
+  .login-back:hover,.dormus-back-button:hover{transform:translateX(-3px);box-shadow:0 9px 20px color-mix(in srgb,var(--dormus-active-color) 18%,transparent);background:var(--dormus-active-soft)!important}
+  .login-back:focus-visible,.dormus-back-button:focus-visible,#profile-button.avatar:focus-visible{outline:3px solid color-mix(in srgb,var(--dormus-active-color) 35%,transparent);outline-offset:3px}
+  @media(prefers-reduced-motion:reduce){#profile-button.avatar,.login-back,.dormus-back-button{transition:none!important}}
+</style>
+<script id="dormus-brand-navigation-polish-script">
+(function(){
+  const clean=value=>String(value||'').replace(/\s+/g,' ').trim().toLowerCase();
+  function removeMarcaButton(){
+    const header=document.querySelector('header.top');
+    if(!header)return;
+    header.querySelectorAll('button,a,[role="button"]').forEach(element=>{
+      if(clean(element.textContent)==='marca')element.remove();
+    });
+  }
+  function styleBackButtons(){
+    document.querySelectorAll('button,a,[role="button"]').forEach(element=>{
+      const text=clean(element.textContent);
+      if(text==='← voltar'||text==='voltar')element.classList.add('dormus-back-button');
+    });
+  }
+  function syncPalette(){
+    const root=document.documentElement,styles=getComputedStyle(root);
+    const primary=styles.getPropertyValue('--soft-primary').trim()||styles.getPropertyValue('--j-green').trim()||'#2f6f5e';
+    const soft=styles.getPropertyValue('--soft-field').trim()||styles.getPropertyValue('--j-green-soft').trim()||'#e5eee8';
+    const dark=styles.getPropertyValue('--soft-text').trim()||styles.getPropertyValue('--j-green-dark').trim()||'#244a40';
+    root.style.setProperty('--dormus-active-color',primary);
+    root.style.setProperty('--dormus-active-soft',soft);
+    root.style.setProperty('--dormus-active-dark',dark);
+  }
+  const originalApplyTheme=window.applyDormusTheme;
+  if(typeof originalApplyTheme==='function'){
+    window.applyDormusTheme=function(){
+      const result=originalApplyTheme.apply(this,arguments);
+      setTimeout(syncPalette,0);
+      return result;
+    };
+  }
+  syncPalette();
+  removeMarcaButton();
+  styleBackButtons();
+  const header=document.querySelector('header.top');
+  if(header&&window.MutationObserver)new MutationObserver(()=>removeMarcaButton()).observe(header,{childList:true,subtree:true});
+})();
+</script>
+<style id="dormus-system-loading-style">
+  #dormus-system-loading{
+    position:fixed;inset:0;z-index:2147482999;display:grid;place-items:center;padding:20px;
+    background:linear-gradient(135deg,rgba(5,18,14,.96),rgba(16,39,31,.93));
+    backdrop-filter:blur(8px);opacity:0;visibility:hidden;pointer-events:none;
+    transition:opacity .3s ease,visibility .3s ease;
+  }
+  #dormus-system-loading[hidden]{display:grid}
+  #dormus-system-loading.is-visible{opacity:1;visibility:visible;pointer-events:auto}
+  .dormus-system-loading-card{
+    width:min(560px,100%);overflow:hidden;border:1px solid rgba(227,155,128,.34);border-radius:22px;
+    background:rgba(9,27,21,.86);box-shadow:0 25px 90px rgba(0,0,0,.42),0 0 0 1px rgba(255,255,255,.04);
+    color:#f6f1e5;transform:translateY(12px) scale(.98);transition:transform .45s cubic-bezier(.2,.8,.2,1);
+  }
+  #dormus-system-loading.is-visible .dormus-system-loading-card{transform:none}
+  .dormus-system-loading-media{position:relative;aspect-ratio:16/9;overflow:hidden;background:#071913}
+  .dormus-system-loading-media video{display:block;width:100%;height:100%;object-fit:cover}
+  .dormus-system-loading-vignette{position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,15,11,.05),rgba(3,15,11,.6))}
+  .dormus-system-loading-fallback{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,#2f6f61 0,#123d32 30%,#071913 72%);opacity:0}
+  .dormus-system-loading-fallback span{font:190px Georgia;color:#e39b80;line-height:1;animation:dormus-loading-pulse 2.2s ease-in-out infinite}
+  .dormus-system-loading-fallback i{position:absolute;width:48%;aspect-ratio:1;border:1px solid #e39b8066;border-radius:50%;animation:dormus-loading-orbit 3s linear infinite}
+  .dormus-system-loading-copy{display:grid;gap:6px;padding:21px 23px 17px}
+  .dormus-system-loading-kicker{color:#e39b80;font:10px Consolas,monospace;letter-spacing:1.8px}
+  .dormus-system-loading-copy strong{font:24px Georgia;color:#fffaf0}
+  .dormus-system-loading-copy>span:last-child{color:#b8cec4;font-size:12px}
+  .dormus-system-loading-progress{height:3px;margin:0 23px 21px;border-radius:99px;background:#ffffff18;overflow:hidden}
+  .dormus-system-loading-progress i{display:block;width:35%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#2f6f61,#e39b80);animation:dormus-loading-progress 1.65s ease-in-out infinite}
+  @keyframes dormus-loading-progress{0%{transform:translateX(-120%);width:28%}50%{width:48%}100%{transform:translateX(360%);width:28%}}
+  @keyframes dormus-loading-pulse{0%,100%{transform:scale(.94);opacity:.72}50%{transform:scale(1.03);opacity:1}}
+  @keyframes dormus-loading-orbit{to{transform:rotate(360deg)}}
+  @media(max-width:560px){
+    #dormus-system-loading{padding:14px}
+    .dormus-system-loading-card{border-radius:17px}
+    .dormus-system-loading-copy{padding:17px 18px 14px}
+    .dormus-system-loading-copy strong{font-size:21px}
+    .dormus-system-loading-progress{margin:0 18px 17px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    #dormus-system-loading{transition:none}
+    .dormus-system-loading-card,.dormus-system-loading-progress i,.dormus-system-loading-fallback span,.dormus-system-loading-fallback i{animation:none;transition:none}
+  }
+</style>
 </body>
 </html>
