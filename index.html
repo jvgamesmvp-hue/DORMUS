@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 2.7</title>
+  <title>Dormus | Gestão imobiliária · 2.8</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -8697,11 +8697,9 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
   function closeDaily(){document.getElementById('dormus-daily-notification-root')?.remove()}
   function showDailyNotifications(){
     if(window.DormusProviderPortal?.access)return;
-    var key='dormus_daily_notifications_'+today();
-    try{if(localStorage.getItem(key)==='1')return;localStorage.setItem(key,'1')}catch(e){}
     var items=attentionItems(),root=document.createElement('div');root.id='dormus-daily-notification-root';root.className='dormus-daily-notification-backdrop';
     var rows=items.length?items.map(function(item){return '<button type="button" class="dormus-daily-notification-item" data-target="'+esc(item.kind)+'"><b class="dormus-daily-notification-icon">!</b><span><strong>'+esc(item.title)+'</strong><span>'+esc(item.detail)+(item.extra?' · '+esc(item.extra):'')+'</span></span></button>'}).join(''):'<div class="dormus-daily-notification-item"><b class="dormus-daily-notification-icon">OK</b><span><strong>Nenhuma pendência crítica encontrada</strong><span>Você pode começar o dia pela visão geral do Dormus.</span></span></div>';
-    root.innerHTML='<div class="dormus-daily-notification-modal" role="dialog" aria-modal="true" aria-labelledby="dormus-daily-title"><div class="dormus-daily-notification-head"><div><h2 id="dormus-daily-title">Resumo do dia</h2><p>Estas notificações aparecem uma vez por dia, ao entrar no sistema.</p></div><button type="button" class="icon" aria-label="Fechar" data-daily-close>×</button></div><div class="dormus-daily-notification-list">'+rows+'</div><div class="dormus-daily-notification-actions"><button type="button" class="button button-primary" data-daily-close>Continuar no Dormus</button></div></div>';
+    root.innerHTML='<div class="dormus-daily-notification-modal" role="dialog" aria-modal="true" aria-labelledby="dormus-daily-title"><div class="dormus-daily-notification-head"><div><h2 id="dormus-daily-title">Resumo do dia</h2><p>Estas notificações aparecem sempre que alguém entra no sistema.</p></div><button type="button" class="icon" aria-label="Fechar" data-daily-close>×</button></div><div class="dormus-daily-notification-list">'+rows+'</div><div class="dormus-daily-notification-actions"><button type="button" class="button button-primary" data-daily-close>Continuar no Dormus</button></div></div>';
     document.body.appendChild(root);
     root.querySelectorAll('[data-daily-close]').forEach(function(b){b.addEventListener('click',closeDaily)});
     root.addEventListener('click',function(e){if(e.target===root)closeDaily()});
@@ -8737,10 +8735,18 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
   var baseEnter=window.enterDormus;
   if(typeof baseEnter==='function'){
     window.enterDormus=async function(session){
+      var userId=String(session?.user?.id||session?.user?.email||'');
+      var shouldShow=userId&&userId!==String(window.__dormusDailyNotificationShownUser||'');
       var result=await baseEnter.apply(this,arguments);
-      setTimeout(function(){if(!window.DormusProviderPortal?.access){try{window.showView('home')}catch(e){}showDailyNotifications()}},450);
+      if(shouldShow){
+        window.__dormusDailyNotificationShownUser=userId;
+        setTimeout(function(){if(!window.DormusProviderPortal?.access){try{window.showView('home')}catch(e){}showDailyNotifications()}},450);
+      }
       return result;
     };
+  }
+  if(typeof supabaseClient!=='undefined'&&supabaseClient.auth?.onAuthStateChange){
+    supabaseClient.auth.onAuthStateChange(function(event){if(event==='SIGNED_OUT')window.__dormusDailyNotificationShownUser=''});
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){install();setTimeout(install,900)});
   else{install();setTimeout(install,900)}
