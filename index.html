@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 9.6</title>
+  <title>Dormus | Gestão imobiliária · 9.7</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -2024,9 +2024,13 @@ initDormus();
       }
       function rentLine(label,value,negative=false){return`<div class="property-finance-line"><span>${esc(label)}</span><strong class="${negative?'rent-money-negative':'rent-money-positive'}">${negative?'−':''}${money(Math.abs(value))}</strong></div>`}
       window.rentPropertyFinanceHistory=function(propertyId){
-        const prop=rentProp(propertyId),charges=db.rentalCharges.filter(r=>r.propertyId===propertyId),maint=db.maintenance.filter(x=>x.propertyId===propertyId),months=[...new Set([...charges.map(r=>r.referenceMonth||rentMonthOfDate(r.dueDate)),...maint.map(x=>rentMonthOfDate(x.date))])].filter(Boolean).sort().reverse();
+        const prop=rentProp(propertyId),seen={},charges=[...(db.rentalCharges||[]),...(db.payments||[])].filter(r=>{const key=String(r.id||`${r.contractId||''}|${r.referenceMonth||rentMonthOfDate(r.dueDate)||rentMonthOfDate(r.date)}`),c=db.contracts.find(x=>String(x.id)===String(r.contractId));if(seen[key])return false;seen[key]=true;return String(r.propertyId)===String(propertyId)||String(c?.propertyId)===String(propertyId)}),maint=db.maintenance.filter(x=>x.propertyId===propertyId),contract=db.contracts.find(x=>x.propertyId===propertyId&&(!x.end||x.end>=new Date().toISOString().slice(0,10)))||db.contracts.find(x=>x.propertyId===propertyId);
+        const existing=[...charges.map(r=>r.referenceMonth||rentMonthOfDate(r.dueDate)),...maint.map(x=>rentMonthOfDate(x.date))].filter(Boolean);
+        const contractStart=contract?.start?String(contract.start).slice(0,7):'',contractEnd=contract?.end?String(contract.end).slice(0,7):'',current=monthNow(),first=[...existing,contractStart].filter(Boolean).sort()[0],last=contractEnd&&contractEnd<current?contractEnd:current;
+        const nextMonth=month=>{const p=String(month).split('-').map(Number),d=new Date(p[0],p[1],1);return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`};
+        const months=[];if(first&&first<=last)for(let month=first;month<=last;month=nextMonth(month))months.push(month);
         if(!months.length)return`<div class="property-finance-empty">${empty('Nenhum movimento financeiro','Gere um aluguel mensal ou registre uma manutenção para começar o histórico deste imóvel.')}</div>`;
-        return months.map(month=>{const rs=charges.filter(r=>(r.referenceMonth||rentMonthOfDate(r.dueDate))===month),ms=maint.filter(x=>rentMonthOfDate(x.date)===month),received=rs.reduce((s,r)=>s+rentNum(r.paidAmount),0),iptu=rs.reduce((s,r)=>s+rentNum(r.iptu),0)+(rs.length?0:rentNum(prop.iptu)),commission=rs.reduce((s,r)=>s+rentNum(r.commission),0),maintenance=ms.reduce((s,r)=>s+rentNum(r.cost),0),net=received-iptu-commission-maintenance;return`<article class="property-finance-month"><div class="property-finance-month-head"><div class="property-finance-month-title">${esc(rentMonthLabel(month))}</div><span class="rent-net">Repasse ${money(net)}</span></div><div class="property-finance-lines">${rentLine('Aluguel recebido',received)}${iptu?rentLine('IPTU',iptu,true):''}${ms.map(x=>rentLine(`Manutenção · ${x.description}`,rentNum(x.cost),true)).join('')}${commission?rentLine('Comissão / taxa de administração',commission,true):''}${rs.flatMap(r=>[rentNum(r.condominium)?['Condomínio a receber',rentNum(r.condominium)]:null,r.statusOverride==='Parcial'||rentStatus(r)==='Parcial'?['Pagamento parcial',rentNum(r.paidAmount)]:null]).filter(Boolean).map(x=>rentLine(x[0],x[1])).join('')}</div><div class="property-finance-total"><span>Resultado do mês</span><strong class="rent-net">${money(net)}</strong></div></article>`}).join('');
+        return months.reverse().map(month=>{const rs=charges.filter(r=>(r.referenceMonth||rentMonthOfDate(r.dueDate))===month),ms=maint.filter(x=>rentMonthOfDate(x.date)===month),received=rs.reduce((s,r)=>s+rentNum(r.paidAmount),0),iptu=rs.reduce((s,r)=>s+rentNum(r.iptu),0),commission=rs.reduce((s,r)=>s+rentNum(r.commission),0),maintenance=ms.reduce((s,r)=>s+rentNum(r.cost),0),net=received-iptu-commission-maintenance,noCharge=!rs.length,lines=noCharge?'<div class="property-finance-line"><span>Nenhum lançamento de aluguel nesta competência</span><strong>—</strong></div>':`${rentLine('Aluguel recebido',received)}${received<=0?'<div class="property-finance-line"><span>Pagamento</span><strong>Não informado</strong></div>':''}${iptu?rentLine('IPTU',iptu,true):''}${ms.map(x=>rentLine(`Manutenção · ${x.description}`,rentNum(x.cost),true)).join('')}${commission?rentLine('Comissão / taxa de administração',commission,true):''}${rs.flatMap(r=>[rentNum(r.condominium)?['Condomínio a receber',rentNum(r.condominium)]:null,r.statusOverride==='Parcial'||rentStatus(r)==='Parcial'?['Pagamento parcial',rentNum(r.paidAmount)]:null]).filter(Boolean).map(x=>rentLine(x[0],x[1])).join('')}`;return`<article class="property-finance-month"><div class="property-finance-month-head"><div class="property-finance-month-title">${esc(rentMonthLabel(month))}</div><span class="rent-net">${noCharge?'Sem lançamento':'Repasse '+money(net)}</span></div><div class="property-finance-lines">${lines}</div><div class="property-finance-total"><span>${noCharge?'Situação da competência':'Resultado do mês'}</span><strong class="rent-net">${noCharge?'Sem lançamento':money(net)}</strong></div></article>`}).join('');
       };
       window.switchPropertyTab=function(tab,button){const body=button.closest('.presentation-body');if(!body)return;body.querySelectorAll('[data-property-tab]').forEach(x=>x.hidden=x.dataset.propertyTab!==tab);body.querySelectorAll('.property-tab').forEach(x=>x.classList.toggle('active',x===button))};
       function renderPropertyWithTabs(r,files){
@@ -8595,7 +8599,7 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
 <script id="dormus-final-request-fixes-script">
 (function(){
   'use strict';
-  var START='2023-01',END='2026-08';
+   var START='2023-01';
   function D(){return window.DormusDB||{}}
   function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
   function money(v){return Number(v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'})}
@@ -8606,7 +8610,8 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
     for(var i=0;i<values.length;i++){var match=String(values[i]||'').match(/(20\d{2})-(0[1-9]|1[0-2])/);if(match)return match[1]+'-'+match[2]}
     return '';
   }
-  function inPeriod(r){var m=monthOf(r);return !!m&&m>=START&&m<=END}
+   function currentMonth(){return today().slice(0,7)}
+   function inPeriod(r){var m=monthOf(r);return !!m&&m>=START&&m<=currentMonth()}
   function chargeTotal(r){
     try{if(typeof window.rentChargeTotal==='function'){var total=Number(window.rentChargeTotal(r));if(Number.isFinite(total)&&total>0)return total}}catch(e){}
     var n=function(v){return Number(String(v==null?'':v).replace(',','.'))||0};
@@ -8638,10 +8643,10 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
 
   async function batchCloseAndTransfer(){
     var d=D(),charges=(d.rentalCharges||[]).filter(inPeriod);
-    if(!charges.length){alert('Não há aluguéis com competência entre janeiro de 2023 e agosto de 2026.');return}
+     if(!charges.length){alert('Não há aluguéis com competência entre janeiro de 2023 e o mês atual.');return}
     var before=JSON.stringify(d),pending=charges.filter(function(r){return Number(r.paidAmount||0)<chargeTotal(r)||String(r.statusOverride||'')!=='Pago'});
     var existingTransfers=charges.filter(function(r){var t=findTransfer(d,r);return t&&String(t.status||'').toLowerCase()==='repassado'}).length;
-    var message='Período: janeiro de 2023 a agosto de 2026\\n\\n'+charges.length+' aluguel(is) serão conferidos. '+pending.length+' receberão baixa e '+(charges.length-existingTransfers)+' repasse(s) serão criados ou atualizados.\\n\\nA competência original de cada aluguel será mantida. Deseja continuar?';
+     var message='Período: janeiro de 2023 a '+currentMonth()+'\\n\\n'+charges.length+' aluguel(is) serão conferidos. '+pending.length+' receberão baixa e '+(charges.length-existingTransfers)+' repasse(s) serão criados ou atualizados.\\n\\nA competência original de cada aluguel será mantida. Deseja continuar?';
     if(!confirm(message))return;
     var created=0,updated=0;
     try{
@@ -8651,7 +8656,7 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
         r.paidAmount=total;
         r.paymentDate=r.paymentDate||r.paidDate||paymentDateFor(r);
         r.paymentMethod=r.paymentMethod||'Outro';
-        r.proof=r.proof||'Baixa em lote: período 01/2023 a 08/2026';
+         r.proof=r.proof||'Baixa em lote: período 01/2023 até o mês atual';
         r.statusOverride='Pago';
         r.updatedAt=new Date().toISOString();
         var x=context(r),t=findTransfer(d,r);
@@ -9772,6 +9777,155 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
     renderCharts();
   }
   setTimeout(wrap,0);setTimeout(wrap,1200);
+})();
+</script>
+<script id="dormus-resume-session">
+(function(){
+  'use strict';
+  if(window.__dormusResumeSessionReady)return;
+  window.__dormusResumeSessionReady=true;
+  var KEY_PREFIX='dormus-resume-session-v1:',restoring=false,restored=false,scrollTimer=null,modalState=null;
+  function userKey(){
+    var u=window.DormusCurrentUser||{};
+    return KEY_PREFIX+String(u.id||u.email||'local').replace(/[^a-zA-Z0-9_.:@-]/g,'_');
+  }
+  function readState(){
+    try{return JSON.parse(localStorage.getItem(userKey())||'null')}catch(e){return null}
+  }
+  function writeState(state){
+    try{localStorage.setItem(userKey(),JSON.stringify(state))}catch(e){}
+  }
+  function activeView(){
+    return document.querySelector('.view.active')?.id||'home';
+  }
+  function scrollTop(){
+    return Math.round(window.scrollY||document.documentElement.scrollTop||document.body.scrollTop||0);
+  }
+  function formDraft(){
+    if(!modalState||modalState.type!=='form')return null;
+    var values={};
+    document.querySelectorAll('#modal-root input[id],#modal-root select[id],#modal-root textarea[id]').forEach(function(el){
+      if(el.type==='file')return;
+      values[el.id]=el.type==='checkbox'?!!el.checked:el.value;
+    });
+    return Object.keys(values).length?values:null;
+  }
+  function currentModal(){
+    if(!modalState)return null;
+    var result={type:modalState.type,kind:modalState.kind||'',id:modalState.id||''};
+    var draft=formDraft();if(draft)result.draft=draft;
+    return result;
+  }
+  function persist(extra){
+    if(!window.DormusCurrentUser||restoring)return;
+    var previous=readState()||{};
+    writeState(Object.assign(previous,{view:extra?.view||activeView(),scrollTop:extra?.scrollTop??scrollTop(),modal:currentModal(),savedAt:new Date().toISOString()}));
+  }
+  function restoreDraft(draft){
+    if(!draft)return;
+    Object.keys(draft).forEach(function(id){
+      var el=document.getElementById(id);if(!el||el.type==='file')return;
+      if(el.type==='checkbox')el.checked=!!draft[id];else el.value=draft[id]??'';
+    });
+    document.querySelectorAll('#modal-root select').forEach(function(el){el.dispatchEvent(new Event('change',{bubbles:true}))});
+  }
+  function applyScroll(value){
+    var top=Math.max(0,Number(value)||0);
+    requestAnimationFrame(function(){window.scrollTo(0,top);setTimeout(function(){window.scrollTo(0,top)},180)});
+  }
+  function closeAndClearModal(){
+    modalState=null;
+    if(restored)persist();
+  }
+  var initialState=null;
+  function restore(){
+    if(restored||!window.DormusCurrentUser)return;
+    var state=initialState||readState();
+    if(!state){restored=true;return}
+    restoring=true;
+    try{
+      var target=state.view&&document.getElementById(state.view)?state.view:'home';
+      if(typeof window.showView==='function')window.showView(target);
+      setTimeout(function(){
+        if(state.modal?.type==='form'&&typeof window.openModal==='function'&&state.modal.kind){
+          modalState={type:'form',kind:state.modal.kind,id:state.modal.id||''};
+          window.openModal(state.modal.kind,state.modal.id||'');
+          setTimeout(function(){restoreDraft(state.modal.draft);applyScroll(state.scrollTop)},140);
+        }else if(state.modal?.type==='presentation'&&typeof window.openPresentation==='function'&&state.modal.kind){
+          modalState={type:'presentation',kind:state.modal.kind,id:state.modal.id||''};
+          window.openPresentation(state.modal.kind,state.modal.id||'');
+          setTimeout(function(){applyScroll(state.scrollTop)},180);
+        }else applyScroll(state.scrollTop);
+        restoring=false;restored=true;persist({view:target,scrollTop:state.scrollTop});
+      },90);
+    }catch(e){restoring=false;restored=true}
+  }
+  var oldShowView=window.showView;
+  if(typeof oldShowView==='function'){
+    window.showView=function(id){
+      if(!restoring&&restored)persist();
+      var result=oldShowView.apply(this,arguments);
+      if(!restoring&&window.DormusCurrentUser)persist({view:id,scrollTop:0});
+      return result;
+    };
+  }
+  var oldOpenModal=window.openModal;
+  if(typeof oldOpenModal==='function'){
+    window.openModal=function(kind,id){
+      modalState={type:'form',kind:String(kind||''),id:String(id||'')};
+      var result=oldOpenModal.apply(this,arguments);
+      setTimeout(function(){if(restored)persist()},80);
+      return result;
+    };
+  }
+  var oldOpenPresentation=window.openPresentation;
+  if(typeof oldOpenPresentation==='function'){
+    window.openPresentation=function(kind,id){
+      modalState={type:'presentation',kind:String(kind||''),id:String(id||'')};
+      var result=oldOpenPresentation.apply(this,arguments);
+      setTimeout(function(){if(restored)persist()},100);
+      return result;
+    };
+  }
+  var oldCloseModal=window.closeModal;
+  if(typeof oldCloseModal==='function'){
+    window.closeModal=function(){
+      var result=oldCloseModal.apply(this,arguments);
+      closeAndClearModal();
+      return result;
+    };
+  }
+  var oldSubmitModal=window.submitModal;
+  if(typeof oldSubmitModal==='function'){
+    window.submitModal=async function(){
+      var result=await oldSubmitModal.apply(this,arguments);
+      if(!document.querySelector('#modal-root .modal-bg'))closeAndClearModal();
+      else if(restored)persist();
+      return result;
+    };
+  }
+  document.addEventListener('input',function(e){
+    if(!restored||restoring||!e.target.closest?.('#modal-root'))return;
+    clearTimeout(scrollTimer);scrollTimer=setTimeout(function(){persist()},350);
+  },true);
+  document.addEventListener('change',function(e){
+    if(!restored||restoring||!e.target.closest?.('#modal-root'))return;
+    persist();
+  },true);
+  window.addEventListener('scroll',function(){
+    if(!restored||restoring)return;
+    clearTimeout(scrollTimer);scrollTimer=setTimeout(function(){persist()},250);
+  },{passive:true});
+  document.addEventListener('visibilitychange',function(){if(document.hidden)persist()});
+  window.addEventListener('pagehide',function(){persist()});
+  initialState=readState();
+  var attempts=0;
+  var wait=setInterval(function(){
+    attempts++;
+    if(window.DormusCurrentUser&&document.querySelector('.view')){
+      clearInterval(wait);setTimeout(restore,350);
+    }else if(attempts>30)clearInterval(wait);
+  },400);
 })();
 </script>
 </body>
