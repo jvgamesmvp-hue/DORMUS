@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 9.4</title>
+  <title>Dormus | Gestão imobiliária · 9.2</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -1276,9 +1276,20 @@ function showDormusSystemLoading(){
       const fallback=document.querySelector('.dormus-system-loading-fallback');
       if(fallback&&!video.dataset.fallbackReady){
         video.dataset.fallbackReady='true';
-        video.addEventListener('error',()=>{fallback.style.opacity='1'}, {once:true});
+        video.addEventListener('error',()=>{
+          if(!video.dataset.alternatePathTried){
+            video.dataset.alternatePathTried='true';
+            video.src='attached_assets/dormus-loading.mp4';
+            video.load();
+            video.play?.().catch(()=>{});
+            return;
+          }
+          fallback.style.opacity='1';
+          video.style.display='none';
+        });
       }
       if(video.error&&fallback)fallback.style.opacity='1';
+      video.playbackRate=.45;
       try{video.currentTime=0}catch(e){}
       video.play?.().catch(()=>{});
     }
@@ -9399,23 +9410,23 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
   #dormus-system-loading[hidden]{display:grid}
   #dormus-system-loading.is-visible{opacity:1;visibility:visible;pointer-events:auto}
   .dormus-system-loading-card{
-    width:min(560px,100%);overflow:hidden;border:1px solid rgba(227,155,128,.34);border-radius:22px;
+    width:min(920px,calc(100vw - 34px));overflow:hidden;border:1px solid rgba(227,155,128,.34);border-radius:22px;
     background:rgba(9,27,21,.86);box-shadow:0 25px 90px rgba(0,0,0,.42),0 0 0 1px rgba(255,255,255,.04);
     color:#f6f1e5;transform:translateY(12px) scale(.98);transition:transform .45s cubic-bezier(.2,.8,.2,1);
   }
   #dormus-system-loading.is-visible .dormus-system-loading-card{transform:none}
   .dormus-system-loading-media{position:relative;aspect-ratio:16/9;overflow:hidden;background:#071913}
-  .dormus-system-loading-media video{display:block;width:100%;height:100%;object-fit:cover}
-  .dormus-system-loading-vignette{position:absolute;inset:0;background:linear-gradient(180deg,rgba(3,15,11,.05),rgba(3,15,11,.6))}
-  .dormus-system-loading-fallback{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,#2f6f61 0,#123d32 30%,#071913 72%);opacity:0}
-  .dormus-system-loading-fallback span{font:190px Georgia;color:#e39b80;line-height:1;animation:dormus-loading-pulse 2.2s ease-in-out infinite}
-  .dormus-system-loading-fallback i{position:absolute;width:48%;aspect-ratio:1;border:1px solid #e39b8066;border-radius:50%;animation:dormus-loading-orbit 3s linear infinite}
+  .dormus-system-loading-media video{position:relative;z-index:1;display:block;width:100%;height:100%;object-fit:cover;background:#071913}
+  .dormus-system-loading-vignette{position:absolute;z-index:2;inset:0;background:linear-gradient(180deg,rgba(3,15,11,.05),rgba(3,15,11,.6))}
+  .dormus-system-loading-fallback{position:absolute;z-index:0;inset:0;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,#2f6f61 0,#123d32 30%,#071913 72%);opacity:1}
+  .dormus-system-loading-fallback span{font:clamp(150px,22vw,250px) Georgia;color:#e39b80;line-height:1;animation:dormus-loading-pulse 4.8s ease-in-out infinite}
+  .dormus-system-loading-fallback i{position:absolute;width:48%;aspect-ratio:1;border:1px solid #e39b8066;border-radius:50%;animation:dormus-loading-orbit 7s linear infinite}
   .dormus-system-loading-copy{display:grid;gap:6px;padding:21px 23px 17px}
   .dormus-system-loading-kicker{color:#e39b80;font:10px Consolas,monospace;letter-spacing:1.8px}
   .dormus-system-loading-copy strong{font:24px Georgia;color:#fffaf0}
   .dormus-system-loading-copy>span:last-child{color:#b8cec4;font-size:12px}
   .dormus-system-loading-progress{height:3px;margin:0 23px 21px;border-radius:99px;background:#ffffff18;overflow:hidden}
-  .dormus-system-loading-progress i{display:block;width:35%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#2f6f61,#e39b80);animation:dormus-loading-progress 1.65s ease-in-out infinite}
+  .dormus-system-loading-progress i{display:block;width:35%;height:100%;border-radius:inherit;background:linear-gradient(90deg,#2f6f61,#e39b80);animation:dormus-loading-progress 4.8s ease-in-out infinite}
   @keyframes dormus-loading-progress{0%{transform:translateX(-120%);width:28%}50%{width:48%}100%{transform:translateX(360%);width:28%}}
   @keyframes dormus-loading-pulse{0%,100%{transform:scale(.94);opacity:.72}50%{transform:scale(1.03);opacity:1}}
   @keyframes dormus-loading-orbit{to{transform:rotate(360deg)}}
