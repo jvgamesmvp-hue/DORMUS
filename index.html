@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 9.3</title>
+  <title>Dormus | Gestão imobiliária · 9.5</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -545,6 +545,19 @@ section,article,.section,.content-card,.white-card{
  .side,.sidebar{background:var(--j-green)!important}
  .panel,.metric,.property,.card,.dash-stat,.dashboard-card{box-shadow:0 6px 20px rgba(32,59,52,.08)!important}
 }
+.commitments-panel{margin-bottom:16px}
+.commitments-list{display:grid;gap:0}
+.commitment-row{display:flex;align-items:center;gap:13px;width:100%;padding:13px 4px;border:0;border-bottom:1px solid var(--j-line);background:transparent;color:var(--j-text);text-align:left;cursor:pointer}
+.commitment-row:last-child{border-bottom:0}
+.commitment-row:hover{background:var(--j-surface-2)}
+.commitment-icon{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border-radius:10px;background:var(--j-green-soft);color:var(--j-green-dark);font-size:17px}
+.commitment-main{flex:1;min-width:0}
+.commitment-main strong,.commitment-main span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.commitment-main strong{font-size:12px;color:var(--j-text)}
+.commitment-main span{margin-top:4px;color:var(--j-muted);font-size:11px}
+.commitment-date{min-width:82px;color:var(--j-text);font-size:11px;font-weight:700;text-align:right}
+.commitment-date small{display:block;margin-top:3px;color:var(--j-muted);font-size:10px;font-weight:400}
+@media(max-width:520px){.commitment-date{min-width:58px}.commitment-date small{display:none}}
 </style>
 </head>
 <body>
@@ -653,6 +666,7 @@ section,article,.section,.content-card,.white-card{
           <section class="panel chart-panel"><div class="panel-head"><div><div class="panel-title">Imóveis por situação</div><div class="panel-kicker">Distribuição atual da carteira.</div></div></div><div id="home-situation-chart" class="bar-chart"></div></section>
           <section class="panel chart-panel"><div class="panel-head"><div><div class="panel-title">Maiores aluguéis ativos</div><div class="panel-kicker">Contratos com maior valor mensal.</div></div></div><div id="home-rent-chart" class="horizontal-chart"></div></section>
         </div>
+         <section class="panel upcoming-panel commitments-panel"><div class="panel-head"><div><div class="panel-title">Próximos compromissos</div><div class="panel-kicker">Visitas, tarefas e movimentos que merecem atenção.</div></div><button class="button button-small" type="button" onclick="showView('agenda')">Ver agenda</button></div><div id="home-commitments-list" class="commitments-list"></div></section>
         <section class="panel upcoming-panel"><div class="panel-head"><div><div class="panel-title">Contratos vencendo</div><div class="panel-kicker">Próximos 60 dias.</div></div><span class="badge gold" id="home-expiring-count">0 contratos</span></div><div id="home-expiring-list"></div></section>
         <section class="panel upcoming-panel"><div class="panel-head"><div><div class="panel-title">Chamados em aberto</div><div class="panel-kicker">Manutenções que ainda precisam de atendimento.</div></div><span class="badge gold" id="home-maintenance-count">0 chamados</span></div><div id="home-maintenance-list"></div></section>
         <div class="dashboard-columns lower">
@@ -1077,6 +1091,15 @@ async function carregarDadosSupabase(){
       const openMaint=(db.maintenance||[]).filter(m=>!['Concluído','Cancelado'].includes(String(m.status||'Aberto'))).sort((a,b)=>{const rank=x=>/urg/i.test(x.priority||'')?0:/alta/i.test(x.priority||'')?1:/m[eé]dia/i.test(x.priority||'')?2:3;return rank(a)-rank(b)||String(a.date||'').localeCompare(String(b.date||''))});
       set('home-maintenance-count',`${openMaint.length} chamado${openMaint.length===1?'':'s'}`);
       if(homeMaint)homeMaint.innerHTML=openMaint.length?openMaint.slice(0,8).map(m=>{const p=db.properties.find(x=>x.id===m.propertyId)||{};return `<div class="expiring-row home-maint-row"><span class="warning-icon">🔧</span><div class="expiring-main"><strong>${esc(m.description||'Chamado de manutenção')}</strong><span>${esc(p.name||'Imóvel não informado')} · ${esc(m.provider||'Sem prestador')} · ${esc(m.status||'Aberto')}</span></div><b>${esc(m.priority||'Média')}</b></div>`}).join(''):empty('Nenhum chamado em aberto','Os chamados de manutenção pendentes aparecerão aqui.');
+       const commitments=document.getElementById('home-commitments-list');
+       if(commitments){
+         const isoToday=new Date().toISOString().slice(0,10);
+         const agendaItems=(db.agenda||[]).filter(x=>!['Concluído','Concluída','Cancelado','Cancelada'].includes(String(x.status||''))).map(x=>({id:x.id,title:x.title||'Compromisso sem título',date:x.date||'',time:x.time||'',category:x.category||'Agenda',linked:x.linked||'',icon:/visita/i.test(x.category||x.title||'')?'◉':/vistoria/i.test(x.category||x.title||'')?'□':/cobran|pagamento|finance/i.test(x.category||x.title||'')?'R$':'◷',kind:'agenda'}));
+         const taskItems=(db.tasks||[]).filter(x=>!['Concluída','Concluído','Cancelada','Cancelado'].includes(String(x.status||''))&&x.due).map(x=>({id:x.id,title:x.title||'Tarefa pendente',date:x.due,time:'',category:'Tarefa',linked:x.propertyId?nameOf('properties',x.propertyId):x.assignee||'',icon:'✓',kind:'task'}));
+         const items=agendaItems.concat(taskItems).filter(x=>!x.date||x.date>=isoToday).sort((a,b)=>`${a.date} ${a.time}`.localeCompare(`${b.date} ${b.time}`)).slice(0,6);
+         const dayLabel=date=>{if(!date)return 'Sem data';if(date===isoToday)return 'Hoje';const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);if(date===tomorrow.toISOString().slice(0,10))return 'Amanhã';return formatDatePt(date)};
+         commitments.innerHTML=items.length?items.map(x=>`<button class="commitment-row" type="button" onclick="showView('agenda')"><span class="commitment-icon">${x.icon}</span><span class="commitment-main"><strong>${esc(x.title)}</strong><span>${esc(x.category)}${x.linked?' · '+esc(x.linked):''}</span></span><span class="commitment-date">${esc(dayLabel(x.date))}<small>${esc(x.time||'A definir')}</small></span></button>`).join(''):empty('Nenhum compromisso próximo','Cadastre uma visita, tarefa ou compromisso na Agenda para acompanhar aqui.');
+       }
       const fs=document.getElementById('home-finance-summary');if(fs){const expected=charges.reduce((a,r)=>a+(typeof rentChargeTotal==='function'?rentChargeTotal(r):Number(r.rent||0)),0),paid=charges.reduce((a,r)=>a+Number(r.paidAmount||0),0),open=Math.max(expected-paid,0);fs.innerHTML=`<div><span>Previsto</span><strong>${money(expected)}</strong></div><div><span>Recebido</span><strong class="success-text">${money(paid)}</strong></div><div><span>Em aberto</span><strong class="warning-text">${money(open)}</strong></div>`}
       if(typeof d6DashboardAlerts==='function')d6DashboardAlerts();
     }
@@ -9547,7 +9570,6 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
   };
   var shareUrlFor=function(payload){
     var url=new URL(cleanBaseUrl());
-    url.searchParams.set('dormus_public','1');
     url.hash=HASH_PREFIX+encodePayload(payload);
     return url.toString();
   };
