@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 2.0</title>
+  <title>Dormus | Gestão imobiliária · 2.1</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -2148,8 +2148,8 @@ window.globalDormusSearch=function(q){
 document.addEventListener('click',e=>{const box=document.getElementById('global-search-results');const wrap=document.querySelector('.global-search');if(box&&wrap&&!wrap.contains(e.target))box.classList.remove('show');if(!e.target.closest('#profile-button')&&!e.target.closest('.profile-menu'))document.querySelector('.profile-menu')?.classList.remove('show');if(!e.target.closest('#notifications-button')&&!e.target.closest('.notifications-panel'))document.querySelector('.notifications-panel')?.classList.remove('show')});
 
 window.toggleProfileMenu=function(){
-  let el=document.querySelector('.profile-menu');if(!el){el=document.createElement('div');el.className='profile-menu';el.innerHTML='<h3>Conta Dormus</h3><p id="profile-email">Usuário conectado</p><button class="menu-action" onclick="openDormusThemePicker()">🎨 Personalizar visual</button><button class="menu-action" id="profile-username-action" onclick="openUsernameSettings()">👤 Alterar usuário da imobiliária</button><button class="menu-action" id="profile-team-access-action" onclick="openTeamAccessModal()">👥 Criar acesso da equipe</button><button class="menu-action" onclick="showView(\'home\');toggleProfileMenu()">Ir para Dashboard</button><button class="menu-action" onclick="logoutDormus()">Sair da conta</button>';document.body.appendChild(el)}
-  const email=document.getElementById('auth-email')?.textContent||'Usuário conectado';const pe=document.getElementById('profile-email');if(pe)pe.textContent=email;const teamAction=document.getElementById('profile-team-access-action');if(teamAction)teamAction.style.display=window.DormusLoginProfile?.perfil==='admin'?'':'none';el.classList.toggle('show');document.querySelector('.notifications-panel')?.classList.remove('show');
+  let el=document.querySelector('.profile-menu');if(!el){el=document.createElement('div');el.className='profile-menu';el.innerHTML='<h3>Conta Dormus</h3><p id="profile-email">Usuário conectado</p><button class="menu-action" onclick="openDormusThemePicker()">🎨 Personalizar visual</button><button class="menu-action" id="profile-username-action" onclick="openUsernameSettings()">👤 Alterar usuário da imobiliária</button><button class="menu-action" id="profile-team-users-action" onclick="openTeamUsersModal()">🛡️ Gerenciar usuários</button><button class="menu-action" id="profile-team-access-action" onclick="openTeamAccessModal()">👥 Criar acesso da equipe</button><button class="menu-action" onclick="showView(\'home\');toggleProfileMenu()">Ir para Dashboard</button><button class="menu-action" onclick="logoutDormus()">Sair da conta</button>';document.body.appendChild(el)}
+  const email=document.getElementById('auth-email')?.textContent||'Usuário conectado';const pe=document.getElementById('profile-email');if(pe)pe.textContent=email;const admin=String(window.DormusLoginProfile?.perfil||'').toLowerCase()==='admin';const usernameAction=document.getElementById('profile-username-action');if(usernameAction)usernameAction.style.display=admin?'':'none';const teamAction=document.getElementById('profile-team-access-action');if(teamAction)teamAction.style.display=admin?'':'none';const usersAction=document.getElementById('profile-team-users-action');if(usersAction)usersAction.style.display=admin?'':'none';el.classList.toggle('show');document.querySelector('.notifications-panel')?.classList.remove('show');
 };
 window.toggleNotifications=function(){
   let el=document.querySelector('.notifications-panel');if(!el){el=document.createElement('div');el.className='notifications-panel';document.body.appendChild(el)}
@@ -3738,6 +3738,7 @@ html[data-dormus-theme] body.provider-mode .provider-chat-button19{background:co
   }
   window.openUsernameSettings=async function(){
     if(document.body.classList.contains('provider-mode'))return;
+    if(String(window.DormusLoginProfile?.perfil||'').toLowerCase()==='admin'){alert('O próprio acesso Admin só pode ser alterado por outro Admin ou diretamente no Supabase.');return}
     document.querySelector('.profile-menu')?.classList.remove('show');
     try{
       const a=await getAccess();const current=a.username||((a.email||'').split('@')[0]);
@@ -10119,12 +10120,125 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
 <script id="dormus-team-access-creator">
 (function(){
   'use strict';
+  const teamStyle=document.createElement('style');
+  teamStyle.textContent='.dormus-team-users-modal{width:min(760px,96vw)}.dormus-team-users-note{padding:10px 12px;margin-bottom:13px;border:1px solid #d8e5dd;border-radius:9px;background:#eff8f2;color:#315345;font-size:11px;line-height:1.45}.dormus-team-users-list{display:grid;gap:8px;max-height:52vh;overflow:auto}.dormus-team-user-row{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid #e1e8ef;border-radius:10px;background:#fff}.dormus-team-user-row.is-blocked{background:#f8fafc}.dormus-team-user-main{min-width:0;flex:1}.dormus-team-user-main strong,.dormus-team-user-main span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dormus-team-user-main strong{color:#162b45;font-size:13px}.dormus-team-user-main span{margin-top:3px;color:#7b8da4;font-size:11px}.dormus-team-user-role{padding:5px 8px;border-radius:999px;background:#eef2f7;color:#60738d;font-size:10px;font-weight:800;white-space:nowrap}.dormus-team-user-role.is-admin{background:#fff3d8;color:#a56b00}.dormus-team-user-row button:disabled{cursor:not-allowed;opacity:.55}.dormus-team-user-edit-target{display:flex;justify-content:space-between;gap:12px;align-items:center;padding:11px 12px;margin-bottom:14px;border:1px solid #e1e8ef;border-radius:10px;background:#f8fafc}.dormus-team-user-edit-target strong{color:#162b45}.dormus-team-user-edit-target span{color:#7b8da4;font-size:11px;text-align:right}@media(max-width:620px){.dormus-team-user-row{align-items:flex-start;flex-wrap:wrap}.dormus-team-user-main{flex-basis:calc(100% - 10px)}.dormus-team-user-role{margin-left:0}.dormus-team-user-edit-target{display:block}.dormus-team-user-edit-target span{display:block;text-align:left;margin-top:4px}}';
+  document.head.appendChild(teamStyle);
   function isAdmin(){return String(window.DormusLoginProfile?.perfil||'').toLowerCase()==='admin'}
   function safe(v){return typeof window.esc==='function'?window.esc(v):String(v??'').replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'})[c]})}
+  function currentEmail(){return String(window.DormusCurrentUser?.email||window.DormusLoginProfile?.email||'').trim().toLowerCase()}
+  async function getSessionToken(){
+    const session=(await supabaseClient.auth.getSession())?.data?.session;
+    if(!session?.access_token)throw new Error('Sua sessão expirou. Entre novamente como administradora.');
+    return session.access_token;
+  }
+  async function dormusLoginAction(action,payload={}){
+    const token=await getSessionToken();
+    const response=await fetch(SUPABASE_URL+'/functions/v1/dormus-login',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},
+      body:JSON.stringify({action,...payload})
+    });
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok||data?.ok===false)throw new Error(data?.error||'Não foi possível concluir a operação.');
+    return data;
+  }
+  function roleLabel(perfil){return String(perfil||'').toLowerCase()==='admin'?'Administrador':'Funcionário'}
+  function userRow(user){
+    const admin=String(user?.perfil||'').toLowerCase()==='admin';
+    const same=currentEmail()===String(user?.email||'').trim().toLowerCase();
+    const blocked=admin&&same;
+    const reason=blocked?'Seu próprio acesso Admin só pode ser alterado por outro Admin ou diretamente no Supabase.':'';
+    return `<div class="dormus-team-user-row ${blocked?'is-blocked':''}">
+      <div class="dormus-team-user-main"><strong>${safe(user?.nome||user?.username||user?.email||'Usuário')}</strong><span>${safe(user?.username||'Sem usuário')} · ${safe(user?.email||'')}</span></div>
+      <span class="dormus-team-user-role ${admin?'is-admin':''}">${roleLabel(user?.perfil)}</span>
+      <button type="button" class="button button-small" ${blocked?'disabled title="'+safe(reason)+'"':''} onclick='openTeamUserEditor(${JSON.stringify(user||{}).replace(/'/g,"&#039;")})'>${blocked?'Bloqueado':'Editar'}</button>
+    </div>`;
+  }
+  function renderTeamUsers(users){
+    const list=document.getElementById('team-users-list');
+    if(!list)return;
+    const rows=(Array.isArray(users)?users:[]).slice().sort((a,b)=>String(a?.nome||a?.username||'').localeCompare(String(b?.nome||b?.username||''),'pt-BR'));
+    list.innerHTML=rows.length?rows.map(userRow).join(''):'<div class="empty">Nenhum acesso de equipe encontrado.</div>';
+  }
+  async function loadTeamUsers(){
+    try{
+      const data=await dormusLoginAction('list_users');
+      const users=data.users||data.data;
+      if(Array.isArray(users))return users;
+    }catch(edgeError){
+      // Fallback para instalações antigas que permitem a leitura administrativa da tabela.
+      const direct=await supabaseClient.from('dormus_acessos').select('id,email,nome,perfil,username').order('nome',{ascending:true});
+      if(!direct.error)return direct.data||[];
+      throw edgeError;
+    }
+    return [];
+  }
+  function teamUsersModalMarkup(){
+    return `<div class="modal-bg" onclick="closeModal(event)"><div class="modal dormus-team-users-modal" onclick="event.stopPropagation()">
+      <div class="modal-head"><div><h2>🛡️ Gerenciar usuários</h2><p>Admins podem alterar funcionários. O próprio acesso Admin fica protegido.</p></div><button class="icon" type="button" onclick="closeModal()">×</button></div>
+      <div class="dormus-team-users-note">A senha é atualizada no Supabase Auth. O nome e o usuário ficam no cadastro de acesso do DORMUS.</div>
+      <div id="team-users-list" class="dormus-team-users-list"><div class="empty">Carregando acessos...</div></div>
+      <div class="modal-actions"><button class="button button-small" type="button" onclick="refreshTeamUsers()">↻ Atualizar</button><button class="button button-quiet" type="button" onclick="closeModal()">Fechar</button></div>
+    </div></div>`;
+  }
+  window.openTeamUsersModal=async function(){
+    if(!isAdmin()){alert('Somente um administrador pode gerenciar os acessos da equipe.');return}
+    const root=document.getElementById('modal-root');if(!root)return;
+    root.innerHTML=teamUsersModalMarkup();
+    try{renderTeamUsers(await loadTeamUsers())}
+    catch(error){console.error('DORMUS list team users:',error);const list=document.getElementById('team-users-list');if(list)list.innerHTML='<div class="empty">Não foi possível carregar os usuários. Verifique as permissões da tabela dormus_acessos ou publique a ação list_users na Edge Function.</div>'}
+  };
+  window.refreshTeamUsers=async function(){
+    const list=document.getElementById('team-users-list');if(list)list.innerHTML='<div class="empty">Atualizando acessos...</div>';
+    try{renderTeamUsers(await loadTeamUsers())}
+    catch(error){console.error('DORMUS refresh team users:',error);if(list)list.innerHTML='<div class="empty">Não foi possível atualizar os usuários.</div>'}
+  };
+  window.openTeamUserEditor=function(user){
+    if(!isAdmin()){alert('Somente um administrador pode editar os acessos.');return}
+    user=user||{};
+    const targetEmail=String(user.email||'').trim().toLowerCase();
+    const targetIsAdmin=String(user.perfil||'').toLowerCase()==='admin';
+    const sameUser=targetEmail===currentEmail();
+    if(targetIsAdmin&&sameUser){alert('O próprio acesso Admin não pode ser alterado aqui. Use outro Admin ou o Supabase.');return}
+    const root=document.getElementById('modal-root');if(!root)return;
+    root.innerHTML=`<div class="modal-bg" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-head"><div><h2>Editar acesso</h2><p>${targetIsAdmin?'Este é outro Administrador. A alteração só é permitida por um Admin diferente.':'Altere o nome, o usuário e, se necessário, defina uma nova senha.'}</p></div><button class="icon" type="button" onclick="openTeamUsersModal()">×</button></div>
+      <div class="dormus-team-user-edit-target"><strong>${safe(user.nome||user.username||'Usuário')}</strong><span>${safe(user.email||'')} · ${roleLabel(user.perfil)}</span></div>
+      <div class="form-grid"><div class="form-field full"><label for="team-edit-name">Nome completo</label><input id="team-edit-name" value="${safe(user.nome||'')}" autocomplete="name"></div>
+      <div class="form-field full"><label for="team-edit-username">Nome de usuário</label><input id="team-edit-username" value="${safe(user.username||'')}" autocomplete="username"></div>
+      <div class="form-field"><label for="team-edit-password">Nova senha <small>(opcional)</small></label><input id="team-edit-password" type="password" minlength="6" autocomplete="new-password" placeholder="Mínimo de 6 caracteres"></div>
+      <div class="form-field"><label for="team-edit-password-confirm">Confirmar nova senha</label><input id="team-edit-password-confirm" type="password" minlength="6" autocomplete="new-password"></div></div>
+      <p class="login-note">O perfil (${roleLabel(user.perfil)}) não é alterado por esta tela. Para proteger a hierarquia, um Admin não pode alterar o próprio acesso Admin.</p>
+      <div class="modal-actions"><button class="button button-quiet" type="button" onclick="openTeamUsersModal()">Cancelar</button><button id="team-edit-submit" class="button button-primary" type="button" onclick='saveTeamUser(${JSON.stringify(user||{}).replace(/'/g,"&#039;")})'>Salvar alterações</button></div>
+    </div></div>`;
+  };
+  window.saveTeamUser=async function(user){
+    if(!isAdmin()){alert('Somente um administrador pode editar os acessos.');return}
+    user=user||{};
+    const targetEmail=String(user.email||'').trim().toLowerCase();
+    const targetIsAdmin=String(user.perfil||'').toLowerCase()==='admin';
+    if(targetIsAdmin&&targetEmail===currentEmail()){alert('O próprio acesso Admin não pode ser alterado aqui. Use outro Admin ou o Supabase.');return}
+    const name=document.getElementById('team-edit-name')?.value.trim()||'';
+    const username=document.getElementById('team-edit-username')?.value.trim().toLowerCase()||'';
+    const password=document.getElementById('team-edit-password')?.value||'';
+    const confirmation=document.getElementById('team-edit-password-confirm')?.value||'';
+    if(name.length<2){alert('Informe um nome com pelo menos 2 caracteres.');return}
+    if(username.length<2||!/^[a-z0-9._-]+$/.test(username)){alert('Informe um nome de usuário válido usando apenas letras, números, ponto, hífen ou sublinhado.');return}
+    if(password&&(password.length<6||password!==confirmation)){alert(password.length<6?'A nova senha precisa ter pelo menos 6 caracteres.':'A confirmação da nova senha não confere.');return}
+    const submit=document.getElementById('team-edit-submit');if(submit){submit.disabled=true;submit.textContent='Salvando...'}
+    try{
+      await dormusLoginAction('update_user',{email:targetEmail,user_id:user.id||null,nome:name,username,password:password||null});
+      closeModal();dormusToast('Usuário atualizado com sucesso.','success');
+    }catch(error){
+      console.error('DORMUS update team user:',error);
+      alert(error?.message||'Não foi possível atualizar o usuário. Confirme se a ação update_user está publicada na Edge Function dormus-login.');
+      if(submit){submit.disabled=false;submit.textContent='Salvar alterações'}
+    }
+  };
   window.openTeamAccessModal=function(){
     if(!isAdmin()){alert('Somente um administrador pode criar acessos da equipe.');return}
     const root=document.getElementById('modal-root');if(!root)return;
-    root.innerHTML=`<div class="modal-bg" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()"><div class="modal-head"><div><h2>Criar acesso da equipe</h2><p class="lead">A senha será enviada diretamente ao Supabase Auth e não ficará salva no HTML.</p></div><button class="icon" type="button" onclick="closeModal()">×</button></div><div class="form-grid"><div class="form-field"><label for="team-access-name">Nome completo</label><input id="team-access-name" value="Laudicéia" autocomplete="name"></div><div class="form-field"><label for="team-access-username">Nome de usuário</label><input id="team-access-username" value="laudiceia" autocomplete="username" required></div><div class="form-field full"><label for="team-access-email">E-mail</label><input id="team-access-email" type="email" value="hdimoveis22@hotmail.com" autocomplete="email" required></div><div class="form-field"><label for="team-access-profile">Perfil</label><select id="team-access-profile"><option value="funcionario" selected>Funcionária</option><option value="admin">Administradora</option></select></div><div class="form-field"><label for="team-access-password">Senha temporária</label><input id="team-access-password" type="password" minlength="6" autocomplete="new-password" required placeholder="Mínimo de 6 caracteres"></div><div class="form-field full"><label for="team-access-password-confirm">Confirmar senha</label><input id="team-access-password-confirm" type="password" minlength="6" autocomplete="new-password" required></div></div><p class="login-note">Depois de criar, entregue a senha temporária à Laudicéia por um canal seguro. Ela poderá entrar usando <strong>laudiceia</strong>.</p><div class="modal-actions"><button class="button button-quiet" type="button" onclick="closeModal()">Cancelar</button><button id="team-access-submit" class="button button-primary" type="button" onclick="createTeamAccess()">Criar acesso</button></div></div></div>`;
+     root.innerHTML=`<div class="modal-bg" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()"><div class="modal-head"><div><h2>Criar acesso da equipe</h2><p class="lead">O Supabase enviará um convite para definir a senha. Nenhuma senha fica salva no HTML.</p></div><button class="icon" type="button" onclick="closeModal()">×</button></div><div class="form-grid"><div class="form-field"><label for="team-access-name">Nome completo</label><input id="team-access-name" value="Laudicéia" autocomplete="name"></div><div class="form-field"><label for="team-access-username">Nome de usuário</label><input id="team-access-username" value="laudiceia" autocomplete="username" required></div><div class="form-field full"><label for="team-access-email">E-mail</label><input id="team-access-email" type="email" value="hdimoveis22@hotmail.com" autocomplete="email" required></div><div class="form-field"><label for="team-access-profile">Perfil</label><select id="team-access-profile"><option value="funcionario" selected>Funcionária</option><option value="admin">Administradora</option></select></div><div class="form-field full"><p class="login-note">O convite será enviado para Laudicéia. Ela poderá definir a senha e entrar usando <strong>laudiceia</strong>.</p></div></div><div class="modal-actions"><button class="button button-quiet" type="button" onclick="closeModal()">Cancelar</button><button id="team-access-submit" class="button button-primary" type="button" onclick="createTeamAccess()">Enviar convite</button></div></div></div>`;
   };
   window.createTeamAccess=async function(){
     if(!isAdmin()){alert('Somente um administrador pode criar acessos da equipe.');return}
@@ -10135,17 +10249,13 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
     const password=document.getElementById('team-access-password')?.value||'';
     const confirmation=document.getElementById('team-access-password-confirm')?.value||'';
     const submit=document.getElementById('team-access-submit');
-    if(!username||!email||password.length<6){alert('Preencha usuário, e-mail e uma senha com pelo menos 6 caracteres.');return}
-    if(password!==confirmation){alert('A confirmação da senha não confere.');return}
+     if(!username||!email){alert('Preencha usuário e e-mail.');return}
+     if(password&&(password.length<6||password!==confirmation)){alert(password.length<6?'A senha precisa ter pelo menos 6 caracteres.':'A confirmação da senha não confere.');return}
     if(submit){submit.disabled=true;submit.textContent='Criando acesso...'}
     try{
-      const session=(await supabaseClient.auth.getSession())?.data?.session;
-      if(!session?.access_token)throw new Error('Sua sessão expirou. Entre novamente como administradora.');
-      const response=await fetch(SUPABASE_URL+'/functions/v1/dormus-login',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({action:'create_user',nome:name,username,email,perfil,password})});
-      const data=await response.json().catch(()=>({}));
-      if(!response.ok||!data.ok)throw new Error(data.error||'Não foi possível criar o acesso.');
+      await dormusLoginAction('create_user',{nome:name,username,email,perfil,password});
       closeModal();
-      alert('Acesso criado com sucesso para '+name+'. Usuário: '+username+'.');
+       alert('Convite enviado com sucesso para '+email+'. Usuário: '+username+'.');
     }catch(error){
       console.error('DORMUS create team access:',error);
       alert(error?.message||'Não foi possível criar o acesso.');
