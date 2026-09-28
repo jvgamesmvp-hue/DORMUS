@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 9.2</title>
+  <title>Dormus | Gestão imobiliária · 9.3</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -602,8 +602,8 @@ section,article,.section,.content-card,.white-card{
         <div class="dormus-system-loading-vignette"></div>
       </div>
       <div class="dormus-system-loading-copy">
-        <span class="dormus-system-loading-kicker">DORMUS · APRESENTAÇÃO</span>
-        <strong>Seu ambiente está sendo preparado</strong>
+        <span class="dormus-system-loading-kicker">DORMUS · SISTEMA</span>
+        <strong>Preparando seu ambiente</strong>
         <span>Carregando imóveis, contratos e indicadores...</span>
       </div>
       <div class="dormus-system-loading-progress"><i></i></div>
@@ -1083,7 +1083,7 @@ async function carregarDadosSupabase(){
 
     function renderProperties(){
       const q=(document.getElementById('property-search')?.value||'').toLowerCase();const activeFilter=document.querySelector('.property-filters .filter-btn.active')?.dataset.pfilter||'';const items=db.properties.filter(p=>{const text=`${p.name} ${p.code} ${p.address} ${p.neighborhood}`.toLowerCase();const status=String(p.status||'');return text.includes(q)&&(!activeFilter||status===activeFilter)});const el=document.getElementById('property-list');const sub=document.getElementById('properties-subtitle');if(sub)sub.textContent=`${db.properties.length} imóvel${db.properties.length===1?'':'is'} cadastrado${db.properties.length===1?'':'s'}`;
-       el.innerHTML=items.length?items.map((p,i)=>`<article class="property"><div class="cover ${['olive','blue','brass'][i%3]}" data-property-cover="${esc(p.id)}"><span class="cover-label">${badge(p.status||'Disponível')}</span></div><div class="property-body"><div class="property-top"><div><div class="property-name">${esc(p.name||'Imóvel sem nome')}</div><div class="property-code">${esc(p.code||'Sem código')} · ${esc(p.type||'Tipo não informado')}</div></div></div><div class="property-address">${esc(p.address||'Endereço não informado')}</div><div class="property-data"><div><span>Proprietário</span><strong>${esc(nameOf('owners',p.ownerId))}</strong></div><div><span>Aluguel</span><strong>${p.rent?money(p.rent):'—'}</strong></div><div><span>Área</span><strong>${esc(p.area||'—')}</strong></div></div><div class="card-actions">${actionButtons('property',p.id)}</div></div></article>`).join('') : empty('Nenhum imóvel cadastrado','Use o botão “Novo imóvel” para começar sua carteira.');
+       el.innerHTML=items.length?items.map((p,i)=>`<article class="property"><div class="cover ${['olive','blue','brass'][i%3]}" data-property-cover="${esc(p.id)}"><span class="cover-label">${badge(p.status||'Disponível')}</span></div><div class="property-body"><div class="property-top"><div><div class="property-name">${esc(p.name||'Imóvel sem nome')}</div><div class="property-code">${esc(p.code||'Sem código')} · ${esc(p.type||'Tipo não informado')}</div></div></div><div class="property-address">${esc(p.address||'Endereço não informado')}</div><div class="property-data"><div><span>Proprietário</span><strong>${esc(nameOf('owners',p.ownerId))}</strong></div><div><span>Aluguel</span><strong>${p.rent?money(p.rent):'—'}</strong></div><div><span>Área</span><strong>${esc(p.area||'—')}</strong></div></div><div class="card-actions">${actionButtons('property',p.id)}${/dispon[ií]vel/i.test(String(p.status||'Disponível'))?`<button class="button button-small button-whatsapp-share" type="button" onclick="sharePropertyWhatsApp('${esc(p.id)}')">💬 WhatsApp</button>`:''}</div></div></article>`).join('') : empty('Nenhum imóvel cadastrado','Use o botão “Novo imóvel” para começar sua carteira.');
       hydratePropertyCovers();
     }
       async function hydratePropertyCovers(){
@@ -1306,7 +1306,7 @@ function hideDormusSystemLoading(){
 }
 async function finishDormusSystemLoading(){
   const started=Number(window.dormusSystemLoadingStartedAt||Date.now());
-  const remaining=Math.max(0,5000-(Date.now()-started));
+  const remaining=Math.max(0,2200-(Date.now()-started));
   if(remaining)await new Promise(resolve=>setTimeout(resolve,remaining));
   hideDormusSystemLoading();
 }
@@ -9442,66 +9442,203 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
     .dormus-system-loading-card,.dormus-system-loading-progress i,.dormus-system-loading-fallback span,.dormus-system-loading-fallback i{animation:none;transition:none}
   }
 </style>
-<style id="dormus-loading-presentation-style">
-  /* A apresentação é autossuficiente: não depende da reprodução do MP4. */
-  #dormus-system-loading{
-    background:radial-gradient(circle at 50% 42%,rgba(27,87,70,.94),rgba(5,21,16,.98) 62%);
+<style id="dormus-public-property-share-style">
+  .button-whatsapp-share{background:#e9f8ee;border-color:#b9dfc3;color:#168044}
+  .button-whatsapp-share:hover{background:#d9f1e1}
+  .public-property-root{min-height:100vh;background:#f5f1e8;color:#20372d;padding:24px}
+  .public-property-shell{width:min(1040px,100%);margin:0 auto}
+  .public-property-brand{display:flex;align-items:center;gap:10px;margin:0 0 24px;color:#20372d;text-decoration:none}
+  .public-property-brand-mark{width:38px;height:38px;border:1px solid #c48e3c;border-radius:50%;display:grid;place-items:center;color:#c48e3c;font:23px Georgia}
+  .public-property-brand strong{display:block;font:21px Georgia}
+  .public-property-brand small{display:block;color:#8b672c;font-size:9px;letter-spacing:1.2px;margin-top:2px}
+  .public-property-header{background:#20372d;color:#fffdf8;border-radius:18px 18px 0 0;padding:28px 32px 24px}
+  .public-property-header .eyebrow{color:#e5c277}
+  .public-property-header h1{font:38px Georgia;margin:8px 0 6px}
+  .public-property-header p{margin:0;color:#c7d1c8;font-size:13px}
+  .public-property-card{background:#fffdf8;border:1px solid #ddd8ca;border-radius:18px;overflow:hidden;box-shadow:0 16px 40px #24372d12}
+  .public-property-hero{display:grid;grid-template-columns:minmax(300px,1fr) minmax(340px,1.05fr)}
+  .public-property-photo{min-height:390px;background:linear-gradient(145deg,#354a3c,#a1804e);display:grid;place-items:center;position:relative}
+  .public-property-photo img{display:block;width:100%;height:100%;min-height:390px;object-fit:cover}
+  .public-property-photo.empty:after{content:'IMÓVEL';font:38px Georgia;letter-spacing:4px;color:#f7f0dd;opacity:.35}
+  .public-property-status{position:absolute;left:20px;top:20px;z-index:1}
+  .public-property-details{padding:30px}
+  .public-property-code{color:#778278;font:11px Consolas,monospace}
+  .public-property-details h2{font:34px Georgia;margin:7px 0}
+  .public-property-address{color:#778278;line-height:1.55;margin:20px 0}
+  .public-property-price{font:28px Georgia;color:#8b672c;margin-bottom:20px}
+  .public-property-price small{display:block;color:#778278;font:10px Arial;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+  .public-property-specs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;border-top:1px solid #ddd8ca;border-bottom:1px solid #ddd8ca;padding:16px 0}
+  .public-property-specs span{display:block;color:#778278;font-size:10px;margin-bottom:5px}
+  .public-property-specs strong{font-size:13px}
+  .public-property-section{padding:26px 30px;border-top:1px solid #ddd8ca}
+  .public-property-section h3{font:21px Georgia;margin:0 0 10px}
+  .public-property-section p{color:#778278;line-height:1.65;white-space:pre-wrap;margin:0}
+  .public-property-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:11px}
+  .public-property-gallery img{display:block;width:100%;height:125px;object-fit:cover;border-radius:10px;border:1px solid #ddd8ca}
+  .public-property-gallery figure{margin:0}
+  .public-property-gallery figcaption{color:#778278;font-size:10px;margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .public-property-actions{display:flex;justify-content:flex-end;gap:9px;flex-wrap:wrap;margin-top:22px}
+  .public-property-actions a,.public-property-actions button{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+  .public-property-footer{text-align:center;color:#778278;font-size:11px;padding:18px 0 3px}
+  @media(max-width:760px){
+    .public-property-root{padding:12px}
+    .public-property-header{padding:23px 20px 20px}
+    .public-property-header h1{font-size:30px}
+    .public-property-hero{grid-template-columns:1fr}
+    .public-property-photo,.public-property-photo img{min-height:250px}
+    .public-property-details,.public-property-section{padding:21px}
+    .public-property-details h2{font-size:28px}
+    .public-property-specs{grid-template-columns:repeat(2,1fr)}
   }
-  .dormus-system-loading-card{
-    position:relative;width:min(1120px,calc(100vw - 34px));border:0;border-radius:0;
-    background:transparent;box-shadow:none;
-  }
-  .dormus-system-loading-media{
-    height:min(68vh,680px);min-height:360px;aspect-ratio:auto;border:1px solid rgba(227,155,128,.38);
-    border-radius:28px;background:#071913;box-shadow:0 30px 100px rgba(0,0,0,.45),inset 0 0 80px rgba(0,0,0,.2);
-  }
-  .dormus-system-loading-media video{display:none!important}
-  .dormus-system-loading-fallback{
-    z-index:1!important;opacity:1!important;overflow:hidden;
-    background:
-      radial-gradient(circle at 50% 44%,rgba(65,145,121,.72) 0,rgba(25,76,61,.6) 20%,transparent 48%),
-      radial-gradient(circle at 18% 12%,rgba(227,155,128,.18),transparent 30%),
-      linear-gradient(135deg,#071913,#0c2e25 48%,#06140f);
-  }
-  .dormus-system-loading-fallback::before{
-    content:"";position:absolute;width:min(72vw,680px);aspect-ratio:1;border:1px solid rgba(227,155,128,.26);
-    border-radius:50%;box-shadow:0 0 0 44px rgba(227,155,128,.06),0 0 0 88px rgba(227,155,128,.035);
-    animation:dormus-presentation-orbit 16s linear infinite;
-  }
-  .dormus-system-loading-fallback::after{
-    content:"DORMUS";position:absolute;left:0;right:0;bottom:12%;text-align:center;
-    color:rgba(246,241,229,.12);font:clamp(34px,7vw,78px) Georgia;letter-spacing:clamp(5px,1.5vw,17px);
-  }
-  .dormus-system-loading-fallback span{
-    position:relative;z-index:2;font:clamp(180px,28vw,330px) Georgia;color:#e8a38c;
-    text-shadow:0 0 35px rgba(227,155,128,.22);animation:dormus-presentation-breathe 5.5s ease-in-out infinite;
-  }
-  .dormus-system-loading-fallback i{
-    z-index:2;width:min(45vw,420px);border-color:rgba(246,241,229,.42);
-    box-shadow:0 0 35px rgba(227,155,128,.16);animation:dormus-presentation-spin 10s linear infinite;
-  }
-  .dormus-system-loading-vignette{
-    z-index:3!important;background:linear-gradient(180deg,rgba(3,15,11,.03),rgba(3,15,11,.2) 55%,rgba(3,15,11,.55));
-  }
-  .dormus-system-loading-copy{
-    position:relative;z-index:4;gap:8px;padding:24px 6px 14px;text-align:center;
-  }
-  .dormus-system-loading-kicker{font-size:11px;letter-spacing:2.4px}
-  .dormus-system-loading-copy strong{font-size:clamp(25px,3vw,36px)}
-  .dormus-system-loading-copy>span:last-child{font-size:13px;color:#c5d8cf}
-  .dormus-system-loading-progress{position:relative;z-index:4;width:min(450px,70%);margin:0 auto 4px}
-  @keyframes dormus-presentation-orbit{to{transform:rotate(360deg)}}
-  @keyframes dormus-presentation-spin{to{transform:rotate(-360deg)}}
-  @keyframes dormus-presentation-breathe{0%,100%{transform:scale(.94);opacity:.78}50%{transform:scale(1.04);opacity:1}}
-  @media(max-width:560px){
-    .dormus-system-loading-card{width:calc(100vw - 24px)}
-    .dormus-system-loading-media{height:58vh;min-height:310px;border-radius:20px}
-    .dormus-system-loading-copy{padding-top:18px}
-    .dormus-system-loading-progress{width:82%}
-  }
-  @media(prefers-reduced-motion:reduce){
-    .dormus-system-loading-fallback::before,.dormus-system-loading-fallback span,.dormus-system-loading-fallback i{animation:none}
-  }
+  body.dormus-public-mode{background:#f5f1e8}
+  body.dormus-public-mode .dormus-system-loading{display:none!important}
 </style>
+<script id="dormus-public-property-share">
+(function(){
+  'use strict';
+  var HASH_PREFIX='dormus-public=';
+  var cleanText=function(v){return String(v==null?'':v).trim()};
+  var escPublic=function(v){return cleanText(v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]})};
+  var moneyPublic=function(v){return v?Number(v).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}):'Valor não informado'};
+  var available=function(v){return /dispon[ií]vel/i.test(cleanText(v))};
+  var address=function(p){return [p.address,p.number&&('nº '+p.number),p.complement,p.neighborhood,p.city,p.state,p.zip].filter(Boolean).join(' · ')||'Endereço não informado'};
+  var safeImageUrl=function(value){
+    var url=cleanText(value);
+    return /^(https:\/\/|http:\/\/|data:image\/)/i.test(url)?url:'';
+  };
+  var encodePayload=function(value){
+    var raw=unescape(encodeURIComponent(JSON.stringify(value)));
+    return btoa(raw).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  };
+  var decodePayload=function(value){
+    try{
+      var raw=atob(String(value).replace(/-/g,'+').replace(/_/g,'/')+'='.repeat((4-String(value).length%4)%4));
+      return JSON.parse(decodeURIComponent(escape(raw)));
+    }catch(error){return null}
+  };
+  var db=function(){return window.DormusDB||{}};
+  var findProperty=function(id){return (db().properties||[]).find(function(item){return String(item.id)===String(id)})};
+  var cleanBaseUrl=function(){
+    var url=new URL(location.href);
+    url.search='';
+    url.hash='';
+    return url.toString();
+  };
+  var payloadFor=function(property,files){
+    return {
+      v:1,
+      name:property.name||'Imóvel',
+      code:property.code||'',
+      type:property.type||'',
+      status:property.status||'Disponível',
+      address:address(property),
+      rent:property.rent||'',
+      area:property.area||'',
+      rooms:property.rooms||'',
+      bathrooms:property.bathrooms||'',
+      parking:property.parking||'',
+      condominium:property.condominium||'',
+      iptu:property.iptu||'',
+      notes:property.notes||'',
+      images:(files||[]).filter(function(file){return file&&file.type&&file.type.indexOf('image/')===0}).map(function(file){
+        return {name:file.name||'Foto do imóvel',room:file.room||'Geral',url:safeImageUrl(file.url)}
+      }).filter(function(file){return file.url}).slice(0,18)
+    };
+  };
+  var shareUrlFor=function(payload){
+    var url=new URL(cleanBaseUrl());
+    url.searchParams.set('dormus_public','1');
+    url.hash=HASH_PREFIX+encodePayload(payload);
+    return url.toString();
+  };
+  var whatsappUrl=function(url,payload){
+    var message='Olá! Confira a apresentação deste imóvel: '+payload.name+(payload.address?' · '+payload.address:'')+'\\n\\n'+url;
+    return 'https://wa.me/?text='+encodeURIComponent(message);
+  };
+  var attachmentsFor=function(id){
+    if(typeof window.listAttachments==='function')return window.listAttachments('property',id);
+    return Promise.resolve([]);
+  };
+  var shareData=function(id){
+    var property=findProperty(id);
+    if(!property)return Promise.reject(new Error('Imóvel não encontrado.'));
+    return attachmentsFor(id).catch(function(){return []}).then(function(files){
+      var payload=payloadFor(property,files);
+      return {property:property,payload:payload,url:shareUrlFor(payload)};
+    });
+  };
+  window.sharePropertyWhatsApp=function(id){
+    shareData(id).then(function(result){
+      if(location.protocol==='file:'){
+        alert('O compartilhamento por WhatsApp precisa de um endereço HTTPS. Publique este HTML no endereço da sua imobiliária e use o botão novamente.');
+        return;
+      }
+      window.open(whatsappUrl(result.url,result.payload),'_blank','noopener');
+    }).catch(function(error){alert(error.message||'Não foi possível preparar a apresentação do imóvel.')});
+  };
+  window.copyPropertyPresentationLink=function(id){
+    shareData(id).then(function(result){
+      if(location.protocol==='file:'){
+        alert('O link público só funciona depois que este HTML estiver hospedado em um endereço HTTPS.');
+        return;
+      }
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(result.url).then(function(){window.dormusToast?window.dormusToast('Link da apresentação copiado.'):alert('Link da apresentação copiado.')});
+      }else{window.prompt('Copie o link da apresentação:',result.url)}
+    }).catch(function(error){alert(error.message||'Não foi possível criar o link da apresentação.')});
+  };
+  function addPresentationAction(){
+    var actions=document.querySelector('.presentation-modal .presentation-actions');
+    if(!actions||actions.querySelector('[data-public-property-share]'))return;
+    var edit=[].slice.call(actions.querySelectorAll('button')).find(function(button){return /openModal\(['"]property['"]/.test(button.getAttribute('onclick')||'')});
+    var match=edit&&String(edit.getAttribute('onclick')||'').match(/openModal\(['"]property['"]\s*,\s*['"]([^'"]+)/);
+    if(!match)return;
+    var id=match[1],share=document.createElement('button');
+    share.type='button';share.className='button button-whatsapp-share';share.setAttribute('data-public-property-share','1');share.textContent='💬 Compartilhar no WhatsApp';share.onclick=function(){window.sharePropertyWhatsApp(id)};
+    actions.insertBefore(share,actions.lastElementChild||null);
+    var copy=document.createElement('button');
+    copy.type='button';copy.className='button button-small';copy.textContent='🔗 Copiar link';copy.onclick=function(){window.copyPropertyPresentationLink(id)};
+    actions.insertBefore(copy,actions.lastElementChild||null);
+  }
+  function publicPage(payload){
+    var first=payload.images&&payload.images[0],gallery=(payload.images||[]).map(function(image){
+      return '<figure><img loading="lazy" src="'+escPublic(safeImageUrl(image.url))+'" alt="'+escPublic(image.name||'Foto do imóvel')+'"><figcaption>'+escPublic(image.room||image.name||'Foto')+'</figcaption></figure>';
+    }).join('');
+    var base=cleanBaseUrl(),wa=whatsappUrl(location.href,payload);
+    window.DormusPublicPresentation=true;
+    document.body.classList.add('dormus-public-mode');
+    var app=document.querySelector('.app');if(app)app.style.display='none';
+    var login=document.getElementById('login-screen');if(login)login.hidden=true;
+    var modal=document.getElementById('modal-root');if(modal)modal.innerHTML='';
+    var loading=document.getElementById('dormus-system-loading');if(loading){loading.classList.remove('is-visible');loading.hidden=true}
+    var publicGuard=new MutationObserver(function(){
+      if(app)app.style.display='none';
+      if(login)login.hidden=true;
+      if(loading){loading.classList.remove('is-visible');loading.hidden=true}
+    });
+    publicGuard.observe(document.body,{attributes:true,subtree:true,attributeFilter:['style','hidden','class']});
+    var root=document.createElement('main');root.id='dormus-public-root';root.className='public-property-root';
+    var specs=[
+      ['Área',payload.area||'—'],['Quartos',payload.rooms||'—'],['Banheiros',payload.bathrooms||'—'],
+      ['Garagem',payload.parking||'—'],['Condomínio',payload.condominium?moneyPublic(payload.condominium):'—'],['IPTU mensal',payload.iptu?moneyPublic(payload.iptu):'—']
+    ].map(function(item){return '<div><span>'+escPublic(item[0])+'</span><strong>'+escPublic(item[1])+'</strong></div>'}).join('');
+    root.innerHTML='<div class="public-property-shell"><a class="public-property-brand" href="'+escPublic(base)+'"><span class="public-property-brand-mark">D</span><span><strong>Dormus</strong><small>GESTÃO IMOBILIÁRIA</small></span></a><article class="public-property-card"><header class="public-property-header"><div class="eyebrow">Apresentação do imóvel</div><h1>'+escPublic(payload.name||'Imóvel')+'</h1><p>Uma visão completa para você conhecer o imóvel antes de agendar a visita.</p></header><div class="public-property-hero"><div class="public-property-photo '+(first?'':'empty')+'">'+(first?'<img src="'+escPublic(safeImageUrl(first.url))+'" alt="'+escPublic(first.name||payload.name||'Foto do imóvel')+'">':'')+'<span class="public-property-status">'+(typeof badge==='function'?badge(payload.status||'Disponível'):'')+'</span></div><div class="public-property-details"><div class="public-property-code">'+escPublic(payload.code||'Sem código')+(payload.type?' · '+escPublic(payload.type):'')+'</div><h2>'+escPublic(payload.name||'Imóvel')+'</h2><div class="public-property-address">'+escPublic(payload.address)+'</div><div class="public-property-price"><small>Aluguel mensal</small>'+escPublic(moneyPublic(payload.rent))+'</div><div class="public-property-specs">'+specs+'</div><div class="public-property-actions"><a class="button button-whatsapp-share" href="'+escPublic(wa)+'" target="_blank" rel="noopener">💬 Falar no WhatsApp</a><button class="button" type="button" onclick="copyPublicPresentationLink()">🔗 Copiar link</button></div></div></div><section class="public-property-section"><h3>Sobre o imóvel</h3><p>'+escPublic(payload.notes||'Nenhuma observação informada.')+'</p></section>'+(gallery?'<section class="public-property-section"><h3>Fotos do imóvel</h3><div class="public-property-gallery">'+gallery+'</div></section>':'')+'</article><div class="public-property-footer">Apresentação compartilhada pelo Dormus · Gestão imobiliária</div></div>';
+    document.body.appendChild(root);
+  }
+  window.copyPublicPresentationLink=function(){
+    var value=location.href;
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(value).then(function(){alert('Link copiado.')});
+    else window.prompt('Copie o link da apresentação:',value);
+  };
+  var publicToken=location.hash.indexOf('#'+HASH_PREFIX)===0?location.hash.slice(HASH_PREFIX.length+1):'';
+  var publicPayload=publicToken?decodePayload(publicToken):null;
+  if(publicPayload&&publicPayload.v===1)publicPage(publicPayload);
+  else{
+    var observer=new MutationObserver(addPresentationAction);
+    observer.observe(document.body,{childList:true,subtree:true});
+    setTimeout(addPresentationAction,300);
+  }
+})();
+</script>
 </body>
 </html>
