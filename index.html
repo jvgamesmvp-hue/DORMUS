@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 2.6</title>
+  <title>Dormus | Gestão imobiliária · 2.8</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -7815,7 +7815,7 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
        var desc='Aluguel recebido'+(tenant?' · '+esc(tenant):'');
         var property=item.p.name||item.p.address||'Imóvel não informado';
         var competence=String(selectedCompetence||item.month||'').slice(0,7),competenceLabel=competence.indexOf('-')>=0?competence.split('-').reverse().join('/'):competence;
-        return '<tr><td class="date">'+esc(competenceLabel||'—')+'</td><td class="description">'+desc+'<div class="property">'+esc(property)+'</div><div class="payment">Data da baixa: '+esc(datePt(payment)||'Não informada para esta competência')+'</div></td><td class="money">'+money(item.gross)+'</td><td class="money"></td><td class="money">'+money(balance)+'</td></tr>';
+        return '<tr><td class="date">'+esc(competenceLabel||'—')+'</td><td class="description">'+desc+'<div class="property">'+esc(property)+'</div>'+(payment?'<div class="payment">Data da baixa: '+esc(datePt(payment))+'</div>':'')+'</td><td class="money">'+money(item.gross)+'</td><td class="money"></td><td class="money">'+money(balance)+'</td></tr>';
      }).join('');
      var fees=items.reduce(function(sum,item){return sum+item.fee;},0);
      var deductions=items.reduce(function(sum,item){return sum+item.deduction;},0);
