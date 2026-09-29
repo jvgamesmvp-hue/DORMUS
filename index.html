@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 3.2</title>
+  <title>Dormus | Gestão imobiliária · 3.4</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -10566,27 +10566,56 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
   }
 
   function printStatement(x){
-    var popup=window.open('','_blank','width=1000,height=800');
-    if(!popup){
-      alert('O navegador bloqueou a janela de impressão. Permita pop-ups para o DORMUS e tente novamente.');
-      return;
+    /*
+     * Usa novamente o demonstrativo original do DORMUS. Para um aluguel
+     * ainda pendente de repasse, cria apenas um registro temporário em
+     * memória; ele não é salvo no banco e permite usar o mesmo layout antigo.
+     */
+    var d=data(), transfer=x.transfer, temporary=false;
+    if(!transfer){
+      temporary=true;
+      transfer={
+        id:'preview-'+x.r.id,
+        chargeId:x.r.id,
+        contractId:x.r.contractId,
+        propertyId:x.r.propertyId,
+        ownerId:x.contract.ownerId ?? x.contract.proprietarioId ?? x.owner.id ?? null,
+        referenceMonth:x.month,
+        gross:x.gross,
+        fee:x.fee,
+        deduction:x.deduction,
+        net:x.net,
+        date:x.r.paymentDate || ''
+      };
+      d.ownerTransfers=(d.ownerTransfers || []).concat([transfer]);
     }
-    var title='Demonstrativo de repasse';
-    var html='<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+title+'</title><style>'+
-      'body{font-family:Arial,sans-serif;color:#182a36;padding:36px}h1{color:#0d3c43}'+
-      'table{width:100%;border-collapse:collapse;margin-top:24px}th,td{border:1px solid #ccd5da;padding:10px;text-align:left}'+
-      'th{background:#edf3f4}@media print{button{display:none}}'+
-      '</style></head><body><h1>Prestação de contas</h1>'+
-      '<p><b>Proprietário:</b> '+esc(x.owner.name || 'Não informado')+'</p>'+
-      '<p><b>Imóvel:</b> '+esc(x.property.name || x.property.address || 'Não informado')+'</p>'+
-      '<p><b>Locatário:</b> '+esc(x.tenant.name || 'Não informado')+'</p>'+
-      '<p><b>Competência:</b> '+esc(x.month || '—')+'</p>'+
-      '<p><b>Data do pagamento:</b> '+esc(x.r.paymentDate || '—')+'</p>'+
-      '<table><tr><th>Aluguel recebido</th><th>Administração</th><th>Desconto</th><th>Valor a repassar</th></tr>'+
-      '<tr><td>'+money(x.gross)+'</td><td>'+money(x.fee)+'</td><td>'+money(x.deduction)+'</td><td><b>'+money(x.net)+'</b></td></tr></table>'+
-      '<p style="margin-top:40px;color:#60717b">DORMUS · Demonstrativo de repasse ao proprietário</p>'+
-      '<script>window.onload=function(){window.print()}<\/script></body></html>';
-    popup.document.open(); popup.document.write(html); popup.document.close(); popup.focus();
+    try{
+      if(typeof window.printOwnerTransferStatement==='function'){
+        window.printOwnerTransferStatement(transfer.id);
+      }else{
+        alert('O demonstrativo original não está disponível nesta versão.');
+      }
+    }finally{
+      if(temporary)d.ownerTransfers=(d.ownerTransfers || []).filter(function(item){
+        return String(item.id)!==String(transfer.id);
+      });
+    }
+  }
+
+  /*
+   * Reassume explicitamente o gerador original do DORMUS (versão 885).
+   * Assim a nova tabela de repasses não altera o layout do demonstrativo.
+   */
+  function printStatement(x){
+    if(typeof window.DormusOwnerStatementPrint==='function'){
+      window.DormusOwnerStatementPrint(x.r.id);
+    }else if(typeof window.DormusPrintOwnerCharge884==='function'){
+      window.DormusPrintOwnerCharge884(x.r.id);
+    }else if(typeof window.printOwnerTransferStatement==='function'){
+      window.printOwnerTransferStatement(x.transfer ? x.transfer.id : x.r.id);
+    }else{
+      alert('O demonstrativo original não está disponível nesta versão.');
+    }
   }
 
   var repasseTab='available';
