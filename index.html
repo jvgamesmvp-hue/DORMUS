@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 3.1</title>
+  <title>Dormus | Gestão imobiliária · 3.2</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -10670,6 +10670,7 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
     document.querySelectorAll('.nav button').forEach(function(item){if(item.id!=='nav-repasse-owner')item.classList.remove('active');});
     var nav=document.getElementById('nav-repasse-owner'); if(nav)nav.classList.add('active');
     var crumb=document.getElementById('crumb'); if(crumb)crumb.textContent='Repasse ao proprietário';
+    setupRealtime();
     renderRepasse(); window.scrollTo(0,0);
   };
   window.generateOwnerTransfers=async function(){renderRepasse();};
@@ -10687,7 +10688,12 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
         else if(document.getElementById('rents')?.classList.contains('active') && typeof window.renderRents==='function')window.renderRents();
       }).subscribe();
   }
-  function boot(){ensureRepasseView();setupRealtime();setTimeout(setupRealtime,1200);}
+  /*
+   * Não abra o canal Realtime durante o carregamento inicial. O DORMUS já
+   * precisa carregar e renderizar vários módulos; o canal é ativado somente
+   * quando o usuário entra em Repasse.
+   */
+  function boot(){ensureRepasseView();}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
