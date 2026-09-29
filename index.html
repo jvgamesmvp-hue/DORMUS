@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 2.8</title>
+  <title>Dormus | Gestão imobiliária · 2.9</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -10300,5 +10300,376 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
   };
 })();
 </script>
+<script id="dormus-final-rent-payment-and-repasse-fix">
+(function(){
+  'use strict';
+
+  /*
+   * Esta é a camada final do fluxo. O arquivo recebeu algumas versões antigas
+   * do módulo de repasse; manter esta implementação por último faz com que
+   * ela seja a autoridade, sem depender de handlers anteriores.
+   */
+  function data(){ return window.DormusDB || {}; }
+  function esc(value){
+    return String(value == null ? '' : value).replace(/[&<>"']/g,function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function money(value){
+    return Number(value || 0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+  }
+  function field(id){
+    var element=document.getElementById(id);
+    return element && typeof element.value==='string' ? element.value.trim() : '';
+  }
+  function wait(ms){ return new Promise(function(resolve){ setTimeout(resolve,ms); }); }
+  function currentMonth(){
+    var el=document.getElementById('repasse-month-final');
+    if(el && el.value)return String(el.value).slice(0,7);
+    var rentMonth=document.getElementById('rent-month-filter');
+    if(rentMonth && rentMonth.value)return String(rentMonth.value).slice(0,7);
+    var now=new Date();
+    return now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  }
+  function recordMonth(r){
+    return String(r && (r.referenceMonth || r.dueDate) || '').slice(0,7);
+  }
+  function isPaid(r){ return Number(r && r.paidAmount || 0) > 0; }
+  function transferFor(r){
+    return (data().ownerTransfers || []).find(function(item){
+      return String(item.chargeId)===String(r.id);
+    }) || null;
+  }
+  function isTransferred(item){
+    return !!item && !/cancel|estorn/i.test(String(item.status || '')) &&
+      (item.status == null || /repass/i.test(String(item.status)));
+  }
+  function contextFor(r){
+    var d=data();
+    var contract=(d.contracts || []).find(function(x){return String(x.id)===String(r.contractId);}) || {};
+    var property=(d.properties || []).find(function(x){
+      return String(x.id)===String(r.propertyId) || String(x.id)===String(contract.propertyId);
+    }) || {};
+    var ownerId=contract.ownerId ?? contract.proprietarioId ?? property.ownerId ??
+      property.proprietarioId ?? r.ownerId;
+    var owner=(d.owners || []).find(function(x){return String(x.id)===String(ownerId);}) || {};
+    var tenant=(d.tenants || []).find(function(x){
+      return String(x.id)===String(r.tenantId) || String(x.id)===String(contract.tenantId);
+    }) || {};
+    var gross=Number(r.paidAmount || 0);
+    var fee=gross*Number(contract.adminFee || 0)/100;
+    var month=recordMonth(r);
+    var deduction=typeof window.ownerMaintenanceDeduction==='function' ?
+      Number(window.ownerMaintenanceDeduction(r.propertyId,month) || 0) : 0;
+    return {
+      r:r,contract:contract,property:property,owner:owner,tenant:tenant,
+      month:month,gross:gross,fee:fee,deduction:deduction,
+      net:Math.max(gross-fee-deduction,0),transfer:transferFor(r)
+    };
+  }
+  function months(){
+    var set={};
+    (data().rentalCharges || []).filter(isPaid).forEach(function(r){
+      var m=recordMonth(r); if(m)set[m]=true;
+    });
+    var now=new Date(),today=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+    if(!set[today])set[today]=true;
+    return Object.keys(set).sort().reverse();
+  }
+  function monthLabel(value){
+    var parts=String(value || '').split('-');
+    if(parts.length<2)return value || '';
+    return new Date(Number(parts[0]),Number(parts[1])-1,1)
+      .toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  }
+
+  async function verifyRemotePayment(id, expected){
+    var client=window.DormusSupabase;
+    if(!client)return false;
+    for(var attempt=0;attempt<3;attempt++){
+      var result=await client.from('dormus_data').select('data').eq('id',1).maybeSingle();
+      if(!result.error){
+        var remote=result.data && result.data.data && (result.data.data.rentalCharges || [])
+          .find(function(item){return String(item.id)===String(id);});
+        if(remote &&
+          Number(remote.paidAmount || 0)===Number(expected.paidAmount || 0) &&
+          String(remote.paymentDate || '')===String(expected.paymentDate || '') &&
+          String(remote.statusOverride || '')===String(expected.statusOverride || '')){
+          return true;
+        }
+      }
+      if(attempt<2)await wait(250*(attempt+1));
+    }
+    return false;
+  }
+  async function verifyRemoteTransfer(chargeId){
+    var client=window.DormusSupabase;
+    if(!client)return false;
+    for(var attempt=0;attempt<3;attempt++){
+      var result=await client.from('dormus_data').select('data').eq('id',1).maybeSingle();
+      if(!result.error){
+        var transfers=result.data && result.data.data && (result.data.data.ownerTransfers || []);
+        if(transfers.some(function(item){
+          return String(item.chargeId)===String(chargeId) &&
+            !/cancel|estorn/i.test(String(item.status || '')) &&
+            (item.status == null || /repass/i.test(String(item.status)));
+        }))return true;
+      }
+      if(attempt<2)await wait(250*(attempt+1));
+    }
+    return false;
+  }
+
+  /*
+   * Reenvio direto é usado somente quando a chamada de save() falha ou a
+   * leitura de confirmação ainda enxerga um snapshot antigo. Assim uma
+   * resposta tardia de uma tentativa anterior não desfaz uma baixa válida.
+   */
+  async function forcePersistLatestState(){
+    var client=window.DormusSupabase;
+    if(!client)throw new Error('Conexão com o banco indisponível.');
+    var snapshot=JSON.parse(JSON.stringify(data()));
+    if(Array.isArray(snapshot.attachments)){
+      snapshot.attachments=snapshot.attachments.map(function(file){
+        var copy=Object.assign({},file);
+        delete copy.url; delete copy.signedUrl; delete copy.previewUrl;
+        return copy;
+      });
+    }
+    var result=await client.from('dormus_data').upsert({
+      id:1,
+      data:snapshot,
+      updated_at:new Date().toISOString()
+    },{onConflict:'id'});
+    if(result.error)throw result.error;
+    return true;
+  }
+
+  function redrawAfterDataChange(){
+    try{ if(typeof window.renderRents==='function')window.renderRents(); }catch(e){}
+    try{ if(typeof window.renderOwnerTransfers==='function')window.renderOwnerTransfers(); }catch(e){}
+  }
+
+  /*
+   * A baixa só volta ao estado anterior se a persistência final realmente
+   * falhar. A versão anterior fazia rollback também quando a leitura de
+   * confirmação falhava depois de um upsert possivelmente concluído.
+   */
+  window.saveRentPayment=async function(id){
+    var d=data(), r=(d.rentalCharges || []).find(function(item){return String(item.id)===String(id);});
+    if(!r){alert('Lançamento de aluguel não encontrado.');return false;}
+    var before=JSON.parse(JSON.stringify(r));
+    var beforePayments=JSON.parse(JSON.stringify(d.payments || []));
+    try{
+      var raw=field('rent-paid-amount')
+        .replace(/R\$\s?/g,'');
+      if(raw.includes(',') && raw.includes('.'))raw=raw.replace(/\./g,'').replace(',','.');
+      else if(raw.includes(','))raw=raw.replace(',','.');
+      var amount=Number(raw || 0);
+      if(!Number.isFinite(amount) || amount<0){
+        alert('Informe um valor recebido válido.'); return false;
+      }
+      r.paidAmount=amount;
+      r.paymentDate=field('rent-payment-date') || rentToday();
+      r.paymentMethod=field('rent-payment-method') || 'PIX';
+      r.proof=field('rent-proof');
+      r.notes=field('rent-notes');
+      var chosen=field('rent-status');
+      var total=Number(typeof rentChargeTotal==='function' ? rentChargeTotal(r) : 0);
+      if(amount>0 && total>0 && amount>=total)chosen='Pago';
+      else if(!chosen || chosen==='A vencer'){
+        chosen=amount<=0 ? 'A vencer' : (total>0 && amount<total ? 'Parcial' : 'Pago');
+      }else if(chosen==='Pago' && total>0 && amount<total){
+        chosen='Parcial';
+      }
+      r.statusOverride=chosen;
+      r.updatedAt=new Date().toISOString();
+      d.payments=(d.rentalCharges || []).filter(isPaid);
+      window.DormusDB=d;
+
+      var saved=typeof window.save==='function' ? await window.save() : false;
+      var confirmed=saved!==false && await verifyRemotePayment(id,r);
+      if(!confirmed){
+        await forcePersistLatestState();
+        confirmed=await verifyRemotePayment(id,r);
+      }
+      if(!confirmed)throw new Error('O Supabase não confirmou a gravação desta baixa.');
+
+      redrawAfterDataChange();
+      if(typeof closeModal==='function')closeModal();
+      if(typeof showView==='function')showView('rents');
+      return true;
+    }catch(error){
+      Object.assign(r,before);
+      d.payments=beforePayments;
+      window.DormusDB=d;
+      redrawAfterDataChange();
+      console.error('Erro ao salvar baixa:',error);
+      alert('Não foi possível salvar a baixa.\n\n'+(error && error.message || error));
+      return false;
+    }
+  };
+
+  function ensureRepasseView(){
+    var view=document.getElementById('repasse');
+    if(!view){
+      view=document.createElement('section');
+      view.id='repasse'; view.className='view';
+      var main=document.querySelector('.main');
+      if(main)main.appendChild(view);
+    }
+    if(!document.getElementById('repasse-standalone-content')){
+      view.innerHTML='<div class="page-head"><div><div class="eyebrow">Gestão financeira</div><h1>Repasse ao proprietário</h1><p class="lead">Aluguéis pagos aparecem aqui imediatamente. Marque somente os repasses ainda pendentes.</p></div><button type="button" class="button button-primary" id="repasse-refresh-final">↻ Atualizar repasses</button></div><section class="panel repasse-panel"><div class="panel-head"><div><div class="panel-title">Repasses aos proprietários</div><div class="panel-kicker">O histórico fica separado dos valores disponíveis.</div></div></div><div id="repasse-standalone-content"></div></section>';
+    }
+    var refresh=document.getElementById('repasse-refresh-final');
+    if(refresh && !refresh.dataset.boundFinal){
+      refresh.dataset.boundFinal='1';
+      refresh.addEventListener('click',function(){window.renderOwnerTransfers();});
+    }
+    return view;
+  }
+
+  function printStatement(x){
+    var popup=window.open('','_blank','width=1000,height=800');
+    if(!popup){
+      alert('O navegador bloqueou a janela de impressão. Permita pop-ups para o DORMUS e tente novamente.');
+      return;
+    }
+    var title='Demonstrativo de repasse';
+    var html='<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>'+title+'</title><style>'+
+      'body{font-family:Arial,sans-serif;color:#182a36;padding:36px}h1{color:#0d3c43}'+
+      'table{width:100%;border-collapse:collapse;margin-top:24px}th,td{border:1px solid #ccd5da;padding:10px;text-align:left}'+
+      'th{background:#edf3f4}@media print{button{display:none}}'+
+      '</style></head><body><h1>Prestação de contas</h1>'+
+      '<p><b>Proprietário:</b> '+esc(x.owner.name || 'Não informado')+'</p>'+
+      '<p><b>Imóvel:</b> '+esc(x.property.name || x.property.address || 'Não informado')+'</p>'+
+      '<p><b>Locatário:</b> '+esc(x.tenant.name || 'Não informado')+'</p>'+
+      '<p><b>Competência:</b> '+esc(x.month || '—')+'</p>'+
+      '<p><b>Data do pagamento:</b> '+esc(x.r.paymentDate || '—')+'</p>'+
+      '<table><tr><th>Aluguel recebido</th><th>Administração</th><th>Desconto</th><th>Valor a repassar</th></tr>'+
+      '<tr><td>'+money(x.gross)+'</td><td>'+money(x.fee)+'</td><td>'+money(x.deduction)+'</td><td><b>'+money(x.net)+'</b></td></tr></table>'+
+      '<p style="margin-top:40px;color:#60717b">DORMUS · Demonstrativo de repasse ao proprietário</p>'+
+      '<script>window.onload=function(){window.print()}<\/script></body></html>';
+    popup.document.open(); popup.document.write(html); popup.document.close(); popup.focus();
+  }
+
+  var repasseTab='available';
+  function renderRepasse(){
+    var view=ensureRepasseView(), el=document.getElementById('repasse-standalone-content');
+    if(!el)return;
+    var ms=months(), selected=currentMonth() || ms[0] || '';
+    var all=(data().rentalCharges || []).filter(isPaid).filter(function(r){
+      return !selected || recordMonth(r)===selected;
+    }).map(contextFor);
+    var available=all.filter(function(x){return !isTransferred(x.transfer);});
+    var done=all.filter(function(x){return isTransferred(x.transfer);});
+    var rows=repasseTab==='done' ? done : available;
+    var totals=rows.reduce(function(sum,x){
+      sum.gross+=x.gross; sum.fee+=x.fee; sum.deduction+=x.deduction; sum.net+=x.net; return sum;
+    },{gross:0,fee:0,deduction:0,net:0});
+    var html='<div class="repasse-tabs-final"><button type="button" class="'+(repasseTab==='available'?'active':'')+'" data-tab-final="available">Disponíveis para repasse <b>'+available.length+'</b></button><button type="button" class="'+(repasseTab==='done'?'active':'')+'" data-tab-final="done">Já repassados <b>'+done.length+'</b></button></div>';
+    html+='<div class="repasse-filter-final"><label><span>Competência</span><select id="repasse-month-final">'+ms.map(function(m){return '<option value="'+esc(m)+'" '+(m===selected?'selected':'')+'>'+esc(monthLabel(m))+'</option>';}).join('')+'</select></label><span>'+(repasseTab==='done'?'Histórico de repasses já registrados':'Somente aluguéis pagos e ainda não repassados')+'</span></div>';
+    html+='<div class="repasse-summary"><div class="summary"><label>Recebido</label><strong>'+money(totals.gross)+'</strong></div><div class="summary"><label>Administração</label><strong>'+money(totals.fee)+'</strong></div><div class="summary"><label>Desconto manutenção</label><strong>'+money(totals.deduction)+'</strong></div><div class="summary"><label>'+(repasseTab==='done'?'Total repassado':'A repassar')+'</label><strong>'+money(totals.net)+'</strong></div></div>';
+    html+='<div class="table-wrap repasse-table-wrap-final"><table class="table repasse-table"><thead><tr><th>Proprietário / imóvel</th><th>Competência</th><th>Recebido</th><th>Admin.</th><th>Desconto</th><th>Repasse</th><th>Status</th><th>Ações</th></tr></thead><tbody>';
+    if(!rows.length)html+='<tr><td colspan="8" class="repasse-empty-final">'+(repasseTab==='done'?'Nenhum repasse registrado nesta competência.':'Nenhum aluguel pago disponível para repasse nesta competência.')+'</td></tr>';
+    rows.forEach(function(x){
+      var actions='';
+      if(repasseTab==='available')actions+='<button type="button" class="button button-small button-primary" data-mark-final="'+esc(x.r.id)+'">Marcar repasse</button>';
+      actions+='<button type="button" class="button button-small" data-print-final="'+esc(x.r.id)+'">🖨 Imprimir demonstrativo</button>';
+      html+='<tr><td><strong>'+esc(x.owner.name || 'Proprietário não identificado')+'</strong><div class="row-sub">'+esc(x.property.name || x.property.address || 'Imóvel não informado')+'</div></td><td>'+esc(x.month || '—')+'</td><td>'+money(x.gross)+'</td><td>'+money(x.fee)+'</td><td>'+money(x.deduction)+'</td><td><strong>'+money(x.net)+'</strong></td><td><span class="repasse-status-final '+(repasseTab==='done'?'done':'available')+'">'+(repasseTab==='done'?'Repassado':'Disponível para repasse')+'</span></td><td class="repasse-actions-final">'+actions+'</td></tr>';
+    });
+    html+='</tbody></table></div>'; el.innerHTML=html;
+    el.querySelectorAll('[data-tab-final]').forEach(function(button){
+      button.onclick=function(){repasseTab=button.dataset.tabFinal;renderRepasse();};
+    });
+    var select=document.getElementById('repasse-month-final');
+    if(select)select.onchange=renderRepasse;
+    el.querySelectorAll('[data-print-final]').forEach(function(button){
+      button.onclick=function(){
+        var charge=(data().rentalCharges || []).find(function(r){return String(r.id)===String(button.dataset.printFinal);});
+        if(charge)printStatement(contextFor(charge));
+      };
+    });
+    el.querySelectorAll('[data-mark-final]').forEach(function(button){
+      button.onclick=function(){markTransfer(button.dataset.markFinal,button);};
+    });
+  }
+
+  async function markTransfer(id,button){
+    var d=data(), r=(d.rentalCharges || []).find(function(item){return String(item.id)===String(id);});
+    if(!r || !isPaid(r)){alert('Este aluguel precisa estar baixado antes do repasse.');return;}
+    if(isTransferred(transferFor(r)))return;
+    var before=JSON.parse(JSON.stringify(d.ownerTransfers || []));
+    button.disabled=true; button.textContent='Salvando...';
+    try{
+      d.ownerTransfers=d.ownerTransfers || [];
+      var x=contextFor(r), tr={
+        id:typeof window.uid==='function'?window.uid():'ot-'+Date.now(),
+        chargeId:r.id,contractId:r.contractId,propertyId:r.propertyId,
+        ownerId:x.contract.ownerId ?? x.contract.proprietarioId ?? x.owner.id ?? null,
+        referenceMonth:x.month,gross:x.gross,fee:x.fee,deduction:x.deduction,
+        net:x.net,date:new Date().toISOString().slice(0,10),status:'Repassado'
+      };
+      d.ownerTransfers.push(tr); window.DormusDB=d;
+      var saved=typeof window.save==='function' ? await window.save() : false;
+      var confirmed=saved!==false && await verifyRemoteTransfer(r.id);
+      if(!confirmed){
+        await forcePersistLatestState();
+        confirmed=await verifyRemoteTransfer(r.id);
+      }
+      if(!confirmed)throw new Error('O Supabase não confirmou o repasse.');
+      repasseTab='available'; renderRepasse();
+    }catch(error){
+      d.ownerTransfers=before; window.DormusDB=d; renderRepasse();
+      alert(error && error.message || 'Não foi possível marcar o repasse.');
+    }
+  }
+
+  window.renderOwnerTransfers=renderRepasse;
+  window.openRepasseView=function(){
+    var view=ensureRepasseView();
+    document.querySelectorAll('.view').forEach(function(item){item.classList.toggle('active',item===view);});
+    document.querySelectorAll('[data-view]').forEach(function(item){item.classList.toggle('active',item.dataset.view==='repasse');});
+    document.querySelectorAll('.nav button').forEach(function(item){if(item.id!=='nav-repasse-owner')item.classList.remove('active');});
+    var nav=document.getElementById('nav-repasse-owner'); if(nav)nav.classList.add('active');
+    var crumb=document.getElementById('crumb'); if(crumb)crumb.textContent='Repasse ao proprietário';
+    renderRepasse(); window.scrollTo(0,0);
+  };
+  window.generateOwnerTransfers=async function(){renderRepasse();};
+
+  function setupRealtime(){
+    var client=window.DormusSupabase;
+    if(!client || window.__dormusRepasseRealtime)return;
+    window.__dormusRepasseRealtime=client.channel('dormus-data-realtime-final')
+      .on('postgres_changes',{event:'UPDATE',schema:'public',table:'dormus_data'},function(payload){
+        var incoming=payload && payload.new && payload.new.data;
+        if(!incoming)return;
+        var d=data(); Object.keys(incoming).forEach(function(key){d[key]=incoming[key];});
+        window.DormusDB=d;
+        if(document.getElementById('repasse')?.classList.contains('active'))renderRepasse();
+        else if(document.getElementById('rents')?.classList.contains('active') && typeof window.renderRents==='function')window.renderRents();
+      }).subscribe();
+  }
+  function boot(){ensureRepasseView();setupRealtime();setTimeout(setupRealtime,1200);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+<style id="dormus-final-rent-payment-and-repasse-style">
+  #repasse .repasse-tabs-final{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 15px;padding:5px;border:1px solid #dce3ea;border-radius:10px;background:#f6f8fa}
+  #repasse .repasse-tabs-final button{border:0;border-radius:7px;padding:9px 13px;background:transparent;color:#6f7d91;font-size:12px;font-weight:700;cursor:pointer}
+  #repasse .repasse-tabs-final button.active{background:#0d3c43;color:#19d19c}
+  #repasse .repasse-tabs-final b{display:inline-grid;place-items:center;min-width:20px;height:20px;margin-left:5px;border-radius:999px;background:#e5ebef;color:#40566a;font-size:10px}
+  #repasse .repasse-tabs-final button.active b{background:#19d19c;color:#0d3c43}
+  #repasse .repasse-filter-final{display:flex;align-items:end;gap:18px;flex-wrap:wrap;margin-bottom:15px;color:#6f7d91;font-size:12px}
+  #repasse .repasse-filter-final label{display:flex;flex-direction:column;gap:5px;font-weight:700;color:#344b5b}
+  #repasse .repasse-filter-final select{min-width:180px}
+  #repasse .repasse-status-final{display:inline-flex;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:700;white-space:nowrap}
+  #repasse .repasse-status-final.available{background:#e4f5ee;color:#087b5a}
+  #repasse .repasse-status-final.done{background:#e9eef4;color:#526b80}
+  #repasse .repasse-empty-final{text-align:center;padding:28px;color:#6f7d91}
+  #repasse .repasse-actions-final{display:flex;gap:6px;align-items:center;flex-wrap:wrap;white-space:normal}
+  #repasse .repasse-actions-final .button{font-size:11px;padding:7px 9px}
+  @media(max-width:720px){#repasse .repasse-filter-final{align-items:stretch;flex-direction:column}}
+</style>
 </body>
 </html>
