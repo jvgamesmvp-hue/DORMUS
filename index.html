@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 2.5</title>
+  <title>Dormus | Gestão imobiliária · 2.6</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -7759,11 +7759,12 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
      var o=(d.owners||[]).find(function(x){return String(x.id)===String(ownerId);})||{};
      var tenantId=r.tenantId??r.locatarioId??c.tenantId??c.locatarioId;
      var t=(d.tenants||[]).find(function(x){return String(x.id)===String(tenantId);})||{};
-     var month=String(r.referenceMonth||'').slice(0,7);
+      var tr=(d.ownerTransfers||[]).find(function(x){return String(x.chargeId)===String(r.id);})||null;
+      var month=String((tr&&tr.referenceMonth)||r.referenceMonth||'').slice(0,7);
      var gross=Number(r.paidAmount||0);
      var fee=gross*Number(c.adminFee||0)/100;
      var deduction=typeof window.ownerMaintenanceDeduction==='function'?Number(window.ownerMaintenanceDeduction(r.propertyId,month)||0):0;
-     return {r:r,c:c,p:p,o:o,t:t,ownerId:ownerId,month:month,gross:gross,fee:fee,deduction:deduction,net:Math.max(gross-fee-deduction,0)};
+      return {r:r,c:c,p:p,o:o,t:t,tr:tr,ownerId:ownerId,month:month,gross:gross,fee:fee,deduction:deduction,net:Math.max(gross-fee-deduction,0)};
    }
    function paidOptions(anchor){
      var d=current(), a=chargeContext(anchor);
@@ -7808,12 +7809,13 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
      var balance=0, totalEntry=0, totalExit=0;
      var rentRows=items.map(function(item){
        balance+=item.gross; totalEntry+=item.gross;
-       var payment=item.r.paymentDate||item.r.paidDate||item.r.dataPagamento||item.r.date;
+        var paymentCandidates=[item.r.paymentDate,item.r.paidDate,item.r.dataPagamento,item.r.date,item.tr&&item.tr.paymentDate,item.tr&&item.tr.date].filter(Boolean);
+        var payment=paymentCandidates.find(function(value){return String(value).slice(0,7)===String(selectedCompetence);})||'';
        var tenant=String(item.t.name||'').trim().split(/\s+/)[0];
        var desc='Aluguel recebido'+(tenant?' · '+esc(tenant):'');
         var property=item.p.name||item.p.address||'Imóvel não informado';
-        var competence=String(item.month||'').slice(0,7),competenceLabel=competence.indexOf('-')>=0?competence.split('-').reverse().join('/'):competence;
-        return '<tr><td class="date">'+esc(competenceLabel||'—')+'</td><td class="description">'+desc+'<div class="property">'+esc(property)+'</div><div class="payment">Data do pagamento: '+esc(datePt(payment)||'Não informada')+'</div></td><td class="money">'+money(item.gross)+'</td><td class="money"></td><td class="money">'+money(balance)+'</td></tr>';
+        var competence=String(selectedCompetence||item.month||'').slice(0,7),competenceLabel=competence.indexOf('-')>=0?competence.split('-').reverse().join('/'):competence;
+        return '<tr><td class="date">'+esc(competenceLabel||'—')+'</td><td class="description">'+desc+'<div class="property">'+esc(property)+'</div><div class="payment">Data da baixa: '+esc(datePt(payment)||'Não informada para esta competência')+'</div></td><td class="money">'+money(item.gross)+'</td><td class="money"></td><td class="money">'+money(balance)+'</td></tr>';
      }).join('');
      var fees=items.reduce(function(sum,item){return sum+item.fee;},0);
      var deductions=items.reduce(function(sum,item){return sum+item.deduction;},0);
@@ -8205,20 +8207,21 @@ ${document.getElementById('dormus-owner-transfer-statement-print-style')?.textCo
   function paid(r){return Number(r&&r.paidAmount||0)>0;}
   function transfer(r){return (D().ownerTransfers||[]).find(function(x){return String(x.chargeId)===String(r.id);})||null;}
   function isDone(t){return !!t&&!/cancel|estorn/i.test(String(t.status||''))&&(t.status==null||/repass/i.test(String(t.status)));}
+   function recordMonth(r){var tr=transfer(r);return String((tr&&tr.referenceMonth)||r.referenceMonth||'').slice(0,7);}
   function monthText(value){var p=String(value||'').slice(0,7).split('-');if(p.length<2||!p[0]||!p[1])return value||'';return new Date(Number(p[0]),Number(p[1])-1,1).toLocaleDateString('pt-BR',{month:'long',year:'numeric'});}
   function currentMonth(){var el=document.getElementById('repasse-month-887')||document.getElementById('repasse-month-881');return el&&el.value?String(el.value).slice(0,7):'';}
   function months(){
     var all=(D().rentalCharges||[]).filter(paid),set={};
-    all.forEach(function(r){var m=String(r.referenceMonth||'').slice(0,7);if(m)set[m]=1;});
+     all.forEach(function(r){var m=recordMonth(r);if(m)set[m]=1;});
     var now=new Date(),today=now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');if(!set[today])set[today]=1;
     return Object.keys(set).sort().reverse();
   }
   function ctx(r){
-    var d=D(),c=(d.contracts||[]).find(function(x){return String(x.id)===String(r.contractId);})||{},p=(d.properties||[]).find(function(x){return String(x.id)===String(r.propertyId)||String(x.id)===String(c.propertyId);})||{},ownerId=c.ownerId??c.proprietarioId??p.ownerId??p.proprietarioId??r.ownerId,o=(d.owners||[]).find(function(x){return String(x.id)===String(ownerId);})||{},t=(d.tenants||[]).find(function(x){return String(x.id)===String(r.tenantId)||String(x.id)===String(c.tenantId);})||{},gross=Number(r.paidAmount||0),fee=gross*Number(c.adminFee||0)/100,month=String(r.referenceMonth||'').slice(0,7),deduction=typeof window.ownerMaintenanceDeduction==='function'?Number(window.ownerMaintenanceDeduction(r.propertyId,month)||0):0;
+     var d=D(),c=(d.contracts||[]).find(function(x){return String(x.id)===String(r.contractId);})||{},p=(d.properties||[]).find(function(x){return String(x.id)===String(r.propertyId)||String(x.id)===String(c.propertyId);})||{},ownerId=c.ownerId??c.proprietarioId??p.ownerId??p.proprietarioId??r.ownerId,o=(d.owners||[]).find(function(x){return String(x.id)===String(ownerId);})||{},t=(d.tenants||[]).find(function(x){return String(x.id)===String(r.tenantId)||String(x.id)===String(c.tenantId);})||{},gross=Number(r.paidAmount||0),fee=gross*Number(c.adminFee||0)/100,month=recordMonth(r),deduction=typeof window.ownerMaintenanceDeduction==='function'?Number(window.ownerMaintenanceDeduction(r.propertyId,month)||0):0;
     return {r:r,c:c,p:p,o:o,t:t,month:month,gross:gross,fee:fee,deduction:deduction,net:Math.max(gross-fee-deduction,0),tr:transfer(r)};
   }
   function collection(selected){
-    return (D().rentalCharges||[]).filter(paid).filter(function(r){return !selected||String(r.referenceMonth||'').slice(0,7)===selected;}).map(ctx).filter(function(x){return tab==='done'?isDone(x.tr):!isDone(x.tr);});
+     return (D().rentalCharges||[]).filter(paid).filter(function(r){return !selected||recordMonth(r)===selected;}).map(ctx).filter(function(x){return tab==='done'?isDone(x.tr):!isDone(x.tr);});
   }
   function chargeTotal(r){
     try{if(typeof rentChargeTotal==='function')return Number(rentChargeTotal(r)||0)}catch(e){}
