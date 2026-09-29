@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 2.9</title>
+  <title>Dormus | Gestão imobiliária · 3.0</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -10386,7 +10386,7 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
   async function verifyRemotePayment(id, expected){
     var client=window.DormusSupabase;
     if(!client)return false;
-    for(var attempt=0;attempt<3;attempt++){
+    for(var attempt=0;attempt<8;attempt++){
       var result=await client.from('dormus_data').select('data').eq('id',1).maybeSingle();
       if(!result.error){
         var remote=result.data && result.data.data && (result.data.data.rentalCharges || [])
@@ -10398,14 +10398,14 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
           return true;
         }
       }
-      if(attempt<2)await wait(250*(attempt+1));
+      if(attempt<7)await wait(Math.min(700+attempt*650,3500));
     }
     return false;
   }
   async function verifyRemoteTransfer(chargeId){
     var client=window.DormusSupabase;
     if(!client)return false;
-    for(var attempt=0;attempt<3;attempt++){
+    for(var attempt=0;attempt<8;attempt++){
       var result=await client.from('dormus_data').select('data').eq('id',1).maybeSingle();
       if(!result.error){
         var transfers=result.data && result.data.data && (result.data.data.ownerTransfers || []);
@@ -10415,7 +10415,7 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
             (item.status == null || /repass/i.test(String(item.status)));
         }))return true;
       }
-      if(attempt<2)await wait(250*(attempt+1));
+      if(attempt<7)await wait(Math.min(700+attempt*650,3500));
     }
     return false;
   }
@@ -10436,13 +10436,37 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
         return copy;
       });
     }
-    var result=await client.from('dormus_data').upsert({
-      id:1,
-      data:snapshot,
-      updated_at:new Date().toISOString()
-    },{onConflict:'id'});
-    if(result.error)throw result.error;
-    return true;
+    var snapshots=[snapshot];
+    /*
+     * O log e a lixeira guardam cópias históricas. Se a linha ficou grande
+     * demais para o statement timeout do projeto, tente uma versão compacta
+     * sem tocar no estado exibido no navegador.
+     */
+    if(JSON.stringify(snapshot).length>650000){
+      var compact=JSON.parse(JSON.stringify(snapshot));
+      if(Array.isArray(compact.auditLog))compact.auditLog=compact.auditLog.slice(0,300);
+      if(Array.isArray(compact.trash))compact.trash=compact.trash.slice(0,100);
+      snapshots.push(compact);
+    }
+    var lastError=null;
+    /*
+     * Um statement timeout é ambíguo: o Postgres pode ter concluído o
+     * upsert, mas o navegador não recebeu a resposta. Repetir com backoff e
+     * verificar depois evita transformar uma gravação válida em rollback.
+     */
+    for(var snapshotIndex=0;snapshotIndex<snapshots.length;snapshotIndex++){
+      for(var attempt=0;attempt<4;attempt++){
+        var result=await client.from('dormus_data').upsert({
+          id:1,
+          data:snapshots[snapshotIndex],
+          updated_at:new Date().toISOString()
+        },{onConflict:'id'});
+        if(!result.error)return true;
+        lastError=result.error;
+        if(attempt<3)await wait(900*(attempt+1));
+      }
+    }
+    throw lastError || new Error('O Supabase não concluiu a gravação.');
   }
 
   function redrawAfterDataChange(){
@@ -10487,11 +10511,17 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
       d.payments=(d.rentalCharges || []).filter(isPaid);
       window.DormusDB=d;
 
-      var saved=typeof window.save==='function' ? await window.save() : false;
-      var confirmed=saved!==false && await verifyRemotePayment(id,r);
-      if(!confirmed){
-        await forcePersistLatestState();
+      /*
+       * Não usa o save() genérico aqui: ele mostra um alerta após o segundo
+       * timeout e não sabe diferenciar "não gravou" de "gravou, mas a
+       * resposta expirou". Esta baixa precisa de confirmação própria.
+       */
+      var confirmed=false, lastError=null;
+      for(var paymentAttempt=0;paymentAttempt<3 && !confirmed;paymentAttempt++){
+        try{ await forcePersistLatestState(); }
+        catch(error){ lastError=error; }
         confirmed=await verifyRemotePayment(id,r);
+        if(!confirmed && paymentAttempt<2)await wait(1200*(paymentAttempt+1));
       }
       if(!confirmed)throw new Error('O Supabase não confirmou a gravação desta baixa.');
 
@@ -10611,11 +10641,12 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
         net:x.net,date:new Date().toISOString().slice(0,10),status:'Repassado'
       };
       d.ownerTransfers.push(tr); window.DormusDB=d;
-      var saved=typeof window.save==='function' ? await window.save() : false;
-      var confirmed=saved!==false && await verifyRemoteTransfer(r.id);
-      if(!confirmed){
-        await forcePersistLatestState();
+      var confirmed=false, lastError=null;
+      for(var transferAttempt=0;transferAttempt<3 && !confirmed;transferAttempt++){
+        try{ await forcePersistLatestState(); }
+        catch(error){ lastError=error; }
         confirmed=await verifyRemoteTransfer(r.id);
+        if(!confirmed && transferAttempt<2)await wait(1200*(transferAttempt+1));
       }
       if(!confirmed)throw new Error('O Supabase não confirmou o repasse.');
       repasseTab='available'; renderRepasse();
