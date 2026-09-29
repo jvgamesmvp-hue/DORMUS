@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Dormus | Gestão imobiliária · 3.0</title>
+  <title>Dormus | Gestão imobiliária · 3.1</title>
   <style>
     :root{--ink:#20372d;--ink-2:#2d493c;--paper:#f5f1e8;--card:#fffdf8;--line:#ddd8ca;--muted:#778278;--brass:#c48e3c;--brass-2:#e5c277;--green:#dcebdc;--red:#f3dfd9;--shadow:0 16px 40px #24372d12}
     *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}
@@ -10323,6 +10323,11 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
     return element && typeof element.value==='string' ? element.value.trim() : '';
   }
   function wait(ms){ return new Promise(function(resolve){ setTimeout(resolve,ms); }); }
+  function savingState(active){
+    try{
+      if(typeof setDormusSavingState==='function')setDormusSavingState(active);
+    }catch(e){}
+  }
   function currentMonth(){
     var el=document.getElementById('repasse-month-final');
     if(el && el.value)return String(el.value).slice(0,7);
@@ -10386,7 +10391,7 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
   async function verifyRemotePayment(id, expected){
     var client=window.DormusSupabase;
     if(!client)return false;
-    for(var attempt=0;attempt<8;attempt++){
+    for(var attempt=0;attempt<4;attempt++){
       var result=await client.from('dormus_data').select('data').eq('id',1).maybeSingle();
       if(!result.error){
         var remote=result.data && result.data.data && (result.data.data.rentalCharges || [])
@@ -10398,14 +10403,14 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
           return true;
         }
       }
-      if(attempt<7)await wait(Math.min(700+attempt*650,3500));
+      if(attempt<3)await wait(500+attempt*500);
     }
     return false;
   }
   async function verifyRemoteTransfer(chargeId){
     var client=window.DormusSupabase;
     if(!client)return false;
-    for(var attempt=0;attempt<8;attempt++){
+    for(var attempt=0;attempt<4;attempt++){
       var result=await client.from('dormus_data').select('data').eq('id',1).maybeSingle();
       if(!result.error){
         var transfers=result.data && result.data.data && (result.data.data.ownerTransfers || []);
@@ -10415,7 +10420,7 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
             (item.status == null || /repass/i.test(String(item.status)));
         }))return true;
       }
-      if(attempt<7)await wait(Math.min(700+attempt*650,3500));
+      if(attempt<3)await wait(500+attempt*500);
     }
     return false;
   }
@@ -10455,7 +10460,7 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
      * verificar depois evita transformar uma gravação válida em rollback.
      */
     for(var snapshotIndex=0;snapshotIndex<snapshots.length;snapshotIndex++){
-      for(var attempt=0;attempt<4;attempt++){
+      for(var attempt=0;attempt<2;attempt++){
         var result=await client.from('dormus_data').upsert({
           id:1,
           data:snapshots[snapshotIndex],
@@ -10463,7 +10468,7 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
         },{onConflict:'id'});
         if(!result.error)return true;
         lastError=result.error;
-        if(attempt<3)await wait(900*(attempt+1));
+        if(attempt<1)await wait(1200);
       }
     }
     throw lastError || new Error('O Supabase não concluiu a gravação.');
@@ -10484,6 +10489,7 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
     if(!r){alert('Lançamento de aluguel não encontrado.');return false;}
     var before=JSON.parse(JSON.stringify(r));
     var beforePayments=JSON.parse(JSON.stringify(d.payments || []));
+    savingState(true);
     try{
       var raw=field('rent-paid-amount')
         .replace(/R\$\s?/g,'');
@@ -10517,11 +10523,11 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
        * resposta expirou". Esta baixa precisa de confirmação própria.
        */
       var confirmed=false, lastError=null;
-      for(var paymentAttempt=0;paymentAttempt<3 && !confirmed;paymentAttempt++){
+      for(var paymentAttempt=0;paymentAttempt<2 && !confirmed;paymentAttempt++){
         try{ await forcePersistLatestState(); }
         catch(error){ lastError=error; }
         confirmed=await verifyRemotePayment(id,r);
-        if(!confirmed && paymentAttempt<2)await wait(1200*(paymentAttempt+1));
+        if(!confirmed && paymentAttempt<1)await wait(1200);
       }
       if(!confirmed)throw new Error('O Supabase não confirmou a gravação desta baixa.');
 
@@ -10537,7 +10543,7 @@ html[data-dormus-theme] body .success-text{background:var(--soft-surface-2)!impo
       console.error('Erro ao salvar baixa:',error);
       alert('Não foi possível salvar a baixa.\n\n'+(error && error.message || error));
       return false;
-    }
+    }finally{ savingState(false); }
   };
 
   function ensureRepasseView(){
